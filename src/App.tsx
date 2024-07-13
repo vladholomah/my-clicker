@@ -1,11 +1,11 @@
 import React from 'react';
-import Clicker from './components/Clicker';
+import GameInterface from './components/GameInterface';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <Clicker />
+      <GameInterface />
     </div>
   );
 }
