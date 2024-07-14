@@ -11,8 +11,8 @@ const Clicker: React.FC = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setEnergy(prevEnergy => Math.min(prevEnergy + 10, maxEnergy));
-    }, 1000);
+      setEnergy(prevEnergy => Math.min(prevEnergy + 1, maxEnergy));
+    }, 2000); // Відновлення 1 одиниці енергії кожні 2 секунди
 
     return () => clearInterval(timer);
   }, []);
@@ -20,7 +20,7 @@ const Clicker: React.FC = () => {
   const handleClick = () => {
     if (energy > 0) {
       setScore(prevScore => prevScore + 1);
-      setEnergy(prevEnergy => Math.max(prevEnergy - 50, 0));
+      setEnergy(prevEnergy => Math.max(prevEnergy - 1, 0));
     }
   };
 
@@ -29,11 +29,16 @@ const Clicker: React.FC = () => {
       <EnergyBar energy={energy} maxEnergy={maxEnergy} />
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
-      <ExchangeDisplay onClick={handleClick} />
-      <button className="binance-button">
-        <img src="/images/binance-logo.png" alt="Binance" />
-        BINANCE
-      </button>
+      <div className="center-content">
+        <ExchangeDisplay onClick={handleClick} />
+        <div className="exchange-text">Your Exchange</div>
+        <div className="binance-button-container">
+          <button className="binance-button">
+            <img src="/images/binance-logo.png" alt="Binance" />
+            BINANCE
+          </button>
+        </div>
+      </div>
       <BottomMenu />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 interface ExchangeDisplayProps {
   onClick: () => void;
@@ -14,14 +14,16 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
   const [animations, setAnimations] = useState<Animation[]>([]);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const lastClickTime = useRef(0);
 
-  const handleInteraction = (clientX: number, clientY: number) => {
+  const handleInteraction = useCallback((x: number, y: number) => {
+    const now = Date.now();
+    if (now - lastClickTime.current < 50) return; // Запобігаємо подвійним кликам
+    lastClickTime.current = now;
+
     if (!buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const tiltX = (y - centerY) / centerY * 10;
@@ -29,55 +31,53 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
 
     setTilt({ x: tiltX, y: tiltY });
 
-    const newAnimation: Animation = { id: Date.now(), x, y };
+    const newAnimation: Animation = { id: now, x, y };
     setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
 
     onClick();
 
-    // Вібрація для мобільних пристроїв
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50);
-    }
-
     setTimeout(() => {
       setTilt({ x: 0, y: 0 });
-    }, 300);
-
-    setTimeout(() => {
       setAnimations(prevAnimations => prevAnimations.filter(anim => anim.id !== newAnimation.id));
-    }, 2000);
-  };
+    }, 1000);
+  }, [onClick]);
 
-  const handleTouch = (event: React.TouchEvent<HTMLButtonElement>) => {
+  const handleTouch = useCallback((event: React.TouchEvent<HTMLButtonElement>) => {
     event.preventDefault();
     const touch = event.touches[0];
-    if (touch) {
-      handleInteraction(touch.clientX, touch.clientY);
+    if (touch && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      handleInteraction(touch.clientX - rect.left, touch.clientY - rect.top);
     }
-  };
+  }, [handleInteraction]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    handleInteraction(event.clientX, event.clientY);
-  };
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      handleInteraction(event.clientX - rect.left, event.clientY - rect.top);
+    }
+  }, [handleInteraction]);
 
   return (
     <div className="exchange-display">
       <button
         ref={buttonRef}
         className="tap-button"
-        onClick={handleClick}
+        onMouseDown={handleClick}
         onTouchStart={handleTouch}
         style={{
           transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-          transition: 'transform 0.1s'
+          transition: 'transform 0.1s',
+          WebkitTapHighlightColor: 'transparent',  // Прибираємо підсвітку на мобільних пристроях
+          outline: 'none'  // Прибираємо фокус
         }}
       >
         <img src="/images/tap.png" alt="Tap" className="tap-image" />
-        {animations.map((animation) => (
+        {animations.map((anim) => (
           <div
-            key={animation.id}
+            key={anim.id}
             className="plus-one"
-            style={{ left: `${animation.x}px`, top: `${animation.y}px` }}
+            style={{ left: anim.x, top: anim.y }}
           >
             +1
           </div>
