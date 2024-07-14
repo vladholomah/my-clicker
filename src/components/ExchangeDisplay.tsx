@@ -12,50 +12,40 @@ interface Animation {
 
 const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
   const [animations, setAnimations] = useState<Animation[]>([]);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const lastClickTime = useRef(0);
+  const lastClickTime = useRef<{[key: number]: number}>({});
 
-  const handleInteraction = useCallback((x: number, y: number) => {
+  const handleInteraction = useCallback((x: number, y: number, identifier: number) => {
     const now = Date.now();
-    if (now - lastClickTime.current < 50) return; // Запобігаємо подвійним кликам
-    lastClickTime.current = now;
+    if (now - (lastClickTime.current[identifier] || 0) < 100) return; // Запобігаємо подвійним кликам
+    lastClickTime.current[identifier] = now;
 
     if (!buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const tiltX = (y - centerY) / centerY * 10;
-    const tiltY = (centerX - x) / centerX * 10;
+    const newAnimation: Animation = {
+      id: now + Math.random(), // Унікальний ідентифікатор для кожної анімації
+      x: x - rect.left,
+      y: y - rect.top
+    };
 
-    setTilt({ x: tiltX, y: tiltY });
-
-    const newAnimation: Animation = { id: now, x, y };
     setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
-
     onClick();
 
     setTimeout(() => {
-      setTilt({ x: 0, y: 0 });
       setAnimations(prevAnimations => prevAnimations.filter(anim => anim.id !== newAnimation.id));
     }, 1000);
   }, [onClick]);
 
   const handleTouch = useCallback((event: React.TouchEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const touch = event.touches[0];
-    if (touch && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      handleInteraction(touch.clientX - rect.left, touch.clientY - rect.top);
-    }
+    Array.from(event.touches).forEach(touch => {
+      handleInteraction(touch.clientX, touch.clientY, touch.identifier);
+    });
   }, [handleInteraction]);
 
-  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      handleInteraction(event.clientX - rect.left, event.clientY - rect.top);
-    }
+  const handleMouseDown = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    handleInteraction(event.clientX, event.clientY, 0);
   }, [handleInteraction]);
 
   return (
@@ -63,21 +53,32 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
       <button
         ref={buttonRef}
         className="tap-button"
-        onMouseDown={handleClick}
+        onMouseDown={handleMouseDown}
         onTouchStart={handleTouch}
         style={{
-          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-          transition: 'transform 0.1s',
-          WebkitTapHighlightColor: 'transparent',  // Прибираємо підсвітку на мобільних пристроях
-          outline: 'none'  // Прибираємо фокус
+          WebkitTapHighlightColor: 'transparent',
+          outline: 'none',
+          userSelect: 'none',
+          width: '200px',
+          height: '200px',
+          borderRadius: '50%',
+          border: 'none',
+          background: 'transparent',
+          position: 'relative',
+          overflow: 'visible'
         }}
       >
-        <img src="/images/tap.png" alt="Tap" className="tap-image" />
+        <img src="/images/tap.png" alt="Tap" className="tap-image" style={{width: '100%', height: '100%', borderRadius: '50%'}} />
         {animations.map((anim) => (
           <div
             key={anim.id}
             className="plus-one"
-            style={{ left: anim.x, top: anim.y }}
+            style={{
+              position: 'absolute',
+              left: anim.x,
+              top: anim.y,
+              pointerEvents: 'none'
+            }}
           >
             +1
           </div>
