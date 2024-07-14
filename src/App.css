@@ -1,21 +1,22 @@
-.App {
-  text-align: center;
-  background-color: #e6f3ff;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+cssCopybody, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }
 
 .game-interface {
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
-  width: 300px;
-  height: 600px;
+  width: 100%;
+  height: 100%;
+  max-width: 414px;
+  max-height: 896px;
+  background-color: rgba(255, 255, 255, 0.8);
+  background-image: url('/images/fon.png');
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
   position: relative;
 }
 
@@ -26,8 +27,9 @@
   border-radius: 15px;
   padding: 5px 10px;
   color: white;
-  width: 100%;
+  width: 90%;
   justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .energy-fill-container {
@@ -45,18 +47,10 @@
   transition: width 0.3s ease;
 }
 
-.settings-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-}
-
 .coin-balance {
   font-size: 24px;
   font-weight: bold;
-  margin: 20px 0;
+  margin-bottom: 10px;
 }
 
 .badge {
@@ -64,28 +58,94 @@
   color: white;
   padding: 5px 15px;
   border-radius: 15px;
-  display: inline-block;
   margin-bottom: 20px;
+}
+
+.exchange-text {
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
 .exchange-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-.bear-image {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #000;
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }
 
-.bear-image img {
+.App {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.game-interface {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 414px;
+  max-height: 896px;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
 }
+
+.tap-button {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.tap-button:active {
+  transform: scale(0.95) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.tap-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.plus-one {
+  position: absolute;
+  font-size: 18px;
+  color: #4CAF50;
+  pointer-events: none;
+  animation: float-up 1s ease-out;
+  opacity: 0;
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-20px); opacity: 0; }
+}
+
+/* ... (інші стилі залишаються без змін) ... */
 
 .binance-button {
   background-color: #f0b90b;
@@ -99,6 +159,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .binance-button img {
@@ -109,8 +170,10 @@
 
 .bottom-menu {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: space-around;
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
 }
 
 .menu-button {
@@ -126,35 +189,4 @@
   width: 24px;
   height: 24px;
   margin-bottom: 5px;
-}
-
-.exchange-display {
-  margin-bottom: 20px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.exchange-display:active {
-  transform: scale(0.98);
-}
-
-.exchange-display {
-  position: relative;
-  margin-bottom: 20px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.plus-one {
-  position: absolute;
-  font-size: 18px;
-  color: #4CAF50;
-  pointer-events: none;
-  animation: float-up 1s ease-out;
-  opacity: 0;
-}
-
-@keyframes float-up {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-20px); opacity: 0; }
 }

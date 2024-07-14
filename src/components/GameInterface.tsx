@@ -17,7 +17,7 @@ const GameInterface: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleClick = (x: number, y: number) => {
+  const handleClick = () => {
     if (energy > 0) {
       setScore(prevScore => prevScore + 1);
       setEnergy(prevEnergy => Math.max(prevEnergy - 1, 0));
@@ -29,6 +29,7 @@ const GameInterface: React.FC = () => {
       <EnergyBar energy={energy} maxEnergy={maxEnergy} />
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
+      <p className="exchange-text">Your Exchange</p>
       <ExchangeDisplay onClick={handleClick} />
       <button className="binance-button">
         <img src="/images/binance-logo.png" alt="Binance" />
