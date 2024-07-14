@@ -4,44 +4,60 @@ interface ExchangeDisplayProps {
   onClick: () => void;
 }
 
+interface Animation {
+  id: number;
+  x: number;
+  y: number;
+}
+
 const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
-  const [animations, setAnimations] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [animations, setAnimations] = useState<Animation[]>([]);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleInteraction = (clientX: number, clientY: number) => {
+    if (!buttonRef.current) return;
+
+    const rect = buttonRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const tiltX = (y - centerY) / centerY * 10;
+    const tiltY = (centerX - x) / centerX * 10;
+
+    setTilt({ x: tiltX, y: tiltY });
+
+    const newAnimation: Animation = { id: Date.now(), x, y };
+    setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
+
+    onClick();
+
+    // Вібрація для мобільних пристроїв
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
+
+    setTimeout(() => {
+      setTilt({ x: 0, y: 0 });
+    }, 300);
+
+    setTimeout(() => {
+      setAnimations(prevAnimations => prevAnimations.filter(anim => anim.id !== newAnimation.id));
+    }, 2000);
+  };
 
   const handleTouch = (event: React.TouchEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const touches = event.touches;
-    const rect = event.currentTarget.getBoundingClientRect();
-
-    for (let i = 0; i < touches.length; i++) {
-      const touch = touches[i];
-      const x = touch.clientX - rect.left;
-      const y = touch.clientY - rect.top;
-
-      onClick();
-
-      const newAnimation = { id: Date.now() + i, x, y };
-      setAnimations(prev => [...prev, newAnimation]);
-
-      setTimeout(() => {
-        setAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-      }, 1000);
+    const touch = event.touches[0];
+    if (touch) {
+      handleInteraction(touch.clientX, touch.clientY);
     }
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    onClick();
-
-    const newAnimation = { id: Date.now(), x, y };
-    setAnimations(prev => [...prev, newAnimation]);
-
-    setTimeout(() => {
-      setAnimations(prev => prev.filter(anim => anim.id !== newAnimation.id));
-    }, 1000);
+    handleInteraction(event.clientX, event.clientY);
   };
 
   return (
@@ -51,13 +67,17 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
         className="tap-button"
         onClick={handleClick}
         onTouchStart={handleTouch}
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transition: 'transform 0.1s'
+        }}
       >
         <img src="/images/tap.png" alt="Tap" className="tap-image" />
-        {animations.map(anim => (
+        {animations.map((animation) => (
           <div
-            key={anim.id}
+            key={animation.id}
             className="plus-one"
-            style={{ left: anim.x, top: anim.y }}
+            style={{ left: `${animation.x}px`, top: `${animation.y}px` }}
           >
             +1
           </div>
