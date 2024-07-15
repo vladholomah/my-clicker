@@ -1,0 +1,48 @@
+.exchange-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.tap-button {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  touch-action: manipulation;
+  transition: transform 0.15s ease-out;
+  -webkit-tap-highlight-color: transparent;
+  transform-style: preserve-3d;
+}
+
+.tap-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  user-select: none;
+  -webkit-user-drag: none;
+  backface-visibility: hidden;
+}
+
+.plus-one {
+  position: absolute;
+  color: red;
+  font-size: 24px;
+  pointer-events: none;
+  animation: floatUp 1s forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateZ(20px);
+  }
+  100% {
+    transform: translateY(-50px) translateZ(20px);
+  }
+}

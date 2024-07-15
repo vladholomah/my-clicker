@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import './ExchangeDisplay.css';
 
 interface ExchangeDisplayProps {
   onClick: () => void;
@@ -18,21 +19,37 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
 
   const handleInteraction = useCallback((x: number, y: number, identifier: number) => {
     const now = Date.now();
-    if (now - (lastClickTime.current[identifier] || 0) < 50) return; // Зменшуємо затримку
+    if (now - (lastClickTime.current[identifier] || 0) < 50) return;
     lastClickTime.current[identifier] = now;
 
     if (!buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const touchX = x - rect.left;
+    const touchY = y - rect.top;
+
+    const angleX = (touchY - centerY) / centerY * 20; // Max tilt 20 degrees
+    const angleY = (centerX - touchX) / centerX * 20; // Max tilt 20 degrees
+
+    buttonRef.current.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(0.95)`;
+
     const newAnimation: Animation = {
       id: now + Math.random(),
-      x: x - rect.left,
-      y: y - rect.top,
+      x: touchX,
+      y: touchY,
       createdAt: now
     };
 
     setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
     onClick();
+
+    setTimeout(() => {
+      if (buttonRef.current) {
+        buttonRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+      }
+    }, 150);
   }, [onClick]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
@@ -65,30 +82,15 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
         className="tap-button"
         onPointerDown={handlePointerDown}
         onTouchStart={handleTouchStart}
-        style={{
-          WebkitTapHighlightColor: 'transparent',
-          outline: 'none',
-          userSelect: 'none',
-          width: '200px',
-          height: '200px',
-          borderRadius: '50%',
-          border: 'none',
-          background: 'transparent',
-          position: 'relative',
-          overflow: 'visible'
-        }}
       >
-        <img src="/images/tap.png" alt="Tap" className="tap-image" style={{width: '100%', height: '100%', borderRadius: '50%'}} />
+        <img src="/images/tap.png" alt="Tap" className="tap-image" />
         {animations.map((anim) => (
           <div
             key={anim.id}
             className="plus-one"
             style={{
-              position: 'absolute',
               left: anim.x,
               top: anim.y,
-              pointerEvents: 'none',
-              animation: `floatUp 1s forwards`,
               opacity: 1 - (Date.now() - anim.createdAt) / 1000
             }}
           >
