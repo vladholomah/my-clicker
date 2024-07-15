@@ -118,8 +118,9 @@ body, html {
 
 .plus-one {
   position: absolute;
-  color: red;
+  color: #ffffff;
   font-size: 24px;
+  font-weight: bold;
   pointer-events: none;
 }
 
@@ -137,31 +138,4 @@ body, html {
   margin-top: 20px;
   margin-bottom: 10px;
   text-align: center;
-}
-
-.binance-button-container {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.binance-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  background-color: #F0B90B;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.binance-button img {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
 }

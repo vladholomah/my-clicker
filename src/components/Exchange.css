@@ -1,0 +1,10 @@
+.exchange-page {
+  padding: 20px;
+}
+
+.exchange-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}

@@ -1,14 +1,14 @@
 .bottom-menu {
   display: flex;
   justify-content: space-between;
-  width: calc(100% - 40px); /* Зменшуємо ширину для відступів */
+  width: calc(100% - 22px); /* Зменшуємо ширину для відступів */
   position: absolute;
   bottom: 10px; /* Опускаємо меню на 20px від нижнього краю */
-  left: 20px; /* Додаємо лівий відступ */
-  right: 20px; /* Додаємо правий відступ */
+  left: 10px; /* Додаємо лівий відступ */
+  right: 10px; /* Додаємо правий відступ */
   background-color: rgb(40, 43, 48);
   padding: 8px;
-  border-radius: 10px; /* Додаємо закруглені кути */
+  border-radius: 20px; /* Додаємо закруглені кути */
   box-sizing: border-box;
 }
 
@@ -23,7 +23,7 @@
   cursor: pointer;
   padding: 10px 5px;
   color: #626161;
-  font-size: 12px;
+  font-size: 10px;
   -webkit-tap-highlight-color: transparent;
   outline: none;
   user-select: none;

@@ -29,12 +29,6 @@ const GameInterface: React.FC = () => {
       <div className="center-content">
         <ExchangeDisplay onClick={handleClick} />
         <div className="exchange-text">Your Exchange</div>
-        <div className="binance-button-container">
-          <button className="binance-button">
-            <img src="/images/binance-logo.png" alt="Binance" />
-            BINANCE
-          </button>
-        </div>
       </div>
       <BottomMenu
         activeItem={currentView}

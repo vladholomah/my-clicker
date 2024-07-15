@@ -1,14 +1,34 @@
 import React, { useState } from 'react';
 import Clicker from './components/Clicker';
 import BottomMenu from './components/BottomMenu';
+import Exchange from './components/Exchange';
 import './App.css';
 
 function App() {
   const [currentView, setCurrentView] = useState('mine');
+  const [selectedExchange, setSelectedExchange] = useState({
+  name: 'Holmah',
+  logo: '/images/holmah.png'
+});
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
   };
+
+  const handleBinanceClick = () => {
+    setCurrentView('exchange');
+  };
+
+ const handleExchangeSelect = (exchangeName: string) => {
+  const newExchange = {
+    name: exchangeName,
+    logo: exchangeName === 'Holmah'
+      ? '/images/holmah.png'
+      : `/images/${exchangeName.toLowerCase()}${exchangeName === 'Binance' ? '-logo' : ''}.png`
+  };
+  setSelectedExchange(newExchange);
+  setCurrentView('mine');
+};
 
   const renderView = () => {
     switch(currentView) {
@@ -18,9 +38,11 @@ function App() {
         return <h1>Boost</h1>;
       case 'earn':
         return <h1>Earn</h1>;
+      case 'exchange':
+        return <Exchange onExchangeSelect={handleExchangeSelect} />;
       case 'mine':
       default:
-        return <Clicker />;
+        return <Clicker onBinanceClick={handleBinanceClick} selectedExchange={selectedExchange} />;
     }
   };
 
