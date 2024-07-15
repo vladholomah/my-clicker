@@ -38,47 +38,38 @@ body, html {
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
-}
-
-.energy-bar {
-  display: flex;
-  align-items: center;
-  background-color: #2c2c2c;
-  border-radius: 15px;
-  padding: 5px 10px;
-  color: white;
-  width: 90%;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.energy-fill-container {
-  flex-grow: 1;
-  background-color: #444;
-  height: 10px;
-  border-radius: 5px;
-  margin: 0 10px;
-  overflow: hidden;
-}
-
-.energy-fill {
-  height: 100%;
-  background-color: #ffa500;
-  transition: width 0.3s ease;
+  justify-content: space-between; /* Це допоможе рівномірно розподілити простір */
 }
 
 .coin-balance {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-size: 24px;
+  font-weight: bold;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.balance-and-badge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+.balance-icon {
+  width: 30px;  /* Змініть розмір відповідно до ваших потреб */
+  height: 30px;
+  margin-right: 5px;
 }
 
 .badge {
-  background-color: #c0c0c0;
+  background-color: #282b30;
   color: white;
   padding: 5px 15px;
   border-radius: 15px;
-  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -135,7 +126,9 @@ body, html {
 
 .exchange-text {
   font-size: 18px;
+  font-weight: bold;
   margin-top: 20px;
   margin-bottom: 10px;
   text-align: center;
 }
+

@@ -10,9 +10,10 @@ interface ClickerProps {
     name: string;
     logo: string;
   };
+  onSettingsClick: () => void;
 }
 
-const Clicker: React.FC<ClickerProps> = ({ onBinanceClick, selectedExchange }) => {
+  const Clicker: React.FC<ClickerProps> = ({ onBinanceClick, selectedExchange, onSettingsClick }) => {
   const [score, setScore] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
@@ -33,24 +34,24 @@ const Clicker: React.FC<ClickerProps> = ({ onBinanceClick, selectedExchange }) =
   };
 
    return (
-    <div className="clicker">
-      <EnergyBar energy={energy} maxEnergy={maxEnergy} />
-      <CoinBalance balance={score} />
-      <div className="badge">Silver</div>
-      <div className="center-content">
-        <ExchangeDisplay onClick={handleClick} />
-        <div className="exchange-info">
-          <div className="exchange-text">Your Exchange:</div>
-          <ExchangeButton
-            onClick={onBinanceClick}
-            logo={selectedExchange.logo}
-            name={selectedExchange.name}
-            isMainView={true}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
+       <div className="clicker">
+           <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
+           <CoinBalance balance={score}/>
+           <div className="badge">Silver</div>
+           <div className="center-content">
+               <ExchangeDisplay onClick={handleClick}/>
+               <div className="exchange-info">
+                   <div className="exchange-text">Your Exchange:</div>
+                   <ExchangeButton
+                       onClick={onBinanceClick}
+                       logo={selectedExchange.logo}
+                       name={selectedExchange.name}
+                       isMainView={true}
+                   />
+               </div>
+           </div>
+       </div>
+   );
+  };
 
 export default Clicker;

@@ -7,7 +7,8 @@ interface CoinBalanceProps {
 const CoinBalance: React.FC<CoinBalanceProps> = ({ balance }) => {
   return (
     <div className="coin-balance">
-      <span>{balance} Coins</span>
+      <img src="/images/balance.png" alt="Balance" className="balance-icon" />
+      <span>{balance}</span>
     </div>
   );
 };

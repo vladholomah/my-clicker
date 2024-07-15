@@ -21,9 +21,19 @@ const GameInterface: React.FC = () => {
     setCurrentView(item);
   };
 
+  const handleSettingsClick = () => {
+    // Handle settings click, for example:
+    console.log('Settings clicked');
+    // You might want to set a new view or open a modal here
+  };
+
   return (
     <div className="game-interface">
-      <EnergyBar energy={energy} maxEnergy={maxEnergy} />
+      <EnergyBar
+        energy={energy}
+        maxEnergy={maxEnergy}
+        onSettingsClick={handleSettingsClick}
+      />
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
       <div className="center-content">
