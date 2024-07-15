@@ -120,17 +120,14 @@ body, html {
   position: absolute;
   color: red;
   font-size: 24px;
-  animation: floatUp 1s forwards;
   pointer-events: none;
 }
 
 @keyframes floatUp {
   0% {
-    opacity: 1;
     transform: translateY(0);
   }
   100% {
-    opacity: 0;
     transform: translateY(-50px);
   }
 }

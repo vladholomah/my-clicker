@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 interface ExchangeDisplayProps {
   onClick: () => void;
@@ -8,6 +8,7 @@ interface Animation {
   id: number;
   x: number;
   y: number;
+  createdAt: number;
 }
 
 const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
@@ -17,44 +18,53 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
 
   const handleInteraction = useCallback((x: number, y: number, identifier: number) => {
     const now = Date.now();
-    if (now - (lastClickTime.current[identifier] || 0) < 100) return; // Запобігаємо подвійним кликам
+    if (now - (lastClickTime.current[identifier] || 0) < 50) return; // Зменшуємо затримку
     lastClickTime.current[identifier] = now;
 
     if (!buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
     const newAnimation: Animation = {
-      id: now + Math.random(), // Унікальний ідентифікатор для кожної анімації
+      id: now + Math.random(),
       x: x - rect.left,
-      y: y - rect.top
+      y: y - rect.top,
+      createdAt: now
     };
 
     setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
     onClick();
-
-    setTimeout(() => {
-      setAnimations(prevAnimations => prevAnimations.filter(anim => anim.id !== newAnimation.id));
-    }, 1000);
   }, [onClick]);
 
-  const handleTouch = useCallback((event: React.TouchEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    Array.from(event.touches).forEach(touch => {
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleInteraction(e.clientX, e.clientY, e.pointerId);
+  }, [handleInteraction]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    Array.from(e.touches).forEach(touch => {
       handleInteraction(touch.clientX, touch.clientY, touch.identifier);
     });
   }, [handleInteraction]);
 
-  const handleMouseDown = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    handleInteraction(event.clientX, event.clientY, 0);
-  }, [handleInteraction]);
+  useEffect(() => {
+    const animationTimer = setInterval(() => {
+      const now = Date.now();
+      setAnimations(prevAnimations =>
+        prevAnimations.filter(anim => now - anim.createdAt < 1000)
+      );
+    }, 100);
+
+    return () => clearInterval(animationTimer);
+  }, []);
 
   return (
     <div className="exchange-display">
       <button
         ref={buttonRef}
         className="tap-button"
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouch}
+        onPointerDown={handlePointerDown}
+        onTouchStart={handleTouchStart}
         style={{
           WebkitTapHighlightColor: 'transparent',
           outline: 'none',
@@ -77,7 +87,9 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
               position: 'absolute',
               left: anim.x,
               top: anim.y,
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              animation: `floatUp 1s forwards`,
+              opacity: 1 - (Date.now() - anim.createdAt) / 1000
             }}
           >
             +1
