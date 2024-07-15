@@ -30,8 +30,8 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
     const touchX = x - rect.left;
     const touchY = y - rect.top;
 
-    const angleX = (touchY - centerY) / centerY * 20; // Max tilt 20 degrees
-    const angleY = (centerX - touchX) / centerX * 20; // Max tilt 20 degrees
+    const angleX = (centerY - touchY) / centerY * 20; // Змінено з (touchY - centerY)
+const angleY = (touchX - centerX) / centerX * 20; // Змінено з (centerX - touchX)
 
     buttonRef.current.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(0.95)`;
 

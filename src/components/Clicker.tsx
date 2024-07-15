@@ -12,7 +12,7 @@ const Clicker: React.FC = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setEnergy(prevEnergy => Math.min(prevEnergy + 1, maxEnergy));
-    }, 2000); // Відновлення 1 одиниці енергії кожні 2 секунди
+    }, 2000);
 
     return () => clearInterval(timer);
   }, []);
@@ -39,7 +39,6 @@ const Clicker: React.FC = () => {
           </button>
         </div>
       </div>
-      <BottomMenu />
     </div>
   );
 };

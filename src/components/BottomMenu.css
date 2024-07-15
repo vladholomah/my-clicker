@@ -1,0 +1,48 @@
+.bottom-menu {
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 40px); /* Зменшуємо ширину для відступів */
+  position: absolute;
+  bottom: 10px; /* Опускаємо меню на 20px від нижнього краю */
+  left: 20px; /* Додаємо лівий відступ */
+  right: 20px; /* Додаємо правий відступ */
+  background-color: rgb(40, 43, 48);
+  padding: 8px;
+  border-radius: 10px; /* Додаємо закруглені кути */
+  box-sizing: border-box;
+}
+
+.menu-button {
+  flex: 1;
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 10px 5px;
+  color: #626161;
+  font-size: 12px;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+}
+
+.menu-button.active {
+  background-color: rgb(28, 31, 36);
+  color: white;
+  border-radius: 10px; /* Додаємо закруглені кути */
+}
+
+.menu-button img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 5px;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}

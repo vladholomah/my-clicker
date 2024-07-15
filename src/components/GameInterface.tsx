@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import EnergyBar from './EnergyBar';
 import CoinBalance from './CoinBalance';
 import ExchangeDisplay from './ExchangeDisplay';
@@ -8,14 +8,7 @@ const GameInterface: React.FC = () => {
   const [score, setScore] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEnergy(prevEnergy => Math.min(prevEnergy + 1, maxEnergy));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  const [currentView, setCurrentView] = useState('mine');
 
   const handleClick = () => {
     if (energy > 0) {
@@ -24,18 +17,29 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  const handleMenuItemClick = (item: string) => {
+    setCurrentView(item);
+  };
+
   return (
     <div className="game-interface">
       <EnergyBar energy={energy} maxEnergy={maxEnergy} />
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
-      <p className="exchange-text">Your Exchange</p>
-      <ExchangeDisplay onClick={handleClick} />
-      <button className="binance-button">
-        <img src="/images/binance-logo.png" alt="Binance" />
-        BINANCE
-      </button>
-      <BottomMenu />
+      <div className="center-content">
+        <ExchangeDisplay onClick={handleClick} />
+        <div className="exchange-text">Your Exchange</div>
+        <div className="binance-button-container">
+          <button className="binance-button">
+            <img src="/images/binance-logo.png" alt="Binance" />
+            BINANCE
+          </button>
+        </div>
+      </div>
+      <BottomMenu
+        activeItem={currentView}
+        onMenuItemClick={handleMenuItemClick}
+      />
     </div>
   );
 };

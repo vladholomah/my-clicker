@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 interface ClickButtonProps {
   onClick: () => void;
@@ -7,17 +7,17 @@ interface ClickButtonProps {
 const ClickButton: React.FC<ClickButtonProps> = ({ onClick }) => {
   const [clickPosition, setClickPosition] = useState<{ x: number, y: number } | null>(null);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setClickPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     onClick();
     setTimeout(() => setClickPosition(null), 500);
-  };
+  }, [onClick]);
 
   return (
     <div className="click-button-container">
       <button onClick={handleClick} className="click-button">
-        Tap
+        <img src="/images/tap.png" alt="Tap" className="tap-image" />
       </button>
       {clickPosition && (
         <span
