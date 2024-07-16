@@ -9,7 +9,7 @@ interface ExchangeProps {
 const exchanges = [
   { name: 'Holmah', logo: '/images/holmah.png' },
   { name: 'Binance', logo: '/images/binance-logo.png' },
-  { name: 'Bybit', logo: '/images/Bybit.png' },
+  { name: 'Bybit', logo: '/images/bybit.png' },
   { name: 'Qmall', logo: '/images/qmall.png' },
   { name: 'WhiteBit', logo: '/images/whitebit.png' }
 ];
