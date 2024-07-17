@@ -10,7 +10,7 @@
   color: white;
   font-weight: bold;
   width: 80%;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   height: 30px;
 }
 
@@ -50,7 +50,7 @@
 
 .energy-fill {
   height: 100%;
- background: linear-gradient(to right, #f88f48 0%, #f78336 50%, #fd812d 100%);
+ background: linear-gradient(to right, #cbefe0 0%, #b5dbcb 50%, #a3d7ce 100%);
   transition: width 0.3s ease;
 }
 
