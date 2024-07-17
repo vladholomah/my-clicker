@@ -55,6 +55,12 @@ function App() {
 
   const renderView = () => {
     switch(currentView) {
+      case 'levels':
+  return <Levels />;
+  case 'settings':
+  return <Settings />;
+  case 'exchange':
+  return <Exchange onExchangeSelect={handleExchangeSelect} />;
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':
