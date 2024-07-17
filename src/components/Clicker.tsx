@@ -16,6 +16,7 @@ interface ClickerProps {
   score: number;
   onScoreChange: (newScore: number) => void;
   onLevelClick: () => void;
+   multitapLevel: number;
 }
 
 const getLevelInfo = (score: number) => {
@@ -33,20 +34,22 @@ const Clicker: React.FC<ClickerProps> = ({
   onSettingsClick,
   score,
   onScoreChange,
-  onLevelClick
+  onLevelClick,
+     multitapLevel,
 }) => {
+
   const { isTurboActive } = useBoost();
   const { energy, maxEnergy, decreaseEnergy } = useEnergy();
   const levelInfo = getLevelInfo(score);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     if (energy > 0) {
-      const increment = isTurboActive ? 5 : 1;
-      onScoreChange(score + increment);
-      decreaseEnergy();
+      const baseIncrement = multitapLevel;
+      const increment = isTurboActive ? baseIncrement * 5 : baseIncrement;
+      onScoreChange(increment);
+      decreaseEnergy(1); // Зменшуємо енергію на 1 за кожен клік
     }
   };
-
   return (
     <div className="clicker">
       <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
@@ -57,7 +60,11 @@ const Clicker: React.FC<ClickerProps> = ({
         <img src="/images/arrow-right.png" alt=">" className="arrow-icon"/>
       </button>
       <div className="center-content">
-        <ExchangeDisplay onClick={handleClick} turboActive={isTurboActive}/>
+         <ExchangeDisplay
+      onClick={handleClick}
+      turboActive={isTurboActive}
+      multitapLevel={multitapLevel}
+    />
         <div className="exchange-info">
           <div className="exchange-text">Your Exchange</div>
           <ExchangeButton

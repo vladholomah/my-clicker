@@ -10,11 +10,13 @@ const GameInterface: React.FC = () => {
   const maxEnergy = 1500;
   const [currentView, setCurrentView] = useState('mine');
   const [turboActive, setTurboActive] = useState(false);
+  const [multitapLevel, setMultitapLevel] = useState(1); // Додайте це
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     if (energy > 0) {
-      setScore(prevScore => prevScore + (turboActive ? 5 : 1));
-      setEnergy(prevEnergy => Math.max(prevEnergy - 1, 0));
+      const increment = turboActive ? multitapLevel * 5 : multitapLevel;
+      setScore(prevScore => prevScore + increment);
+      setEnergy(prevEnergy => Math.max(prevEnergy - multitapLevel, 0));
     }
   };
 
@@ -23,9 +25,7 @@ const GameInterface: React.FC = () => {
   };
 
   const handleSettingsClick = () => {
-    // Handle settings click, for example:
     console.log('Settings clicked');
-    // You might want to set a new view or open a modal here
   };
 
   return (
@@ -38,7 +38,11 @@ const GameInterface: React.FC = () => {
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
       <div className="center-content">
-        <ExchangeDisplay onClick={handleClick} turboActive={turboActive} />
+        <ExchangeDisplay
+          onClick={handleClick}
+          turboActive={turboActive}
+          multitapLevel={multitapLevel}
+        />
         <div className="exchange-text">Your Exchange</div>
       </div>
       <BottomMenu

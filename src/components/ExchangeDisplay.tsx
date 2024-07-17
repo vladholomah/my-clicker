@@ -4,6 +4,7 @@ import './ExchangeDisplay.css';
 interface ExchangeDisplayProps {
   onClick: (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => void;
   turboActive: boolean;
+  multitapLevel: number;
 }
 
 interface Animation {
@@ -13,7 +14,7 @@ interface Animation {
   createdAt: number;
 }
 
-const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive }) => {
+const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive, multitapLevel }) => {
   const [animations, setAnimations] = useState<Animation[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const lastClickTime = useRef<{[key: number]: number}>({});
@@ -76,7 +77,7 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive 
     return () => clearInterval(animationTimer);
   }, []);
 
-  return (
+return (
     <div className="exchange-display">
       <button
         ref={buttonRef}
@@ -95,7 +96,7 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive 
               opacity: 1 - (Date.now() - anim.createdAt) / 1000
             }}
           >
-            +{turboActive ? 5 : 1}
+            +{turboActive ? multitapLevel * 5 : multitapLevel}
           </div>
         ))}
       </button>

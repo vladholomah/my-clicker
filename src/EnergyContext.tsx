@@ -6,7 +6,7 @@ interface EnergyContextType {
   energyRefillCount: number;
   energyRefillCooldown: number;
   activateEnergyRefill: () => void;
-  decreaseEnergy: () => void;
+  decreaseEnergy: (amount?: number) => void;
 }
 
 const EnergyContext = createContext<EnergyContextType | undefined>(undefined);
@@ -28,9 +28,9 @@ export const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [energyRefillCount, energyRefillCooldown, maxEnergy]);
 
-  const decreaseEnergy = useCallback(() => {
-    setEnergy(prev => Math.max(prev - 1, 0));
-  }, []);
+const decreaseEnergy = useCallback((amount: number = 1) => {
+  setEnergy(prev => Math.max(prev - amount, 0));
+}, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;

@@ -34,7 +34,7 @@
 
 .plus-one {
   position: absolute;
-  color: red;
+  color: #ffffff;
   font-size: 24px;
   pointer-events: none;
   animation: floatUp 1s forwards;

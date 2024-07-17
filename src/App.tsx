@@ -16,6 +16,7 @@ function App() {
     logo: '/images/holmah.png'
   });
   const [score, setScore] = useState(0);
+  const [multitapLevel, setMultitapLevel] = useState(1);
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -40,8 +41,16 @@ function App() {
     setCurrentView('settings');
   };
 
-  const handleScoreChange = (newScore: number) => {
-    setScore(newScore);
+
+    const handleMultitapUpgrade = (level: number, cost: number) => {
+    if (score >= cost) {
+      setScore(score - cost);
+      setMultitapLevel(level);
+    }
+  };
+
+    const handleScoreChange = (increment: number) => {
+    setScore(prevScore => prevScore + increment);
   };
 
   const renderView = () => {
@@ -52,15 +61,9 @@ function App() {
         return <Boost
           balance={score}
           setCurrentView={setCurrentView}
+          onMultitapUpgrade={handleMultitapUpgrade}
+          currentLevel={multitapLevel}
         />;
-      case 'earn':
-        return <h1>Earn</h1>;
-      case 'exchange':
-        return <Exchange onExchangeSelect={handleExchangeSelect} />;
-      case 'settings':
-        return <Settings />;
-            case 'levels':
-        return <Levels />;
       case 'mine':
       default:
         return <Clicker
@@ -70,6 +73,7 @@ function App() {
           score={score}
           onScoreChange={handleScoreChange}
           onLevelClick={() => setCurrentView('levels')}
+          multitapLevel={multitapLevel}
         />;
     }
   };
