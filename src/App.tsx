@@ -6,6 +6,7 @@ import Settings from './components/Settings';
 import Boost from './components/Boost';
 import Levels from './components/Levels';
 import { BoostProvider } from './BoostContext';
+import { EnergyProvider } from './EnergyContext';
 import './App.css';
 
 function App() {
@@ -75,12 +76,14 @@ function App() {
 
   return (
     <BoostProvider>
-      <div className="App">
-        <div className="game-interface">
-          {renderView()}
-          <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+      <EnergyProvider>
+        <div className="App">
+          <div className="game-interface">
+            {renderView()}
+            <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+          </div>
         </div>
-      </div>
+      </EnergyProvider>
     </BoostProvider>
   );
 }

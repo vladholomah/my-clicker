@@ -4,6 +4,7 @@ import CoinBalance from './CoinBalance';
 import ExchangeDisplay from './ExchangeDisplay';
 import ExchangeButton from './ExchangeButton';
 import { useBoost } from '../BoostContext';
+import { useEnergy } from '../EnergyContext';
 
 interface ClickerProps {
   onBinanceClick: () => void;
@@ -35,49 +36,40 @@ const Clicker: React.FC<ClickerProps> = ({
   onLevelClick
 }) => {
   const { isTurboActive } = useBoost();
-  const [energy, setEnergy] = useState(1500);
-  const maxEnergy = 1500;
+  const { energy, maxEnergy, decreaseEnergy } = useEnergy();
   const levelInfo = getLevelInfo(score);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEnergy(prevEnergy => Math.min(prevEnergy + 1, maxEnergy));
-    }, 2000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     if (energy > 0) {
       const increment = isTurboActive ? 5 : 1;
       onScoreChange(score + increment);
-      setEnergy(prevEnergy => Math.max(prevEnergy - 1, 0));
+      decreaseEnergy();
     }
   };
 
   return (
-      <div className="clicker">
-        <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
-        <CoinBalance balance={score}/>
-        <button className="level-button" onClick={onLevelClick}>
-          <img src={levelInfo.icon} alt={levelInfo.name} className="level-icon"/>
-          <span className="level-name">{levelInfo.name}</span>
-          <img src="/images/arrow-right.png" alt=">" className="arrow-icon"/>
-        </button>
-        <div className="center-content">
-          <ExchangeDisplay onClick={handleClick} turboActive={isTurboActive}/>
-          <div className="exchange-info">
-            <div className="exchange-text">Your Exchange</div>
-            <ExchangeButton
-                onClick={onBinanceClick}
-                logo={selectedExchange.logo}
-                name={selectedExchange.name}
-                isMainView={true}
-            />
-          </div>
+    <div className="clicker">
+      <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
+      <CoinBalance balance={score}/>
+      <button className="level-button" onClick={onLevelClick}>
+        <img src={levelInfo.icon} alt={levelInfo.name} className="level-icon"/>
+        <span className="level-name">{levelInfo.name}</span>
+        <img src="/images/arrow-right.png" alt=">" className="arrow-icon"/>
+      </button>
+      <div className="center-content">
+        <ExchangeDisplay onClick={handleClick} turboActive={isTurboActive}/>
+        <div className="exchange-info">
+          <div className="exchange-text">Your Exchange</div>
+          <ExchangeButton
+            onClick={onBinanceClick}
+            logo={selectedExchange.logo}
+            name={selectedExchange.name}
+            isMainView={true}
+          />
         </div>
-        {isTurboActive && <div className="turbo-active">Turbo Active!</div>}
       </div>
+      {isTurboActive && <div className="turbo-active">Turbo Active!</div>}
+    </div>
   );
 };
 
