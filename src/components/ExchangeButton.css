@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 .exchange-button-container {
   background-color: #282b30;
   padding: 15px;
-  border-radius: 20px;
+  border-radius: 25px;
   margin: 5px;
   display: flex;
   justify-content: center;

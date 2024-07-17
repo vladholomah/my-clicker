@@ -1,5 +1,6 @@
 import React from 'react';
-import './EnergyBar.css'; // Переконайтеся, що ви імпортуєте CSS файл
+import './EnergyBar.css';
+import energyIcon from '../images/energy.png'; // Оновлений шля
 
 interface EnergyBarProps {
   energy: number;
@@ -12,10 +13,12 @@ const EnergyBar: React.FC<EnergyBarProps> = ({ energy, maxEnergy, onSettingsClic
 
   return (
     <div className="energy-bar">
-      <span className="energy-icon">⚡</span>
-      <span>{energy}/{maxEnergy}</span>
-      <div className="energy-fill-container">
-        <div className="energy-fill" style={{ width: `${percentage}%` }}></div>
+      <div className="energy-content">
+        <img src={energyIcon} alt="Energy" className="energy-icon" />
+        <span className="energy-balance">{energy}/{maxEnergy}</span>
+        <div className="energy-fill-container">
+          <div className="energy-fill" style={{ width: `${percentage}%` }}></div>
+        </div>
       </div>
       <button className="settings-button" onClick={onSettingsClick}>
         <img src="/images/setting.png" alt="Settings" className="settings-icon" />

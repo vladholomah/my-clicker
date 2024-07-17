@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body, html {
   margin: 0;
   padding: 0;
@@ -28,6 +30,7 @@ body, html {
   padding-bottom: 90px; /* приблизна висота меню плюс невеликий запас */
   box-sizing: border-box;
   position: relative;
+  overflow-y: auto; /* Додано для прокрутки, якщо контент не вміщується */
 }
 
 .clicker {
@@ -38,25 +41,16 @@ body, html {
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
-  justify-content: space-between; /* Це допоможе рівномірно розподілити простір */
 }
 
 .coin-balance {
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Збільшуємо відступ між балансом і кнопкою рівня */
   font-size: 24px;
   font-weight: bold;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.balance-and-badge-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 50px;
-  margin-bottom: 20px;
 }
 
 .balance-icon {
@@ -66,11 +60,20 @@ body, html {
 }
 
 .badge {
-  background-color: #282b30;
+  background-color: rgba(40, 43, 48, 0.54);
   color: white;
   padding: 5px 15px;
   border-radius: 15px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.badge img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
 .center-content {
@@ -126,9 +129,47 @@ body, html {
 
 .exchange-text {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 500;
   margin-top: 20px;
   margin-bottom: 10px;
   text-align: center;
 }
 
+.level-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #282b30;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px; /* Додаємо верхній відступ */
+}
+
+.level-button:hover {
+  background-color: #3a3d42;
+}
+
+.level-button .level-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.level-button .level-name {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 14px; /* Зменшений розмір шрифту */
+  font-weight: 500; /* Додано невелику жирність для кращої читабельності */
+}
+
+.level-button .arrow-icon {
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  vertical-align: middle;
+}

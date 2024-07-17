@@ -1,15 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 .energy-bar {
   display: flex;
   align-items: center;
-  position: relative; /* Додаємо це для абсолютного позиціонування кнопки налаштувань */
+  position: relative;
   background-color: #2c2c2c;
-  border-radius: 20px;
-  padding: 10px 30px;
+  border-radius: 25px;
+  padding: 5px 20px;
   color: white;
-    font-weight: bold;
-  width: 70%;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  font-weight: bold;
+  width: 80%;
+  margin-bottom: 50px;
+  height: 30px;
 }
 
 .settings-button {
@@ -17,10 +19,10 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  position: absolute; /* Змінюємо на абсолютне позиціонування */
-  right: 10px; /* Відступ справа */
-  top: 50%; /* Розміщуємо по вертикальному центру */
-  transform: translateY(-40%); /* Зміщуємо трохи вгору від центру */
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  height: 100%; /* Займаємо всю висоту батьківського елемента */
 }
 
 .settings-icon {
@@ -29,17 +31,39 @@
   object-fit: contain;
 }
 
+.energy-balance {
+  min-width: 60px; /* Трохи зменшуємо мінімальну ширину */
+  text-align: left;
+  margin-right: 10px; /* Збільшуємо відступ справа */
+  font-size: 14px;
+  line-height: 1;
+}
+
 .energy-fill-container {
   flex-grow: 1;
   background-color: #444;
   height: 10px;
   border-radius: 5px;
-  margin: 0 10px;
   overflow: hidden;
+  align-self: center;
 }
 
 .energy-fill {
   height: 100%;
-  background-color: #a8c9db;
+ background: linear-gradient(to right, #74cce8 0%, #75e1d4 50%, #79f2d1 100%);
   transition: width 0.3s ease;
+}
+
+.energy-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.energy-icon {
+  margin-right: 5px;
+  width: 16px; /* Встановлюємо ширину зображення */
+  height: 16px; /* Встановлюємо висоту зображення */
+  object-fit: contain; /* Забезпечуємо, щоб зображення вмістилося в задані розміри */
 }

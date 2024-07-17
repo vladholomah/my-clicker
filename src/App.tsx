@@ -4,7 +4,8 @@ import BottomMenu from './components/BottomMenu';
 import Exchange from './components/Exchange';
 import Settings from './components/Settings';
 import Boost from './components/Boost';
-import { BoostProvider, useBoost } from './BoostContext';
+import Levels from './components/Levels';
+import { BoostProvider } from './BoostContext';
 import './App.css';
 
 function App() {
@@ -57,6 +58,8 @@ function App() {
         return <Exchange onExchangeSelect={handleExchangeSelect} />;
       case 'settings':
         return <Settings />;
+            case 'levels':
+        return <Levels />;
       case 'mine':
       default:
         return <Clicker
@@ -65,6 +68,7 @@ function App() {
           onSettingsClick={handleSettingsClick}
           score={score}
           onScoreChange={handleScoreChange}
+          onLevelClick={() => setCurrentView('levels')}
         />;
     }
   };

@@ -1,0 +1,66 @@
+.levels-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.levels-title {
+  font-size: 24px;
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+
+.levels-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.level-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+}
+
+.level-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.level-info img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.level-info h3 {
+  font-size: 20px;
+  margin: 0 0 5px 0;
+}
+
+.level-info p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.level-carousel button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.level-carousel button:focus {
+  outline: none;
+}
