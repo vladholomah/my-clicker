@@ -50,7 +50,7 @@
 
 .energy-fill {
   height: 100%;
- background: linear-gradient(to right, #74cce8 0%, #75e1d4 50%, #79f2d1 100%);
+ background: linear-gradient(to right, #f88f48 0%, #f78336 50%, #fd812d 100%);
   transition: width 0.3s ease;
 }
 
