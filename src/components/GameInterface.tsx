@@ -9,10 +9,11 @@ const GameInterface: React.FC = () => {
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
   const [currentView, setCurrentView] = useState('mine');
+  const [turboActive, setTurboActive] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     if (energy > 0) {
-      setScore(prevScore => prevScore + 1);
+      setScore(prevScore => prevScore + (turboActive ? 5 : 1));
       setEnergy(prevEnergy => Math.max(prevEnergy - 1, 0));
     }
   };
@@ -37,7 +38,7 @@ const GameInterface: React.FC = () => {
       <CoinBalance balance={score} />
       <div className="badge">Silver</div>
       <div className="center-content">
-        <ExchangeDisplay onClick={handleClick} />
+        <ExchangeDisplay onClick={handleClick} turboActive={turboActive} />
         <div className="exchange-text">Your Exchange</div>
       </div>
       <BottomMenu

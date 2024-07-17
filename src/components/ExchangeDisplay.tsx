@@ -2,7 +2,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import './ExchangeDisplay.css';
 
 interface ExchangeDisplayProps {
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => void;
+  turboActive: boolean;
 }
 
 interface Animation {
@@ -12,12 +13,12 @@ interface Animation {
   createdAt: number;
 }
 
-const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
+const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive }) => {
   const [animations, setAnimations] = useState<Animation[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const lastClickTime = useRef<{[key: number]: number}>({});
 
-  const handleInteraction = useCallback((x: number, y: number, identifier: number) => {
+  const handleInteraction = useCallback((x: number, y: number, identifier: number, event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     const now = Date.now();
     if (now - (lastClickTime.current[identifier] || 0) < 50) return;
     lastClickTime.current[identifier] = now;
@@ -30,8 +31,8 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick }) => {
     const touchX = x - rect.left;
     const touchY = y - rect.top;
 
-    const angleX = (centerY - touchY) / centerY * 20; // Змінено з (touchY - centerY)
-const angleY = (touchX - centerX) / centerX * 20; // Змінено з (centerX - touchX)
+    const angleX = (centerY - touchY) / centerY * 20;
+    const angleY = (touchX - centerX) / centerX * 20;
 
     buttonRef.current.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(0.95)`;
 
@@ -43,7 +44,7 @@ const angleY = (touchX - centerX) / centerX * 20; // Змінено з (centerX 
     };
 
     setAnimations(prevAnimations => [...prevAnimations, newAnimation]);
-    onClick();
+    onClick(event);
 
     setTimeout(() => {
       if (buttonRef.current) {
@@ -54,13 +55,13 @@ const angleY = (touchX - centerX) / centerX * 20; // Змінено з (centerX 
 
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    handleInteraction(e.clientX, e.clientY, e.pointerId);
+    handleInteraction(e.clientX, e.clientY, e.pointerId, e);
   }, [handleInteraction]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
     Array.from(e.touches).forEach(touch => {
-      handleInteraction(touch.clientX, touch.clientY, touch.identifier);
+      handleInteraction(touch.clientX, touch.clientY, touch.identifier, e);
     });
   }, [handleInteraction]);
 
@@ -94,7 +95,7 @@ const angleY = (touchX - centerX) / centerX * 20; // Змінено з (centerX 
               opacity: 1 - (Date.now() - anim.createdAt) / 1000
             }}
           >
-            +1
+            +{turboActive ? 5 : 1}
           </div>
         ))}
       </button>

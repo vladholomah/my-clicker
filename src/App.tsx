@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import Clicker from './components/Clicker';
 import BottomMenu from './components/BottomMenu';
 import Exchange from './components/Exchange';
-import Settings from './components/Settings'; // You'll need to create this component
+import Settings from './components/Settings';
+import Boost from './components/Boost';
+import { BoostProvider, useBoost } from './BoostContext';
 import './App.css';
 
 function App() {
@@ -11,6 +13,7 @@ function App() {
     name: 'Holmah',
     logo: '/images/holmah.png'
   });
+  const [score, setScore] = useState(0);
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -35,35 +38,46 @@ function App() {
     setCurrentView('settings');
   };
 
+  const handleScoreChange = (newScore: number) => {
+    setScore(newScore);
+  };
+
   const renderView = () => {
     switch(currentView) {
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':
-        return <h1>Boost</h1>;
+        return <Boost
+          balance={score}
+          setCurrentView={setCurrentView}
+        />;
       case 'earn':
         return <h1>Earn</h1>;
       case 'exchange':
         return <Exchange onExchangeSelect={handleExchangeSelect} />;
       case 'settings':
-        return <Settings />; // You'll need to create this component
+        return <Settings />;
       case 'mine':
       default:
         return <Clicker
           onBinanceClick={handleBinanceClick}
           selectedExchange={selectedExchange}
           onSettingsClick={handleSettingsClick}
+          score={score}
+          onScoreChange={handleScoreChange}
         />;
     }
   };
 
   return (
-    <div className="App">
-      <div className="game-interface">
-        {renderView()}
-        <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+    <BoostProvider>
+      <div className="App">
+        <div className="game-interface">
+          {renderView()}
+          <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+        </div>
       </div>
-    </div>
+    </BoostProvider>
   );
 }
 
