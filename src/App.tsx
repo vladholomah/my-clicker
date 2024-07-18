@@ -5,6 +5,7 @@ import Exchange from './components/Exchange';
 import Settings from './components/Settings';
 import Boost from './components/Boost';
 import Levels from './components/Levels';
+import Card from './components/Card';
 import { BoostProvider } from './BoostContext';
 import { EnergyProvider } from './EnergyContext';
 import './App.css';
@@ -70,6 +71,8 @@ function App() {
           onMultitapUpgrade={handleMultitapUpgrade}
           currentLevel={multitapLevel}
         />;
+        case 'card':  // Додаємо новий case для вкладки Card
+        return <Card />;
       case 'mine':
       default:
         return <Clicker

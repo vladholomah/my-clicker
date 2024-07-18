@@ -49,6 +49,16 @@ const BottomMenu: React.FC<BottomMenuProps> = ({ activeItem, onMenuItemClick }) 
         />
         Earn
       </button>
+      <button
+        className={`menu-button ${activeItem === 'card' ? 'active' : ''}`}
+        onClick={() => onMenuItemClick('card')}
+      >
+        <img
+          src={activeItem === 'card' ? "/images/card-active.png" : "/images/card-icon.png"}
+          alt="Card"
+        />
+        Card
+      </button>
     </div>
   );
 };
