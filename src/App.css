@@ -22,7 +22,7 @@ body, html {
   height: 100%;
   max-width: 414px;
   max-height: 896px;
-  background: linear-gradient(to bottom, #a2c6dc, #ffffff, #a1c4da);
+  background: linear-gradient(to bottom, #a2c6dc, #f8f3f3, #a1c4da);
   display: flex;
   flex-direction: column;
   align-items: center;
