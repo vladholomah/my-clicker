@@ -6,7 +6,7 @@
   bottom: 10px;
   left: 10px;
   right: 10px;
-  background-color: rgb(40, 43, 48);
+  background-color: rgba(97, 96, 96, 0.38);
   padding: 8px;
   border-radius: 20px;
   box-sizing: border-box;
@@ -30,7 +30,7 @@
 }
 
 .menu-button.active {
-  background-color: rgb(28, 31, 36);
+  background-color: rgba(28, 31, 36, 0.8);
   color: white;
   border-radius: 10px;
 }
