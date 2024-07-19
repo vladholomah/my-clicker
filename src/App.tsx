@@ -71,8 +71,8 @@ function App() {
           onMultitapUpgrade={handleMultitapUpgrade}
           currentLevel={multitapLevel}
         />;
-        case 'card':  // Додаємо новий case для вкладки Card
-        return <Card />;
+case 'card':
+  return <Card balance={score} />;
       case 'mine':
       default:
         return <Clicker
