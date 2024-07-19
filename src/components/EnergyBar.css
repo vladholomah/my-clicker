@@ -51,7 +51,7 @@
 
 .energy-fill {
   height: 100%;
-  background: linear-gradient(to right, #cbefe0 0%, #b5dbcb 50%, #a3d7ce 100%);
+  background: linear-gradient(to right, #fcfcfc 0%, #c1d7e5 50%, #a2c3d9 100%);
   transition: width 0.3s ease;
   position: absolute; /* Додайте цю властивість */
   left: 0; /* Додайте цю властивість */
