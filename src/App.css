@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+  overflow: hidden;
+  position: fixed;
   width: 100%;
+  height: 100%;
 }
 
 .App {
@@ -18,18 +18,18 @@ body, html {
 }
 
 .game-interface {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  max-width: 414px;
-  max-height: 896px;
+  height: 100vh;
   background: linear-gradient(to bottom, #232323, #424242, #232323);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 90px; /* приблизна висота меню плюс невеликий запас */
+  padding: 20px;
   box-sizing: border-box;
-  position: relative;
-  overflow-y: auto; /* Додано для прокрутки, якщо контент не вміщується */
+  overflow: hidden;
 }
 
 .clicker {
@@ -42,8 +42,19 @@ body, html {
   box-sizing: border-box;
 }
 
+.center-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .coin-balance {
-  margin-bottom: 10px; /* Збільшуємо відступ між балансом і кнопкою рівня */
+   position: absolute;
+  margin-top: 80px; /* Відступ від верху */
+  width: 100%;
+  margin-bottom: 5px; /* Збільшуємо відступ між балансом і кнопкою рівня */
   color: #ffffff;
   font-size: 24px;
   font-weight: bold;
@@ -76,14 +87,6 @@ body, html {
   margin-right: 5px;
 }
 
-.center-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
-  width: 100%;
-}
 
 .exchange-display {
   display: flex;
@@ -94,6 +97,8 @@ body, html {
 
 .tap-button {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
   width: 270px;
   height: 270px;
   background-color: transparent;
@@ -138,6 +143,8 @@ body, html {
 }
 
 .level-button {
+  position: absolute;
+  top: 130px; /* Збільште це значення, щоб опустити нижче балансу */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,3 +182,26 @@ body, html {
   margin-left: 5px;
   vertical-align: middle;
 }
+
+.coin-background {
+  position: absolute;
+  bottom: -40px; /* Розташування над меню */
+  left: 0;
+  right: 0;
+  height: 100px; /* Висота зображення */
+  background-image: url('/images/coins.png');
+  background-repeat: no-repeat; /* Змінено з repeat на no-repeat */
+  background-position: center bottom;
+  background-size: contain;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1; /* Вище за меню, але нижче за основний контент */
+}
+
+/* Додаємо цей клас, щоб забезпечити правильне розташування контенту */
+.content-container {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+

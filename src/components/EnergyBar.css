@@ -3,15 +3,19 @@
 .energy-bar {
   display: flex;
   align-items: center;
-  position: relative;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: rgba(97, 96, 96, 0.38);
   border-radius: 25px;
-  padding: 5px 20px;
+  padding: 5px 15px;
   color: #ffffff;
   font-weight: bold;
   width: 85%;
-  margin-bottom: 30px;
   height: 30px;
+  overflow: hidden;
+  z-index: 10;
 }
 
 .settings-button {
@@ -22,21 +26,40 @@
   margin-left: 10px;
   display: flex;
   align-items: center;
-  height: 100%; /* Займаємо всю висоту батьківського елемента */
+  height: 100%;
+  animation: rotateSettings 10s linear infinite;
+}
+
+@keyframes rotateSettings {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .settings-icon {
   width: 24px;
   height: 24px;
   object-fit: contain;
+  transition: filter 0.3s ease;
+}
+
+.settings-button:hover .settings-icon {
+  filter: brightness(1.5) drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
 }
 
 .energy-balance {
-  min-width: 60px; /* Трохи зменшуємо мінімальну ширину */
+  min-width: 60px;
   text-align: left;
-  margin-right: 10px; /* Збільшуємо відступ справа */
+  margin-right: 10px;
   font-size: 14px;
   line-height: 1;
+  position: relative;
+  z-index: 2;
+  animation: pulseText 2s infinite alternate;
+}
+
+@keyframes pulseText {
+  0% { text-shadow: 0 0 2px rgba(255, 255, 255, 0.5); }
+  100% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
 }
 
 .energy-fill-container {
@@ -46,16 +69,22 @@
   border-radius: 5px;
   overflow: hidden;
   align-self: center;
-  position: relative; /* Додайте цю властивість */
+  position: relative;
 }
 
 .energy-fill {
   height: 100%;
   background: linear-gradient(to right, #fcdb75 0%, #f1b01f 50%, #eb9701 100%);
-  transition: width 0.3s ease;
-  position: absolute; /* Додайте цю властивість */
-  left: 0; /* Додайте цю властивість */
-  top: 0; /* Додайте цю властивість */
+  transition: width 0.5s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: glowFill 2s infinite alternate;
+}
+
+@keyframes glowFill {
+  0% { box-shadow: 0 0 2px #fcdb75; }
+  100% { box-shadow: 0 0 8px #fcdb75; }
 }
 
 .energy-content {
@@ -63,11 +92,34 @@
   align-items: center;
   flex-grow: 1;
   height: 100%;
+  position: relative;
 }
 
 .energy-icon {
   margin-right: 5px;
-  width: 16px; /* Встановлюємо ширину зображення */
-  height: 16px; /* Встановлюємо висоту зображення */
-  object-fit: contain; /* Забезпечуємо, щоб зображення вмістилося в задані розміри */
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.sparkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
 }
