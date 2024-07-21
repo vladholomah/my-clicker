@@ -45,36 +45,15 @@ const Boost: React.FC<BoostProps> = ({
     setCurrentView('mine');
   };
 
-  const getTurboButtonContent = () => {
+  const getButtonContent = (image: string, text: string, timer: string) => {
     return (
       <>
-        <div className="turbo-image-container">
-          <img src="/images/x5.png" alt="Turbo" className="turbo-image" />
-          <div className="rocket-animation"></div>
+        <div className="boost-image-container">
+          <img src={image} alt={text} className="boost-image" />
         </div>
-        <div className="turbo-text-container">
-          <span className="turbo-text">Turbo</span>
-          <span className="turbo-timer">
-            {turboTimer > 0 ? `${turboTimer}s` :
-             cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
-             ` ${turboCount}/3`}
-          </span>
-        </div>
-      </>
-    );
-  };
-
-  const getEnergyButtonContent = () => {
-    return (
-      <>
-        <div className="energy-image-container">
-          <img src="/images/fullenergy.png" alt="Energy" className="energy-image" />
-        </div>
-        <div className="energy-text-container">
-          <span className="energy-text">Energy</span>
-          <span className="energy-timer">
-            {energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : ` ${energyRefillCount}/3`}
-          </span>
+        <div className="boost-text-container">
+          <span className="boost-text">{text}</span>
+          <span className="boost-timer">{timer}</span>
         </div>
       </>
     );
@@ -82,38 +61,64 @@ const Boost: React.FC<BoostProps> = ({
 
   return (
     <div className="boost">
-      <h1 className="boost-title">Boost</h1>
+      <h1 className="boost-title"></h1>
       <h2 className="balance-title">Your Balance</h2>
       <div className="balance">
         <img src="/images/balance.png" alt="Balance" className="balance-icon" />
         <span>{balance}</span>
       </div>
-      <div className="boost-buttons-container">
-        <button
-          onClick={handleActivateTurbo}
-          disabled={turboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
-          className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
-        >
-          {getTurboButtonContent()}
-        </button>
-        <button
-          onClick={handleActivateEnergyRefill}
-          disabled={energyRefillCount === 0 || energyRefillCooldown > 0}
-          className="boost-button energy-button"
-        >
-          {getEnergyButtonContent()}
-        </button>
+      <div className="boost-section">
+        <h3 className="boost-section-title">Free Daily Boosters</h3>
+        <div className="boost-buttons-container">
+          <button
+            onClick={handleActivateTurbo}
+            disabled={turboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
+            className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
+          >
+            {getButtonContent(
+              "/images/x5.png",
+              "Turbo",
+              turboTimer > 0 ? `${turboTimer}s` :
+              cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
+              `${turboCount}/3`
+            )}
+          </button>
+          <button
+            onClick={handleActivateEnergyRefill}
+            disabled={energyRefillCount === 0 || energyRefillCooldown > 0}
+            className="boost-button energy-button"
+          >
+            {getButtonContent(
+              "/images/fullenergy.png",
+              "Energy",
+              energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : `${energyRefillCount}/3`
+            )}
+          </button>
+          <button
+            className="boost-button"
+            // Тут можна додати обробник кліку, коли ви будете готові додати функціональність
+          >
+            {getButtonContent(
+              "/images/level-b.png",
+              "Rewards",
+              "get" // Можна змінити на актуальний текст або таймер, коли додасте функціональність
+            )}
+          </button>
+        </div>
       </div>
-      <MultitapButton
-        balance={balance}
-        onMultitapUpgrade={onMultitapUpgrade}
-        currentLevel={currentLevel}
-      />
-      <EnergyBoostButton
-        balance={balance}
-        onEnergyBoostUpgrade={onEnergyBoostUpgrade}
-        currentMaxEnergy={currentMaxEnergy}
-      />
+      <div className="boost-section">
+        <h3 className="boost-section-title">Boosters</h3>
+        <MultitapButton
+          balance={balance}
+          onMultitapUpgrade={onMultitapUpgrade}
+          currentLevel={currentLevel}
+        />
+        <EnergyBoostButton
+          balance={balance}
+          onEnergyBoostUpgrade={onEnergyBoostUpgrade}
+          currentMaxEnergy={currentMaxEnergy}
+        />
+      </div>
     </div>
   );
 };
