@@ -3,7 +3,7 @@
 .energy-bar {
   display: flex;
   align-items: center;
-  position: absolute;
+  position: fixed; /* змінено з absolute на fixed */
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
@@ -13,6 +13,7 @@
   color: #ffffff;
   font-weight: bold;
   width: 85%;
+  max-width: 400px; /* додано максимальну ширину */
   height: 30px;
   overflow: hidden;
   z-index: 10;
@@ -64,7 +65,7 @@
 
 .energy-fill-container {
   flex-grow: 1;
-  background-color: #444;
+  background-color: #555454;
   height: 10px;
   border-radius: 5px;
   overflow: hidden;

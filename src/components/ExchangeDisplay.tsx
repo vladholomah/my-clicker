@@ -19,10 +19,10 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive,
   const buttonRef = useRef<HTMLButtonElement>(null);
   const lastClickTime = useRef<{[key: number]: number}>({});
 
-  const handleInteraction = useCallback((x: number, y: number, identifier: number, event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-    const now = Date.now();
-    if (now - (lastClickTime.current[identifier] || 0) < 50) return;
-    lastClickTime.current[identifier] = now;
+const handleInteraction = useCallback((x: number, y: number, identifier: number, event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+  const now = Date.now();
+  if (now - (lastClickTime.current[identifier] || 0) < 50) return;
+  lastClickTime.current[identifier] = now;
 
     if (!buttonRef.current) return;
 
