@@ -56,6 +56,8 @@
   position: relative;
   z-index: 2;
   animation: pulseText 2s infinite alternate;
+  width: 80px; /* Додайте цю лінію */
+  text-align: center; /* Додайте цю лінію */
 }
 
 @keyframes pulseText {
