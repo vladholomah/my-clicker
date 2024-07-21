@@ -7,10 +7,10 @@ import Boost from './components/Boost';
 import Levels from './components/Levels';
 import Card from './components/Card';
 import { BoostProvider } from './BoostContext';
-import { EnergyProvider } from './EnergyContext';
+import { EnergyProvider, useEnergy } from './EnergyContext';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState('mine');
   const [selectedExchange, setSelectedExchange] = useState({
     name: 'Holmah',
@@ -18,6 +18,7 @@ function App() {
   });
   const [score, setScore] = useState(0);
   const [multitapLevel, setMultitapLevel] = useState(1);
+  const { maxEnergy, setMaxEnergy, refillEnergy } = useEnergy();
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -42,26 +43,33 @@ function App() {
     setCurrentView('settings');
   };
 
-
-    const handleMultitapUpgrade = (level: number, cost: number) => {
+  const handleMultitapUpgrade = (level: number, cost: number) => {
     if (score >= cost) {
       setScore(score - cost);
       setMultitapLevel(level);
     }
   };
 
-    const handleScoreChange = (increment: number) => {
+  const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
+    if (score >= cost) {
+      setScore(score - cost);
+      setMaxEnergy(newMaxEnergy);
+      refillEnergy(); // Відновлюємо енергію до нового максимуму
+    }
+  };
+
+  const handleScoreChange = (increment: number) => {
     setScore(prevScore => prevScore + increment);
   };
 
   const renderView = () => {
     switch(currentView) {
       case 'levels':
-  return <Levels />;
-  case 'settings':
-  return <Settings />;
-  case 'exchange':
-  return <Exchange onExchangeSelect={handleExchangeSelect} />;
+        return <Levels />;
+      case 'settings':
+        return <Settings />;
+      case 'exchange':
+        return <Exchange onExchangeSelect={handleExchangeSelect} />;
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':
@@ -69,33 +77,41 @@ function App() {
           balance={score}
           setCurrentView={setCurrentView}
           onMultitapUpgrade={handleMultitapUpgrade}
+          onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
           currentLevel={multitapLevel}
+          currentMaxEnergy={maxEnergy}
         />;
-case 'card':
-  return <Card balance={score} />;
-      case 'mine':
-      default:
-        return <Clicker
-          onBinanceClick={handleBinanceClick}
-          selectedExchange={selectedExchange}
-          onSettingsClick={handleSettingsClick}
-          score={score}
-          onScoreChange={handleScoreChange}
-          onLevelClick={() => setCurrentView('levels')}
-          multitapLevel={multitapLevel}
-        />;
-    }
-  };
+      case 'card':
+        return <Card balance={score} />;
+          case 'mine':
+    default:
+      return <Clicker
+        onBinanceClick={handleBinanceClick}
+        selectedExchange={selectedExchange}
+        onSettingsClick={handleSettingsClick}
+        score={score}
+        onScoreChange={handleScoreChange}
+        onLevelClick={() => setCurrentView('levels')}
+        multitapLevel={multitapLevel}
+      />;
+  }
+};
 
+  return (
+    <div className="App">
+      <div className="game-interface">
+        {renderView()}
+        <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+      </div>
+    </div>
+  );
+}
+
+function App() {
   return (
     <BoostProvider>
       <EnergyProvider>
-        <div className="App">
-          <div className="game-interface">
-            {renderView()}
-            <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
-          </div>
-        </div>
+        <AppContent />
       </EnergyProvider>
     </BoostProvider>
   );

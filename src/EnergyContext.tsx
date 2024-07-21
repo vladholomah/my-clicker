@@ -7,13 +7,15 @@ interface EnergyContextType {
   energyRefillCooldown: number;
   activateEnergyRefill: () => void;
   decreaseEnergy: (amount?: number) => void;
+  setMaxEnergy: (newMaxEnergy: number) => void;
+  refillEnergy: () => void; // Нова функція
 }
 
 const EnergyContext = createContext<EnergyContextType | undefined>(undefined);
 
-export const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [energy, setEnergy] = useState(1500);
-  const maxEnergy = 1500;
+  const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energyRefillCount, setEnergyRefillCount] = useState(3);
   const [energyRefillCooldown, setEnergyRefillCooldown] = useState(0);
 
@@ -39,6 +41,15 @@ export const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     return () => clearInterval(interval);
   }, [maxEnergy]);
+
+  const refillEnergy = useCallback(() => {
+    setEnergy(maxEnergy);
+  }, [maxEnergy]);
+
+  const updateMaxEnergy = useCallback((newMaxEnergy: number) => {
+    setMaxEnergy(newMaxEnergy);
+    setEnergy(newMaxEnergy); // Відразу встановлюємо енергію на новий максимум
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -68,7 +79,9 @@ export const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       energyRefillCount,
       energyRefillCooldown,
       activateEnergyRefill,
-      decreaseEnergy
+      decreaseEnergy,
+      setMaxEnergy: updateMaxEnergy,
+      refillEnergy
     }}>
       {children}
     </EnergyContext.Provider>
@@ -82,3 +95,5 @@ export const useEnergy = () => {
   }
   return context;
 };
+
+export { EnergyProvider };

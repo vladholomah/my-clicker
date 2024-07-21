@@ -2,16 +2,26 @@ import React from 'react';
 import { useBoost } from '../BoostContext';
 import { useEnergy } from '../EnergyContext';
 import MultitapButton from './MultitapButton';
+import EnergyBoostButton from './EnergyBoostButton';
 import './Boost.css';
 
 interface BoostProps {
   balance: number;
   setCurrentView: (view: string) => void;
   onMultitapUpgrade: (level: number, cost: number) => void;
-  currentLevel: number; // Додайте це
+  onEnergyBoostUpgrade: (newMaxEnergy: number, cost: number) => void;
+  currentLevel: number;
+  currentMaxEnergy: number;
 }
 
-const Boost: React.FC<BoostProps> = ({ balance, setCurrentView, onMultitapUpgrade, currentLevel }) => {
+const Boost: React.FC<BoostProps> = ({
+  balance,
+  setCurrentView,
+  onMultitapUpgrade,
+  onEnergyBoostUpgrade,
+  currentLevel,
+  currentMaxEnergy
+}) => {
   const {
     turboCount,
     turboTimer,
@@ -95,11 +105,17 @@ const Boost: React.FC<BoostProps> = ({ balance, setCurrentView, onMultitapUpgrad
         </button>
       </div>
       <MultitapButton
-  balance={balance}
-  onMultitapUpgrade={onMultitapUpgrade}
-  currentLevel={currentLevel} // Додайте це
-/>
+        balance={balance}
+        onMultitapUpgrade={onMultitapUpgrade}
+        currentLevel={currentLevel}
+      />
+      <EnergyBoostButton
+        balance={balance}
+        onEnergyBoostUpgrade={onEnergyBoostUpgrade}
+        currentMaxEnergy={currentMaxEnergy}
+      />
     </div>
   );
 };
+
 export default Boost;

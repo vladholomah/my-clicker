@@ -20,7 +20,7 @@
 }
 
 .multitap-button:disabled {
-  background-color: #7a8d86;
+  background-color: #282b30;
   cursor: not-allowed;
 }
 
@@ -30,8 +30,8 @@
 }
 
 .multitap-icon {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
 }
 
@@ -57,7 +57,7 @@
 
 .confirmation-modal {
   background-color: #282b30;
-  padding: 20px;
+  padding: 50px;
   border-radius: 30px 30px 0 0;
   width: 100%;
   max-height: 50vh;
@@ -65,7 +65,7 @@
   text-align: center;
   position: relative;
   color: #ffffff;
-  box-shadow: 0 -4px 6px rgba(255, 132, 0, 0.91);
+  box-shadow: 0 -4px 6px rgb(253, 214, 16);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -95,15 +95,15 @@
 }
 
 .multitap-image {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   margin: 10px auto;
   display: block;
 }
 
 .confirm-button {
-  background-color: #ff8400;
-  color: white;
+  background-color: #ffcc00;
+  color: #ffffff;
   border: none;
   padding: 20px 100px;
   border-radius: 15px;
