@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Levels.css';
+import './Levels.css'; // Переконайтеся, що ви створили цей файл
 
 interface Level {
   name: string;

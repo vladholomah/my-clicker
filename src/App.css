@@ -62,12 +62,14 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap; /* Додано для переносу на новий рядок при необхідності */
 }
 
 .balance-icon {
-  width: 30px;  /* Змініть розмір відповідно до ваших потреб */
+  width: 30px;
   height: 30px;
   margin-right: 5px;
+  flex-shrink: 0; /* Запобігає зменшенню іконки */
 }
 
 .badge {
@@ -106,7 +108,7 @@ body, html {
   border-radius: 50%;
   cursor: pointer;
   outline: none;
-  margin-top: 20px;
+  margin-top: 120px;
   margin-bottom: 10px;
 }
 
@@ -122,14 +124,18 @@ body, html {
   font-size: 24px;
   font-weight: bold;
   pointer-events: none;
+  animation: floatUp 1s ease-out;
+  opacity: 0;
 }
 
 @keyframes floatUp {
   0% {
     transform: translateY(0);
+    opacity: 1;
   }
   100% {
     transform: translateY(-50px);
+    opacity: 0;
   }
 }
 
@@ -137,7 +143,7 @@ body, html {
   font-size: 18px;
   color: #ffffff;
   font-weight: 500;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-bottom: 10px;
   text-align: center;
 }
@@ -155,7 +161,8 @@ body, html {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 10px; /* Додаємо верхній відступ */
+  margin-top: 30px; /* Додаємо верхній відступ */
+   z-index: 2;
 }
 
 .level-button:hover {

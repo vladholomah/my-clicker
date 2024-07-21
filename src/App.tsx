@@ -51,8 +51,8 @@ function App() {
   };
 
     const handleScoreChange = (increment: number) => {
-  setScore(prevScore => prevScore + increment);
-};
+    setScore(prevScore => prevScore + increment);
+  };
 
   const renderView = () => {
     switch(currentView) {
