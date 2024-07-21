@@ -28,9 +28,17 @@ export const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [energyRefillCount, energyRefillCooldown, maxEnergy]);
 
-const decreaseEnergy = useCallback((amount: number = 1) => {
-  setEnergy(prev => Math.max(prev - amount, 0));
-}, []);
+  const decreaseEnergy = useCallback((amount: number = 1) => {
+    setEnergy(prev => Math.max(prev - amount, 0));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setEnergy(prev => Math.min(prev + 1, maxEnergy));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [maxEnergy]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
