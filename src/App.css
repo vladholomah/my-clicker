@@ -53,8 +53,7 @@ body, html {
 .coin-balance {
    position: absolute;
   margin-top: 80px; /* Відступ від верху */
-  width: 100%;
-  margin-bottom: 5px; /* Збільшуємо відступ між балансом і кнопкою рівня */
+  margin-bottom: 10px; /* Збільшуємо відступ між балансом і кнопкою рівня */
   color: #ffffff;
   font-size: 24px;
   font-weight: bold;
@@ -62,7 +61,6 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap; /* Додано для переносу на новий рядок при необхідності */
 }
 
 .balance-icon {
