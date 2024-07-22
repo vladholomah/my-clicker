@@ -5,10 +5,12 @@ interface EnergyContextType {
   maxEnergy: number;
   energyRefillCount: number;
   energyRefillCooldown: number;
+  energyRecoveryRate: number;
   activateEnergyRefill: () => void;
   decreaseEnergy: (amount?: number) => void;
   setMaxEnergy: (newMaxEnergy: number) => void;
-  refillEnergy: () => void; // Нова функція
+  refillEnergy: () => void;
+  setEnergyRecoveryRate: (newRate: number) => void;
 }
 
 const EnergyContext = createContext<EnergyContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energyRefillCount, setEnergyRefillCount] = useState(3);
   const [energyRefillCooldown, setEnergyRefillCooldown] = useState(0);
+  const [energyRecoveryRate, setEnergyRecoveryRate] = useState(5000); // 5000 мс за замовчуванням
 
   const activateEnergyRefill = useCallback(() => {
     if (energyRefillCount > 0 && energyRefillCooldown === 0) {
@@ -37,10 +40,10 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
   useEffect(() => {
     const interval = setInterval(() => {
       setEnergy(prev => Math.min(prev + 1, maxEnergy));
-    }, 1000);
+    }, energyRecoveryRate);
 
     return () => clearInterval(interval);
-  }, [maxEnergy]);
+  }, [maxEnergy, energyRecoveryRate]);
 
   const refillEnergy = useCallback(() => {
     setEnergy(maxEnergy);
@@ -48,7 +51,11 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   const updateMaxEnergy = useCallback((newMaxEnergy: number) => {
     setMaxEnergy(newMaxEnergy);
-    setEnergy(newMaxEnergy); // Відразу встановлюємо енергію на новий максимум
+    setEnergy(newMaxEnergy);
+  }, []);
+
+  const updateEnergyRecoveryRate = useCallback((newRate: number) => {
+    setEnergyRecoveryRate(newRate);
   }, []);
 
   useEffect(() => {
@@ -78,10 +85,12 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
       maxEnergy,
       energyRefillCount,
       energyRefillCooldown,
+      energyRecoveryRate,
       activateEnergyRefill,
       decreaseEnergy,
       setMaxEnergy: updateMaxEnergy,
-      refillEnergy
+      refillEnergy,
+      setEnergyRecoveryRate: updateEnergyRecoveryRate
     }}>
       {children}
     </EnergyContext.Provider>

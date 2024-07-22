@@ -18,7 +18,8 @@ function AppContent() {
   });
   const [score, setScore] = useState(0);
   const [multitapLevel, setMultitapLevel] = useState(1);
-  const { maxEnergy, setMaxEnergy, refillEnergy } = useEnergy();
+ const [energyRecoveryRate, setLocalEnergyRecoveryRate] = useState(5);
+  const { maxEnergy, setMaxEnergy, refillEnergy, setEnergyRecoveryRate } = useEnergy();
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -58,6 +59,14 @@ function AppContent() {
     }
   };
 
+  const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
+    if (score >= cost) {
+      setScore(prevScore => prevScore - cost);
+      setLocalEnergyRecoveryRate(newRate);
+      setEnergyRecoveryRate(newRate); // Update the rate in the EnergyContext
+    }
+  };
+
   const handleScoreChange = (increment: number) => {
     setScore(prevScore => prevScore + increment);
   };
@@ -78,8 +87,10 @@ function AppContent() {
           setCurrentView={setCurrentView}
           onMultitapUpgrade={handleMultitapUpgrade}
           onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
+          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgrade}
           currentLevel={multitapLevel}
           currentMaxEnergy={maxEnergy}
+          currentEnergyRecoveryRate={energyRecoveryRate}
         />;
       case 'card':
         return <Card balance={score} />;

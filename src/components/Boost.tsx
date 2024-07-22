@@ -3,6 +3,7 @@ import { useBoost } from '../BoostContext';
 import { useEnergy } from '../EnergyContext';
 import MultitapButton from './MultitapButton';
 import EnergyBoostButton from './EnergyBoostButton';
+import EnergyRecoveryButton from './EnergyRecoveryButton';
 import './Boost.css';
 
 interface BoostProps {
@@ -10,8 +11,10 @@ interface BoostProps {
   setCurrentView: (view: string) => void;
   onMultitapUpgrade: (level: number, cost: number) => void;
   onEnergyBoostUpgrade: (newMaxEnergy: number, cost: number) => void;
+  onEnergyRecoveryUpgrade: (newRate: number, cost: number) => void;
   currentLevel: number;
   currentMaxEnergy: number;
+  currentEnergyRecoveryRate: number;
 }
 
 const Boost: React.FC<BoostProps> = ({
@@ -19,6 +22,8 @@ const Boost: React.FC<BoostProps> = ({
   setCurrentView,
   onMultitapUpgrade,
   onEnergyBoostUpgrade,
+  onEnergyRecoveryUpgrade,
+  currentEnergyRecoveryRate,
   currentLevel,
   currentMaxEnergy
 }) => {
@@ -134,6 +139,11 @@ const Boost: React.FC<BoostProps> = ({
           onEnergyBoostUpgrade={onEnergyBoostUpgrade}
           currentMaxEnergy={currentMaxEnergy}
         />
+        <EnergyRecoveryButton
+  balance={balance}
+  onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
+  currentEnergyRecoveryRate={currentEnergyRecoveryRate}
+/>
       </div>
     </div>
   );
