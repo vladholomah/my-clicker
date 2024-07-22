@@ -61,6 +61,7 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
+   z-index: 2;
 }
 
 .balance-icon {
@@ -106,7 +107,7 @@ body, html {
   border-radius: 50%;
   cursor: pointer;
   outline: none;
-  margin-top: 120px;
+  margin-top: 100px;
   margin-bottom: 10px;
 }
 
@@ -141,9 +142,11 @@ body, html {
   font-size: 18px;
   color: #ffffff;
   font-weight: 500;
-  margin-top: 10px;
+  margin-top: 120px;
   margin-bottom: 10px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .level-button {
@@ -209,4 +212,3 @@ body, html {
   z-index: 1;
   height: 100%;
 }
-

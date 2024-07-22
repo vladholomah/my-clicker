@@ -51,33 +51,33 @@ const Clicker: React.FC<ClickerProps> = ({
   };
 
   return (
-    <div className="clicker">
-      <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
-      <CoinBalance balance={score}/>
-      <button className="level-button" onClick={onLevelClick}>
-        <img src={levelInfo.icon} alt={levelInfo.name} className="level-icon"/>
-        <span className="level-name">{levelInfo.name}</span>
-        <img src="/images/arrow-right.png" alt=">" className="arrow-icon"/>
-      </button>
-      <div className="center-content">
-         <ExchangeDisplay
-          onClick={handleClick}
-          turboActive={isTurboActive}
-          multitapLevel={multitapLevel}
-        />
-        <div className="exchange-info">
-          <div className="exchange-text">Your Exchange</div>
-          <ExchangeButton
-            onClick={onBinanceClick}
-            logo={selectedExchange.logo}
-            name={selectedExchange.name}
-            isMainView={true}
+      <div className="clicker">
+        <EnergyBar energy={energy} maxEnergy={maxEnergy} onSettingsClick={onSettingsClick}/>
+        <CoinBalance balance={score}/>
+        <button className="level-button" onClick={onLevelClick}>
+          <img src={levelInfo.icon} alt={levelInfo.name} className="level-icon"/>
+          <span className="level-name">{levelInfo.name}</span>
+          <img src="/images/arrow-right.png" alt=">" className="arrow-icon"/>
+        </button>
+        <div className="center-content">
+          <ExchangeDisplay
+              onClick={handleClick}
+              turboActive={isTurboActive}
+              multitapLevel={multitapLevel}
           />
+          <div className="exchange-info">
+            <div className="exchange-text">Your Exchange</div>
+            <ExchangeButton
+                onClick={onBinanceClick}
+                logo={selectedExchange.logo}
+                name={selectedExchange.name}
+                isMainView={true}
+            />
+          </div>
         </div>
       </div>
-      {isTurboActive && <div className="turbo-active"></div>}
-    </div>
-  );
+  )
+      ;
 };
 
 export default Clicker;

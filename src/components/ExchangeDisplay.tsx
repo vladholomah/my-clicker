@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import TurboVideo from './TurboVideo';
 import './ExchangeDisplay.css';
 
 interface ExchangeDisplayProps {
@@ -19,10 +20,10 @@ const ExchangeDisplay: React.FC<ExchangeDisplayProps> = ({ onClick, turboActive,
   const buttonRef = useRef<HTMLButtonElement>(null);
   const lastClickTime = useRef<{[key: number]: number}>({});
 
-const handleInteraction = useCallback((x: number, y: number, identifier: number, event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-  const now = Date.now();
-  if (now - (lastClickTime.current[identifier] || 0) < 50) return;
-  lastClickTime.current[identifier] = now;
+  const handleInteraction = useCallback((x: number, y: number, identifier: number, event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    const now = Date.now();
+    if (now - (lastClickTime.current[identifier] || 0) < 50) return;
+    lastClickTime.current[identifier] = now;
 
     if (!buttonRef.current) return;
 
@@ -77,29 +78,32 @@ const handleInteraction = useCallback((x: number, y: number, identifier: number,
     return () => clearInterval(animationTimer);
   }, []);
 
-return (
+  return (
     <div className="exchange-display">
-      <button
-        ref={buttonRef}
-        className="tap-button"
-        onPointerDown={handlePointerDown}
-        onTouchStart={handleTouchStart}
-      >
-        <img src="/images/tap.png" alt="Tap" className="tap-image" />
-        {animations.map((anim) => (
-          <div
-            key={anim.id}
-            className="plus-one"
-            style={{
-              left: anim.x,
-              top: anim.y,
-              opacity: 1 - (Date.now() - anim.createdAt) / 1000
-            }}
-          >
-            +{turboActive ? multitapLevel * 5 : multitapLevel}
-          </div>
-        ))}
-      </button>
+      <div className="tap-button-container">
+        <TurboVideo isActive={turboActive} />
+        <button
+          ref={buttonRef}
+          className="tap-button"
+          onPointerDown={handlePointerDown}
+          onTouchStart={handleTouchStart}
+        >
+          <img src="/images/tap.png" alt="Tap" className="tap-image" />
+          {animations.map((anim) => (
+            <div
+              key={anim.id}
+              className="plus-one"
+              style={{
+                left: anim.x,
+                top: anim.y,
+                opacity: 1 - (Date.now() - anim.createdAt) / 1000
+              }}
+            >
+              +{turboActive ? multitapLevel * 5 : multitapLevel}
+            </div>
+          ))}
+        </button>
+      </div>
     </div>
   );
 };
