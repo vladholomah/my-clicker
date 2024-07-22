@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBoost } from '../BoostContext';
 import { useEnergy } from '../EnergyContext';
 import MultitapButton from './MultitapButton';
@@ -22,6 +22,7 @@ const Boost: React.FC<BoostProps> = ({
   currentLevel,
   currentMaxEnergy
 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const {
     turboCount,
     turboTimer,
@@ -34,6 +35,22 @@ const Boost: React.FC<BoostProps> = ({
     energyRefillCooldown,
     activateEnergyRefill
   } = useEnergy();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png'];
+    images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   const handleActivateTurbo = () => {
     activateTurbo();
@@ -60,7 +77,7 @@ const Boost: React.FC<BoostProps> = ({
   };
 
   return (
-    <div className="boost">
+    <div className={`boost ${isLoaded ? 'loaded' : ''}`}>
       <h1 className="boost-title"></h1>
       <h2 className="balance-title">Your Balance</h2>
       <div className="balance">
@@ -96,12 +113,11 @@ const Boost: React.FC<BoostProps> = ({
           </button>
           <button
             className="boost-button"
-            // Тут можна додати обробник кліку, коли ви будете готові додати функціональність
           >
             {getButtonContent(
               "/images/level-b.png",
               "Rewards",
-              "get" // Можна змінити на актуальний текст або таймер, коли додасте функціональність
+              "get"
             )}
           </button>
         </div>
