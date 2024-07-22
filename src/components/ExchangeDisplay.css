@@ -32,10 +32,10 @@
 
 .turbo-video-container {
   position: absolute;
-  top: 9%;
-  left: -29.5%;
-  width: 160%;
-  height: 160%;
+  top: 12%;
+  left: -27%;
+  width: 155%;
+  height: 155%;
   overflow: hidden;
   border-radius: 50%;
   z-index: -1;
