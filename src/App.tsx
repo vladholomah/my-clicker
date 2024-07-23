@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Clicker from './components/Clicker';
 import BottomMenu from './components/BottomMenu';
 import Exchange from './components/Exchange';
@@ -18,8 +18,10 @@ function AppContent() {
   });
   const [score, setScore] = useState(0);
   const [multitapLevel, setMultitapLevel] = useState(1);
- const [energyRecoveryRate, setLocalEnergyRecoveryRate] = useState(5);
+  const [energyRecoveryRate, setLocalEnergyRecoveryRate] = useState(5);
   const { maxEnergy, setMaxEnergy, refillEnergy, setEnergyRecoveryRate } = useEnergy();
+  const [rewardsReceived, setRewardsReceived] = useState(false);
+  const [lastRewardLevel, setLastRewardLevel] = useState('');
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -55,7 +57,7 @@ function AppContent() {
     if (score >= cost) {
       setScore(score - cost);
       setMaxEnergy(newMaxEnergy);
-      refillEnergy(); // Відновлюємо енергію до нового максимуму
+      refillEnergy();
     }
   };
 
@@ -63,13 +65,38 @@ function AppContent() {
     if (score >= cost) {
       setScore(prevScore => prevScore - cost);
       setLocalEnergyRecoveryRate(newRate);
-      setEnergyRecoveryRate(newRate); // Update the rate in the EnergyContext
+      setEnergyRecoveryRate(newRate);
     }
   };
 
   const handleScoreChange = (increment: number) => {
     setScore(prevScore => prevScore + increment);
   };
+
+  const getLevelInfo = (score: number) => {
+    if (score < 5000) return { name: 'Silver', reward: 1000 };
+    if (score < 25000) return { name: 'Gold', reward: 10000 };
+    if (score < 100000) return { name: 'Platinum', reward: 15000 };
+    if (score < 1000000) return { name: 'Diamond', reward: 30000 };
+    if (score < 2000000) return { name: 'Epic', reward: 50000 };
+    return { name: 'Legendary', reward: 5000000 };
+  };
+
+  const handleRewardsClick = () => {
+    const currentLevel = getLevelInfo(score);
+    if (currentLevel.name !== lastRewardLevel && !rewardsReceived) {
+      setScore(prevScore => prevScore + currentLevel.reward);
+      setRewardsReceived(true);
+      setLastRewardLevel(currentLevel.name);
+    }
+  };
+
+  useEffect(() => {
+    const currentLevel = getLevelInfo(score);
+    if (currentLevel.name !== lastRewardLevel) {
+      setRewardsReceived(false);
+    }
+  }, [score, lastRewardLevel]);
 
   const renderView = () => {
     switch(currentView) {
@@ -91,22 +118,24 @@ function AppContent() {
           currentLevel={multitapLevel}
           currentMaxEnergy={maxEnergy}
           currentEnergyRecoveryRate={energyRecoveryRate}
+          onRewardsClick={handleRewardsClick}
+          rewardsReceived={rewardsReceived}
         />;
       case 'card':
         return <Card balance={score} />;
-          case 'mine':
-    default:
-      return <Clicker
-        onBinanceClick={handleBinanceClick}
-        selectedExchange={selectedExchange}
-        onSettingsClick={handleSettingsClick}
-        score={score}
-        onScoreChange={handleScoreChange}
-        onLevelClick={() => setCurrentView('levels')}
-        multitapLevel={multitapLevel}
-      />;
-  }
-};
+      case 'mine':
+      default:
+        return <Clicker
+          onBinanceClick={handleBinanceClick}
+          selectedExchange={selectedExchange}
+          onSettingsClick={handleSettingsClick}
+          score={score}
+          onScoreChange={handleScoreChange}
+          onLevelClick={() => setCurrentView('levels')}
+          multitapLevel={multitapLevel}
+        />;
+    }
+  };
 
   return (
     <div className="App">

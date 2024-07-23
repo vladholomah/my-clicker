@@ -156,3 +156,7 @@
 .boost-button.active {
   background-color: #3a3d42;
 }
+.done-icon.boost-timer {
+  width: auto;
+  height: 14px;  /* Це має відповідати розміру шрифту */
+}

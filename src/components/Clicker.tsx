@@ -20,11 +20,11 @@ interface ClickerProps {
 }
 
 const getLevelInfo = (score: number) => {
-  if (score < 100) return { name: 'Silver', icon: '/images/silver.png' };
-  if (score < 200) return { name: 'Gold', icon: '/images/gold.png' };
-  if (score < 300) return { name: 'Platinum', icon: '/images/platinum.png' };
-  if (score < 400) return { name: 'Diamond', icon: '/images/diamond.png' };
-  if (score < 600) return { name: 'Epic', icon: '/images/epic.png' };
+  if (score < 5000) return { name: 'Silver', icon: '/images/silver.png' };
+  if (score < 25000) return { name: 'Gold', icon: '/images/gold.png' };
+  if (score < 100000) return { name: 'Platinum', icon: '/images/platinum.png' };
+  if (score < 1000000) return { name: 'Diamond', icon: '/images/diamond.png' };
+  if (score < 2000000) return { name: 'Epic', icon: '/images/epic.png' };
   return { name: 'Legendary', icon: '/images/legendary.png' };
 };
 

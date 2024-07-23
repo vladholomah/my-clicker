@@ -15,6 +15,8 @@ interface BoostProps {
   currentLevel: number;
   currentMaxEnergy: number;
   currentEnergyRecoveryRate: number;
+  onRewardsClick: () => void;
+  rewardsReceived: boolean;
 }
 
 const Boost: React.FC<BoostProps> = ({
@@ -25,7 +27,9 @@ const Boost: React.FC<BoostProps> = ({
   onEnergyRecoveryUpgrade,
   currentEnergyRecoveryRate,
   currentLevel,
-  currentMaxEnergy
+  currentMaxEnergy,
+  onRewardsClick,
+  rewardsReceived
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const {
@@ -50,7 +54,7 @@ const Boost: React.FC<BoostProps> = ({
   }, []);
 
   useEffect(() => {
-    const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png'];
+    const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png'];
     images.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -67,7 +71,7 @@ const Boost: React.FC<BoostProps> = ({
     setCurrentView('mine');
   };
 
-  const getButtonContent = (image: string, text: string, timer: string) => {
+  const getButtonContent = (image: string, text: string, timer: React.ReactNode) => {
     return (
       <>
         <div className="boost-image-container">
@@ -117,14 +121,17 @@ const Boost: React.FC<BoostProps> = ({
             )}
           </button>
           <button
+            onClick={onRewardsClick}
             className="boost-button"
           >
-            {getButtonContent(
-              "/images/level-b.png",
-              "Rewards",
-              "get"
-            )}
-          </button>
+  {getButtonContent(
+    "/images/level-b.png",
+    "Rewards",
+    rewardsReceived ? (
+      <img src="/images/done.png" alt="Done" className="done-icon boost-timer" />
+    ) : "Get"
+  )}
+</button>
         </div>
       </div>
       <div className="boost-section">
@@ -140,10 +147,10 @@ const Boost: React.FC<BoostProps> = ({
           currentMaxEnergy={currentMaxEnergy}
         />
         <EnergyRecoveryButton
-  balance={balance}
-  onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
-  currentEnergyRecoveryRate={currentEnergyRecoveryRate}
-/>
+          balance={balance}
+          onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
+          currentEnergyRecoveryRate={currentEnergyRecoveryRate}
+        />
       </div>
     </div>
   );

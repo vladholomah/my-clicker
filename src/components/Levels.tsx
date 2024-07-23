@@ -9,12 +9,12 @@ interface Level {
 }
 
 const levels: Level[] = [
-  { name: 'Silver', icon: '/images/silver.png', minCoins: 0, maxCoins: 99 },
-  { name: 'Gold', icon: '/images/gold.png', minCoins: 100, maxCoins: 199 },
-  { name: 'Platinum', icon: '/images/platinum.png', minCoins: 200, maxCoins: 299 },
-  { name: 'Diamond', icon: '/images/diamond.png', minCoins: 300, maxCoins: 399 },
-  { name: 'Epic', icon: '/images/epic.png', minCoins: 400, maxCoins: 599 },
-  { name: 'Legendary', icon: '/images/legendary.png', minCoins: 600, maxCoins: 1000 },
+  { name: 'Silver', icon: '/images/silver.png', minCoins: 0, maxCoins: 4999 },
+  { name: 'Gold', icon: '/images/gold.png', minCoins: 5000, maxCoins: 24999 },
+  { name: 'Platinum', icon: '/images/platinum.png', minCoins: 25000, maxCoins: 99999 },
+  { name: 'Diamond', icon: '/images/diamond.png', minCoins: 100000, maxCoins: 999999 },
+  { name: 'Epic', icon: '/images/epic.png', minCoins: 1000000, maxCoins: 1999999 },
+  { name: 'Legendary', icon: '/images/legendary.png', minCoins: 2000000, maxCoins: 500000 },
 ];
 
 const Levels: React.FC = () => {
