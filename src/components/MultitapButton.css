@@ -61,7 +61,6 @@
   text-align: center;
   position: relative;
   color: #ffffff;
-  box-shadow: 0 -4px 6px rgb(253, 214, 16);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -72,6 +71,55 @@
   to {
     transform: translateY(0);
   }
+}
+
+.multitap-modal {
+  box-shadow: 0 -4px 6px rgb(218, 55, 57);
+}
+
+.energy-boost-modal {
+  box-shadow: 0 -4px 6px rgb(253, 178, 42);
+}
+
+.recharging-speed-modal {
+  box-shadow: 0 -4px 6px rgb(60, 241, 178);
+}
+
+.energy-boost-confirm {
+  background-color: #fdb02b; /* Зелений колір для Energy Boost */
+  color: #ffffff;
+}
+
+.recharging-speed-confirm {
+  background-color: #3bf1b7; /* Синій колір для Recharging Speed */
+  color: #ffffff;
+}
+
+.multitap-confirm {
+  background-color: #da3837; /* Жовтий колір для Multitap */
+  color: #ffffff;
+}
+
+.confirm-button:hover {
+  transform: scale(1.05);
+}
+
+.energy-boost-confirm:hover {
+  background-color: #fdc224; /* Темніший зелений при наведенні */
+}
+
+.recharging-speed-confirm:hover {
+  background-color: #3feb90; /* Темніший синій при наведенні */
+}
+
+.multitap-confirm:hover {
+  background-color: #FFA500; /* Темніший жовтий при наведенні */
+}
+
+.confirm-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .close-button {
@@ -98,8 +146,6 @@
 }
 
 .confirm-button {
-  background-color: #9e4cf4;
-  color: #ffffff;
   border: none;
   padding: 20px 100px;
   border-radius: 15px;

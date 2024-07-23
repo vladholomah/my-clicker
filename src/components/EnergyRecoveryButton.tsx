@@ -49,9 +49,9 @@ const EnergyRecoveryButton: React.FC<EnergyRecoveryButtonProps> = ({
   return (
     <>
       <button
-        className="multitap-button"
-        onClick={handleClick}
-        disabled={!nextLevelInfo || balance < (nextLevelInfo?.cost || 0)}
+          className="multitap-button recharging-speed-specific"
+          onClick={handleClick}
+          disabled={!nextLevelInfo || balance < (nextLevelInfo?.cost || 0)}
       >
         <div className="multitap-button-content">
           <div className="multitap-content">
@@ -60,45 +60,45 @@ const EnergyRecoveryButton: React.FC<EnergyRecoveryButtonProps> = ({
               <span className="multitap-title">Recharging Speed</span>
               <span className="multitap-levels">
                 {nextLevelInfo
-                  ? `1:${currentEnergyRecoveryRate} to 1:${nextLevelInfo.rate}`
-                  : `Max level (1:${currentEnergyRecoveryRate})`
+                    ? `1:${currentEnergyRecoveryRate} to 1:${nextLevelInfo.rate}`
+                    : `Max level (1:${currentEnergyRecoveryRate})`
                 }
               </span>
             </div>
           </div>
           <div className="multitap-cost">
             {nextLevelInfo && (
-              <>
-                <img src="/images/balance.png" alt="Balance" className="balance-batton"/>
-                <span>{nextLevelInfo.cost}</span>
-                <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon"/>
-              </>
+                <>
+                  <img src="/images/balance.png" alt="Balance" className="balance-batton"/>
+                  <span>{nextLevelInfo.cost}</span>
+                  <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon"/>
+                </>
             )}
           </div>
         </div>
       </button>
 
       {showConfirmation && nextLevelInfo && (
-        <div className="confirmation-overlay">
-          <div className="confirmation-modal">
-            <button className="close-button" onClick={handleCancel}>×</button>
-            <img src="/images/Energyrecovery.png" alt="Energy Recovery" className="multitap-image"/>
-            <div className="multitap-info">
-              Відновлює енергію швидше
+          <div className="confirmation-overlay">
+            <div className="confirmation-modal recharging-speed-modal">
+              <button className="close-button" onClick={handleCancel}>×</button>
+              <img src="/images/Energyrecovery.png" alt="Energy Recovery" className="multitap-image"/>
+              <div className="multitap-info">
+                Відновлює енергію швидше
+              </div>
+              <div className="price-info">
+                <img src="/images/balance.png" alt="Balance" className="price-icon"/>
+                <span>{nextLevelInfo.cost}</span>
+              </div>
+              <button
+                  className="confirm-button recharging-speed-confirm"
+                  onClick={handleConfirm}
+                  disabled={balance < nextLevelInfo.cost}
+              >
+                Підтвердити
+              </button>
             </div>
-            <div className="price-info">
-              <img src="/images/balance.png" alt="Balance" className="price-icon"/>
-              <span>{nextLevelInfo.cost}</span>
-            </div>
-            <button
-              className="confirm-button"
-              onClick={handleConfirm}
-              disabled={balance < nextLevelInfo.cost}
-            >
-              Підтвердити
-            </button>
           </div>
-        </div>
       )}
     </>
   );
