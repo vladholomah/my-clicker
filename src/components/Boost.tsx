@@ -31,6 +31,7 @@ const Boost: React.FC<BoostProps> = ({
   onRewardsClick,
   rewardsReceived
 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [rewardAmount, setRewardAmount] = useState(0);
   const {
@@ -46,6 +47,13 @@ const Boost: React.FC<BoostProps> = ({
     activateEnergyRefill
   } = useEnergy();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png', '/images/donefree.png'];
@@ -98,93 +106,93 @@ const Boost: React.FC<BoostProps> = ({
   };
 
   return (
-      <div className="boost">
-        <h1 className="boost-title"></h1>
-        <h2 className="balance-title">Your Balance</h2>
-        <div className="balance">
-          <img src="/images/balance.png" alt="Balance" className="balance-icon"/>
-          <span>{balance}</span>
-        </div>
-        <div className="boost-section">
-          <h3 className="boost-section-title">Free Daily Boosters</h3>
-          <div className="boost-buttons-container">
-            <button
-                onClick={handleActivateTurbo}
-                disabled={turboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
-                className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
-            >
-              {getButtonContent(
-                  "/images/x5.png",
-                  "Turbo",
-                  turboTimer > 0 ? `${turboTimer}s` :
-                      cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
-                          `${turboCount}/3`
-              )}
-            </button>
-            <button
-                onClick={handleActivateEnergyRefill}
-                disabled={energyRefillCount === 0 || energyRefillCooldown > 0}
-                className="boost-button energy-button"
-            >
-              {getButtonContent(
-                  "/images/fullenergy.png",
-                  "Energy",
-                  energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : `${energyRefillCount}/3`
-              )}
-            </button>
-            <button
-                onClick={handleRewardsClick}
-                className={`boost-button rewards-button ${!rewardsReceived ? 'active' : ''}`}
-                disabled={rewardsReceived}
-            >
-              {getButtonContent(
-                  "/images/level-b.png",
-                  "Rewards",
-                  rewardsReceived ? (
-                      <img src="/images/done.png" alt="Done" className="done-icon boost-timer"/>
-                  ) : (
-                      <>
-                        <span className="rewards-notification"></span>
-                        "Get"
-                      </>
-                  )
-              )}
-            </button>
-          </div>
-        </div>
-        <div className="boost-section">
-          <h3 className="boost-section-title">Boosters</h3>
-          <MultitapButton
-              balance={balance}
-              onMultitapUpgrade={onMultitapUpgrade}
-              currentLevel={currentLevel}
-          />
-          <EnergyBoostButton
-              balance={balance}
-              onEnergyBoostUpgrade={onEnergyBoostUpgrade}
-              currentMaxEnergy={currentMaxEnergy}
-          />
-          <EnergyRecoveryButton
-              balance={balance}
-              onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
-              currentEnergyRecoveryRate={currentEnergyRecoveryRate}
-          />
-        </div>
-        {showRewardModal && (
-            <div className="reward-modal">
-              <div className="reward-content">
-                <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image"/>
-                <h2 className="congrats-text">Congrats!</h2>
-                <p className="reward-text">You have received a reward</p>
-                <div className="reward-amount">
-                  <img src="/images/balance.png" alt="Balance" className="balance-icons"/>
-                  <span>{rewardAmount}</span>
-                </div>
-                <button className="back-button" onClick={() => setShowRewardModal(false)}>Back</button>
-              </div>
-            </div>
-        )}
+    <div className={`boost ${isLoaded ? 'loaded' : ''}`}>
+      <h1 className="boost-title"></h1>
+      <h2 className="balance-title">Your Balance</h2>
+      <div className="balance">
+        <img src="/images/balance.png" alt="Balance" className="balance-icon" />
+        <span>{balance}</span>
       </div>
+      <div className="boost-section">
+        <h3 className="boost-section-title">Free Daily Boosters</h3>
+        <div className="boost-buttons-container">
+          <button
+              onClick={handleActivateTurbo}
+              disabled={turboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
+              className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
+          >
+            {getButtonContent(
+                "/images/x5.png",
+                "Turbo",
+                turboTimer > 0 ? `${turboTimer}s` :
+                    cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
+                        `${turboCount}/3`
+            )}
+          </button>
+          <button
+              onClick={handleActivateEnergyRefill}
+              disabled={energyRefillCount === 0 || energyRefillCooldown > 0}
+              className="boost-button energy-button"
+          >
+            {getButtonContent(
+                "/images/fullenergy.png",
+                "Energy",
+                energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : `${energyRefillCount}/3`
+            )}
+          </button>
+          <button
+              onClick={handleRewardsClick}
+              className={`boost-button rewards-button ${!rewardsReceived ? 'active' : ''}`}
+              disabled={rewardsReceived}
+          >
+            {getButtonContent(
+                "/images/level-b.png",
+                "Rewards",
+                rewardsReceived ? (
+                    <img src="/images/done.png" alt="Done" className="done-icon boost-timer"/>
+                ) : (
+                    <>
+                      <span className="rewards-notification"></span>
+                      "Get"
+                    </>
+                )
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="boost-section">
+        <h3 className="boost-section-title">Boosters</h3>
+        <MultitapButton
+            balance={balance}
+            onMultitapUpgrade={onMultitapUpgrade}
+            currentLevel={currentLevel}
+        />
+        <EnergyBoostButton
+            balance={balance}
+            onEnergyBoostUpgrade={onEnergyBoostUpgrade}
+            currentMaxEnergy={currentMaxEnergy}
+        />
+        <EnergyRecoveryButton
+          balance={balance}
+          onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
+          currentEnergyRecoveryRate={currentEnergyRecoveryRate}
+        />
+      </div>
+{showRewardModal && (
+  <div className="reward-modal">
+    <div className="reward-content">
+      <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image" />
+      <h2 className="congrats-text">Congrats!</h2>
+      <p className="reward-text">You have received a reward</p>
+      <div className="reward-amount">
+        <img src="/images/balance.png" alt="Balance" className="balance-icons" />
+        <span>{rewardAmount}</span>
+      </div>
+      <button className="back-button" onClick={() => setShowRewardModal(false)}>Back</button>
+    </div>
+  </div>
+)}
+    </div>
   );
 };
 
