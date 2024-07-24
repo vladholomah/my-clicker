@@ -300,7 +300,7 @@
 
 .boost-button.rewards-button {
   position: relative;
-  overflow: visible;  /* Змінено з 'hidden' на 'visible' */
+  overflow: hidden;
 }
 
 .boost-button.rewards-button:not(:disabled) {
