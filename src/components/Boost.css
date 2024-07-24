@@ -80,20 +80,20 @@
   overflow: hidden;
   animation: fadeInUp 0.2s ease-out;
   animation-fill-mode: both;
-    flex-shrink: 0;
 }
 
 .boost-button:nth-child(1) {
-  animation-delay: 0.05s;
-}
-
-.boost-button:nth-child(2) {
   animation-delay: 0.1s;
 }
 
-.boost-button:nth-child(3) {
-  animation-delay: 0.15s;
+.boost-button:nth-child(2) {
+  animation-delay: 0.2s;
 }
+
+.boost-button:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
 .boost-image-container {
   width: 60%;
   height: 60%;
@@ -179,7 +179,9 @@
   color: #a0a0a0;
   text-align: center;
 }
-
+.boost-button.active {
+  background-color: #3a3d42;
+}
 .done-icon.boost-timer {
   width: auto;
   height: 14px;  /* Це має відповідати розміру шрифту */
@@ -191,7 +193,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(214, 22, 22, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -327,12 +329,4 @@
   font-weight: bold;
   animation: bounce 2s infinite;
   z-index: 1;  /* Додано для впевненості, що кружечок буде поверх кнопки */
-}
-
-
-@media screen and (max-width: 768px) {
-  .boost-button.rewards-button {
-    height: auto;
-    aspect-ratio: 1 / 1.1;
-  }
 }
