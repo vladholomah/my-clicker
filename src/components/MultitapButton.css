@@ -13,6 +13,9 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
+   animation: fadeInUp 0.2s ease-out;
+  animation-fill-mode: both;
+   animation-delay: 0.2s;
 }
 
 .multitap-button:disabled {

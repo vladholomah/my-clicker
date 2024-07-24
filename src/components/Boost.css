@@ -1,5 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .boost {
   display: flex;
   flex-direction: column;
@@ -7,6 +18,7 @@
   justify-content: flex-start;
   height: 100%;
   padding: 1px;
+  animation: fadeInUp 0.3s ease-out;
 }
 
 .boost-section {
@@ -66,8 +78,21 @@
   padding: 10px;
   position: relative;
   overflow: hidden;
+  animation: fadeInUp 0.2s ease-out;
+  animation-fill-mode: both;
 }
 
+.boost-button:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.boost-button:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.boost-button:nth-child(3) {
+  animation-delay: 0.15s;
+}
 .boost-image-container {
   width: 60%;
   height: 60%;
@@ -238,4 +263,69 @@
 
 .back-button:hover {
   background-color: #3ae9ab;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(172, 185, 237, 0.74);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.boost-button.rewards-button {
+  position: relative;
+  overflow: visible;  /* Змінено з 'hidden' на 'visible' */
+}
+
+.boost-button.rewards-button:not(:disabled) {
+  animation: pulse 2s infinite, bounce 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: rotate(45deg) translateY(-100%);
+  }
+  100% {
+    transform: rotate(45deg) translateY(100%);
+  }
+}
+
+.rewards-notification {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #d42e2b;
+  color: white;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+  animation: bounce 2s infinite;
+  z-index: 1;  /* Додано для впевненості, що кружечок буде поверх кнопки */
 }
