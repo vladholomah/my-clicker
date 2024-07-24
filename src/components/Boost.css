@@ -350,3 +350,16 @@
   z-index: 1;  /* Додано для впевненості, що кружечок буде поверх кнопки */
 }
 
+@media screen and (max-width: 768px) {
+  .boost {
+    padding: 10px;
+  }
+
+  .boost-buttons-container {
+    gap: 5px;
+  }
+
+  .boost-button {
+    padding: 5px;
+  }
+}
