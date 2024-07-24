@@ -61,8 +61,8 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   width: 100%;
-  max-width: 360px;
-  min-width: 360px; /* або інше підходяще значення */
+  max-width: 350px;
+  min-width: 350px; /* або інше підходяще значення */
   width: 100%;
   margin: 10px auto;
 }
