@@ -32,6 +32,8 @@ const Boost: React.FC<BoostProps> = ({
   rewardsReceived
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showRewardModal, setShowRewardModal] = useState(false);
+  const [rewardAmount, setRewardAmount] = useState(0);
   const {
     turboCount,
     turboTimer,
@@ -54,7 +56,7 @@ const Boost: React.FC<BoostProps> = ({
   }, []);
 
   useEffect(() => {
-    const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png'];
+    const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png', '/images/donefree.png'];
     images.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -69,6 +71,24 @@ const Boost: React.FC<BoostProps> = ({
   const handleActivateEnergyRefill = () => {
     activateEnergyRefill();
     setCurrentView('mine');
+  };
+
+  const handleRewardsClick = () => {
+    if (!rewardsReceived) {
+      const reward = calculateReward(balance);
+      setRewardAmount(reward);
+      setShowRewardModal(true);
+      onRewardsClick();
+    }
+  };
+
+  const calculateReward = (balance: number) => {
+    if (balance < 5000) return 1000;
+    if (balance < 25000) return 10000;
+    if (balance < 100000) return 15000;
+    if (balance < 1000000) return 30000;
+    if (balance < 2000000) return 50000;
+    return 5000000;
   };
 
   const getButtonContent = (image: string, text: string, timer: React.ReactNode) => {
@@ -121,17 +141,17 @@ const Boost: React.FC<BoostProps> = ({
             )}
           </button>
           <button
-            onClick={onRewardsClick}
+            onClick={handleRewardsClick}
             className="boost-button"
           >
-  {getButtonContent(
-    "/images/level-b.png",
-    "Rewards",
-    rewardsReceived ? (
-      <img src="/images/done.png" alt="Done" className="done-icon boost-timer" />
-    ) : "Get"
-  )}
-</button>
+            {getButtonContent(
+              "/images/level-b.png",
+              "Rewards",
+              rewardsReceived ? (
+                <img src="/images/done.png" alt="Done" className="done-icon boost-timer" />
+              ) : "Get"
+            )}
+          </button>
         </div>
       </div>
       <div className="boost-section">
@@ -152,6 +172,20 @@ const Boost: React.FC<BoostProps> = ({
           currentEnergyRecoveryRate={currentEnergyRecoveryRate}
         />
       </div>
+{showRewardModal && (
+  <div className="reward-modal">
+    <div className="reward-content">
+      <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image" />
+      <h2 className="congrats-text">Congrats!</h2>
+      <p className="reward-text">You have received a reward</p>
+      <div className="reward-amount">
+        <img src="/images/balance.png" alt="Balance" className="balance-icons" />
+        <span>{rewardAmount}</span>
+      </div>
+      <button className="back-button" onClick={() => setShowRewardModal(false)}>Back</button>
+    </div>
+  </div>
+)}
     </div>
   );
 };
