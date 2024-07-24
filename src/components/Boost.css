@@ -62,7 +62,7 @@
   gap: 10px;
   width: 100%;
   max-width: 380px;
-  min-width: 310px; /* або інше підходяще значення */
+  min-width: 380px; /* або інше підходяще значення */
   width: 100%;
   margin: 10px auto;
 }
