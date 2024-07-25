@@ -18,7 +18,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
   return (
     <div className="exchange-page">
       <h1>Select Exchange</h1>
-      <div className="exchange-grid">
+      <div className="exchange-grid select-exchange">
         {exchanges.map((exchange) => (
           <ExchangeButton
             key={exchange.name}
