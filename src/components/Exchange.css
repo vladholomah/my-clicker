@@ -1,17 +1,192 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-.exchange-page {
-  padding: 20px;
-  color: #ffffff;
+.exchange-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 250px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  overflow: visible;
+  margin: 0 auto;
 }
 
-.exchange-grid {
+.carousel-button {
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.carousel-button.prev {
+  left: -20px;
+}
+
+.carousel-button.next {
+  right: -20px;
+}
+
+.exchange-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.exchange-slide {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  background: #933386;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: scale(0.8) translateX(0);
+  padding: 15px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.exchange-slide.active {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  left: 10%;
+  z-index: 2;
+}
+
+.exchange-slide.next {
+  opacity: 0.6;
+  transform: scale(0.8) translateX(87.5%);
+  left: 10%;
+  z-index: 1;
+}
+
+.exchange-slide.prev {
+  opacity: 0.6;
+  transform: scale(0.8) translateX(-87.5%);
+  left: 10%;
+  z-index: 1;
+}
+
+.exchange-slide.far-next {
+  opacity: 0;
+  transform: scale(0.8) translateX(175%);
+  left: 10%;
+  z-index: 0;
+}
+
+.exchange-slide.far-prev {
+  opacity: 0;
+  transform: scale(0.8) translateX(-175%);
+  left: 10%;
+  z-index: 0;
+}
+
+.exchange-slide h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.profit-info {
+  display: flex;
   align-items: center;
-  width: 100%;
+  margin-bottom: 10px;
+}
+
+.profit-info img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  object-fit: contain;
+}
+
+.profit-info span {
+  font-size: 11px;
+  margin-right: 5px;
+  color: white;
+}
+
+.profit-info span:last-child {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.exchange-slide p {
+  font-size: 11px;
+  margin-bottom: 10px;
+  flex-grow: 1;
+  overflow-y: auto;
+  color: white;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.registration-button {
+  background-color: #ffd700;
+  color: #000000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.add-button {
+  background-color: #4a4a4a;
+  color: #ffffff;
+  border: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.indicator.active {
+  background: white;
+}
+
+.exchange-slides {
+  transition: transform 0.3s ease;
+}
+
+.exchange-slides.animating .exchange-slide {
+  transition: all 0.3s ease;
 }
