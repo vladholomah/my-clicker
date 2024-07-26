@@ -59,48 +59,32 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSwipingUp, setIsSwipingUp] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const swipeThreshold = 50; // Поріг для спрацьовування свайпу
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.targetTouches[0].clientX,
-      y: e.targetTouches[0].clientY
-    });
+    setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd({
-      x: e.targetTouches[0].clientX,
-      y: e.targetTouches[0].clientY
-    });
-
-    const deltaY = touchStart.y - e.targetTouches[0].clientY;
-    if (deltaY > 0) {
-      setIsSwipingUp(true);
-    } else {
-      setIsSwipingUp(false);
-    }
+    setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   };
 
   const handleTouchEnd = () => {
     const deltaX = touchStart.x - touchEnd.x;
     const deltaY = touchStart.y - touchEnd.y;
 
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-      // Вертикальний свайп
-      if (deltaY > swipeThreshold && isSwipingUp) {
+    if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 50) {
+      // Свайп вгору
+      setIsSwipingUp(true);
+      setTimeout(() => {
         onExchangeSelect(exchanges[currentIndex].name);
-      }
-    } else {
-      // Горизонтальний свайп
-      if (deltaX > swipeThreshold) {
+      }, 300);
+    } else if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
         nextExchange();
-      } else if (deltaX < -swipeThreshold) {
+      } else {
         prevExchange();
       }
     }
-
-    setIsSwipingUp(false);
   };
 
   useEffect(() => {
@@ -147,11 +131,11 @@ return (
     <h1>Оберіть біржу</h1>
     <div
       className="exchange-carousel"
-        ref={carouselRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      ref={carouselRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <button
         className="carousel-button prev"
         onClick={prevExchange}
@@ -159,35 +143,35 @@ return (
       >
         <img src="/images/swipe-l.png" alt="Previous" />
       </button>
-        <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
-          {exchanges.map((exchange, index) => (
-              <div
-                  key={exchange.name}
-                  className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
-              >
-                <h2>{exchange.name}</h2>
-                <div className="profit-info">
-                  <img src={exchange.logo} alt={exchange.name}/>
-                  <span>Прибуток за годину</span>
-                  <span>{exchange.profitPerHour}</span>
-                </div>
-                <p>{exchange.description}</p>
-                <div className={`swipe-indicator ${isSwipingUp ? 'swiping' : ''}`}>
-                  <img src="/images/swipe-up.png" alt="Swipe up"/>
-                </div>
-              </div>
-          ))}
-        </div>
+         <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
+        {exchanges.map((exchange, index) => (
+          <div
+            key={exchange.name}
+            className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
+          >
+            <h2>{exchange.name}</h2>
+            <div className="profit-info">
+              <img src={exchange.logo} alt={exchange.name} />
+              <span>Прибуток за годину</span>
+              <span>{exchange.profitPerHour}</span>
+            </div>
+            <p>{exchange.description}</p>
+            <div className="swipe-indicator">
+              <img src="/images/swipe-up.png" alt="Swipe up" />
+            </div>
+          </div>
+        ))}
+         </div>
       <button
-          className="carousel-button next"
-          onClick={nextExchange}
-          disabled={isAnimating}
+        className="carousel-button next"
+        onClick={nextExchange}
+        disabled={isAnimating}
       >
-        <img src="/images/swipe.png" alt="Next"/>
+        <img src="/images/swipe.png" alt="Next" />
       </button>
     </div>
-    <div className="carousel-indicators">
-      {exchanges.map((_, index) => (
+       <div className="carousel-indicators">
+         {exchanges.map((_, index) => (
              <span
                  key={index}
                  className={`indicator ${index === currentIndex ? 'active' : ''}`}
