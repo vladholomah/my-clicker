@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './Exchange.css';
 
 interface ExchangeProps {
@@ -58,31 +58,34 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
   const [touchEnd, setTouchEnd] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (selectedExchange) {
-      const index = exchanges.findIndex(exchange => exchange.name === selectedExchange);
-      if (index !== -1) {
-        setCurrentIndex(index);
-      }
-    }
-  }, [selectedExchange]);
+  const isSwiping = useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
+    isSwiping.current = true;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {
-      nextExchange();
-    }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isSwiping.current) {
+      if (touchStart - touchEnd > 50) {
+        nextExchange();
+      }
 
-    if (touchStart - touchEnd < -50) {
-      prevExchange();
+      if (touchStart - touchEnd < -50) {
+        prevExchange();
+      }
+    }
+    isSwiping.current = false;
+  };
+
+  const handleClick = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    if (!isSwiping.current) {
+      action();
     }
   };
 
@@ -116,7 +119,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
     // Додайте тут логіку для переходу на іншу сторінку
   };
 
-  return (
+   return (
     <div className="exchange-page">
       <h1>Оберіть біржу</h1>
       <div
@@ -140,16 +143,16 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
                 <span>{exchange.profitPerHour}</span>
               </div>
               <p>{exchange.description}</p>
-              <div className="button-group">
+              <div className="button-group" onClick={(e) => e.stopPropagation()}>
                 <button
                   className="registration-button"
-                  onClick={() => window.open(exchange.registrationLink, '_blank')}
+                  onClick={(e) => handleClick(e, () => window.open(exchange.registrationLink, '_blank'))}
                 >
                   Реєстрація
                 </button>
                 <button
                   className="add-button"
-                  onClick={() => handleExchangeSelect(exchange.name)}
+                  onClick={(e) => handleClick(e, () => handleExchangeSelect(exchange.name))}
                 >
                   +
                 </button>
