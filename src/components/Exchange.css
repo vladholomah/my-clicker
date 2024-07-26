@@ -180,18 +180,20 @@
 
 .swipe-indicator {
   position: absolute;
-  bottom: 10px;
+  bottom: 15px;
   left: 0;
   right: 0;
   text-align: center;
-  animation: float 2s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.swipe-indicator.swiping {
+  transform: translateY(-20px);
 }
 
 .swipe-indicator img {
-  width: 15px; /* Налаштуйте за потребою */
+  width: 30px;
   height: auto;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
 }
 
 @keyframes float {
@@ -208,9 +210,8 @@
 }
 
 .exchange-slide.swiping-up {
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+  transform: translateY(-50px);
+  transition: transform 0.3s ease;
 }
 
 .registration-section {
