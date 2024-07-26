@@ -126,17 +126,23 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
     window.open(currentExchange.registrationLink, '_blank');
   };
 
- return (
-     <div className="exchange-page">
-       <h1>Оберіть біржу</h1>
-       <div
-           className="exchange-carousel"
-           ref={carouselRef}
-           onTouchStart={handleTouchStart}
-           onTouchMove={handleTouchMove}
-           onTouchEnd={handleTouchEnd}
-       >
-         <button className="carousel-button prev" onClick={prevExchange} disabled={isAnimating}>&lt;</button>
+return (
+  <div className="exchange-page">
+    <h1>Оберіть біржу</h1>
+    <div
+      className="exchange-carousel"
+      ref={carouselRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <button
+        className="carousel-button prev"
+        onClick={prevExchange}
+        disabled={isAnimating}
+      >
+        <img src="/images/swipe-l.png" alt="Previous" />
+      </button>
          <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
         {exchanges.map((exchange, index) => (
           <div
@@ -156,8 +162,14 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
           </div>
         ))}
          </div>
-         <button className="carousel-button next" onClick={nextExchange} disabled={isAnimating}>&gt;</button>
-       </div>
+      <button
+        className="carousel-button next"
+        onClick={nextExchange}
+        disabled={isAnimating}
+      >
+        <img src="/images/swipe.png" alt="Next" />
+      </button>
+    </div>
        <div className="carousel-indicators">
          {exchanges.map((_, index) => (
              <span
