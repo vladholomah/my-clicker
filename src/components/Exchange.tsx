@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Exchange.css';
 
 interface ExchangeProps {
   onExchangeSelect: (exchange: string) => void;
+  selectedExchange: string;
 }
 
 interface ExchangeInfo {
@@ -10,6 +11,7 @@ interface ExchangeInfo {
   logo: string;
   profitPerHour: string;
   description: string;
+  registrationLink: string;
 }
 
 const exchanges: ExchangeInfo[] = [
@@ -17,40 +19,54 @@ const exchanges: ExchangeInfo[] = [
     name: 'Binance',
     logo: '/images/binance-logo.png',
     profitPerHour: '11.5K',
-    description: 'Провідна криптовалютна біржа для торгівлі цифровими активами.'
+    description: 'Провідна криптовалютна біржа для торгівлі цифровими активами.',
+    registrationLink: 'https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00729U4ZZW'
   },
   {
     name: 'Holmah',
     logo: '/images/holmah.png',
     profitPerHour: '10.2K',
-    description: 'Інноваційна біржа з широким спектром торгових інструментів.'
+    description: 'Інноваційна біржа з широким спектром торгових інструментів.',
+    registrationLink: 'https://www.htx.com/uk-ua?utm_source=UT&utm_medium=prodnews&inviter_id=11350560'
   },
   {
     name: 'Bybit',
     logo: '/images/bybit.png',
     profitPerHour: '9.8K',
-    description: 'Професійна платформа для торгівлі криптовалютними деривативами.'
+    description: 'Професійна платформа для торгівлі криптовалютними деривативами.',
+    registrationLink: 'https://www.bybit.com/invite?ref=5QJAAQ4'
   },
   {
     name: 'Qmall',
     logo: '/images/qmall.png',
     profitPerHour: '8.7K',
-    description: 'Швидко зростаюча біржа з інтуїтивно зрозумілим інтерфейсом.'
+    description: 'Швидко зростаюча біржа з інтуїтивно зрозумілим інтерфейсом.',
+    registrationLink: 'https://qmall.io/ua/sign-in'
   },
   {
     name: 'WhiteBit',
     logo: '/images/whitebit.png',
     profitPerHour: '9.1K',
-    description: 'Європейська біржа з високим рівнем безпеки та підтримкою фіатних валют.'
+    description: 'Європейська біржа з високим рівнем безпеки та підтримкою фіатних валют.',
+    registrationLink: 'https://whitebit.com/ua'
   }
 ];
 
-const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
+const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedExchange) {
+      const index = exchanges.findIndex(exchange => exchange.name === selectedExchange);
+      if (index !== -1) {
+        setCurrentIndex(index);
+      }
+    }
+  }, [selectedExchange]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -90,7 +106,14 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
     if (diff === 0) return 'active';
     if (diff === 1) return 'next';
     if (diff === totalSlides - 1) return 'prev';
+    if (diff === 2) return 'far-next';
+    if (diff === totalSlides - 2) return 'far-prev';
     return '';
+  };
+
+  const handleExchangeSelect = (exchangeName: string) => {
+    onExchangeSelect(exchangeName);
+    // Додайте тут логіку для переходу на іншу сторінку
   };
 
   return (
@@ -118,10 +141,18 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
               </div>
               <p>{exchange.description}</p>
               <div className="button-group">
-                <button className="registration-button">
+                <button
+                  className="registration-button"
+                  onClick={() => window.open(exchange.registrationLink, '_blank')}
+                >
                   Реєстрація
                 </button>
-                <button className="add-button" onClick={() => onExchangeSelect(exchange.name)}>+</button>
+                <button
+                  className="add-button"
+                  onClick={() => handleExchangeSelect(exchange.name)}
+                >
+                  +
+                </button>
               </div>
             </div>
           ))}
