@@ -58,34 +58,22 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
   const [touchEnd, setTouchEnd] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const isSwiping = useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
-    isSwiping.current = true;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (isSwiping.current) {
-      if (touchStart - touchEnd > 50) {
-        nextExchange();
-      }
-
-      if (touchStart - touchEnd < -50) {
-        prevExchange();
-      }
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 50) {
+      nextExchange();
     }
-    isSwiping.current = false;
-  };
 
-  const handleClick = (e: React.MouseEvent, action: () => void) => {
-    e.stopPropagation();
-    if (!isSwiping.current) {
-      action();
+    if (touchStart - touchEnd < -50) {
+      prevExchange();
     }
   };
 
@@ -114,12 +102,18 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
     return '';
   };
 
-  const handleExchangeSelect = (exchangeName: string) => {
-    onExchangeSelect(exchangeName);
-    // Додайте тут логіку для переходу на іншу сторінку
+  const handleRegistration = () => {
+    const currentExchange = exchanges[currentIndex];
+    window.open(currentExchange.registrationLink, '_blank');
   };
 
-   return (
+  const handleSlideClick = (exchangeName: string) => {
+    if (!isAnimating) {
+      onExchangeSelect(exchangeName);
+    }
+  };
+
+  return (
     <div className="exchange-page">
       <h1>Оберіть біржу</h1>
       <div
@@ -135,6 +129,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
             <div
               key={exchange.name}
               className={`exchange-slide ${getSlideClass(index)}`}
+              onClick={() => handleSlideClick(exchange.name)}
             >
               <h2>{exchange.name}</h2>
               <div className="profit-info">
@@ -143,20 +138,6 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
                 <span>{exchange.profitPerHour}</span>
               </div>
               <p>{exchange.description}</p>
-              <div className="button-group" onClick={(e) => e.stopPropagation()}>
-                <button
-                  className="registration-button"
-                  onClick={(e) => handleClick(e, () => window.open(exchange.registrationLink, '_blank'))}
-                >
-                  Реєстрація
-                </button>
-                <button
-                  className="add-button"
-                  onClick={(e) => handleClick(e, () => handleExchangeSelect(exchange.name))}
-                >
-                  +
-                </button>
-              </div>
             </div>
           ))}
         </div>
@@ -176,6 +157,12 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
             }}
           />
         ))}
+      </div>
+      <div className="registration-section">
+        <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни кнопку реєстрація</p>
+        <button className="registration-button" onClick={handleRegistration}>
+          Реєстрація
+        </button>
       </div>
     </div>
   );
