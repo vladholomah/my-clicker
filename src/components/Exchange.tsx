@@ -60,11 +60,11 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
   };
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
+    if (touchStart - touchEnd > 50) {  // Зменшено з 75 до 50
       nextExchange();
     }
 
-    if (touchStart - touchEnd < -75) {
+    if (touchStart - touchEnd < -50) {  // Зменшено з -75 до -50
       prevExchange();
     }
   };
