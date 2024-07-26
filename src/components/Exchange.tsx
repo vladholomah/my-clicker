@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Exchange.css';
 
 interface ExchangeProps {
@@ -54,28 +54,47 @@ const exchanges: ExchangeInfo[] = [
 
 const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isSwipingUp, setIsSwipingUp] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   };
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {
-      nextExchange();
-    }
+    const deltaX = touchStart.x - touchEnd.x;
+    const deltaY = touchStart.y - touchEnd.y;
 
-    if (touchStart - touchEnd < -50) {
-      prevExchange();
+    if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 50) {
+      // Свайп вгору
+      setIsSwipingUp(true);
+      setTimeout(() => {
+        onExchangeSelect(exchanges[currentIndex].name);
+      }, 300);
+    } else if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        nextExchange();
+      } else {
+        prevExchange();
+      }
     }
   };
+
+  useEffect(() => {
+    if (isSwipingUp) {
+      const timer = setTimeout(() => {
+        setIsSwipingUp(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isSwipingUp]);
 
   const nextExchange = () => {
     if (isAnimating) return;
@@ -107,65 +126,62 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
     window.open(currentExchange.registrationLink, '_blank');
   };
 
-  const handleSlideClick = (exchangeName: string) => {
-    if (!isAnimating) {
-      onExchangeSelect(exchangeName);
-    }
-  };
-
-  return (
-    <div className="exchange-page">
-      <h1>Оберіть біржу</h1>
-      <div
-        className="exchange-carousel"
-        ref={carouselRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <button className="carousel-button prev" onClick={prevExchange} disabled={isAnimating}>&lt;</button>
-        <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
-          {exchanges.map((exchange, index) => (
-            <div
-              key={exchange.name}
-              className={`exchange-slide ${getSlideClass(index)}`}
-              onClick={() => handleSlideClick(exchange.name)}
-            >
-              <h2>{exchange.name}</h2>
-              <div className="profit-info">
-                <img src={exchange.logo} alt={exchange.name} />
-                <span>Прибуток за годину</span>
-                <span>{exchange.profitPerHour}</span>
-              </div>
-              <p>{exchange.description}</p>
+ return (
+     <div className="exchange-page">
+       <h1>Оберіть біржу</h1>
+       <div
+           className="exchange-carousel"
+           ref={carouselRef}
+           onTouchStart={handleTouchStart}
+           onTouchMove={handleTouchMove}
+           onTouchEnd={handleTouchEnd}
+       >
+         <button className="carousel-button prev" onClick={prevExchange} disabled={isAnimating}>&lt;</button>
+         <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
+        {exchanges.map((exchange, index) => (
+          <div
+            key={exchange.name}
+            className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
+          >
+            <h2>{exchange.name}</h2>
+            <div className="profit-info">
+              <img src={exchange.logo} alt={exchange.name} />
+              <span>Прибуток за годину</span>
+              <span>{exchange.profitPerHour}</span>
             </div>
-          ))}
-        </div>
-        <button className="carousel-button next" onClick={nextExchange} disabled={isAnimating}>&gt;</button>
-      </div>
-      <div className="carousel-indicators">
-        {exchanges.map((_, index) => (
-          <span
-            key={index}
-            className={`indicator ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => {
-              if (!isAnimating) {
-                setIsAnimating(true);
-                setCurrentIndex(index);
-                setTimeout(() => setIsAnimating(false), 300);
-              }
-            }}
-          />
+            <p>{exchange.description}</p>
+            <div className="swipe-indicator">
+              <img src="/images/swipe-up.png" alt="Swipe up" />
+            </div>
+          </div>
         ))}
-      </div>
-      <div className="registration-section">
-        <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни кнопку реєстрація</p>
-        <button className="registration-button" onClick={handleRegistration}>
-          Реєстрація
-        </button>
-      </div>
-    </div>
-  );
+         </div>
+         <button className="carousel-button next" onClick={nextExchange} disabled={isAnimating}>&gt;</button>
+       </div>
+       <div className="carousel-indicators">
+         {exchanges.map((_, index) => (
+             <span
+                 key={index}
+                 className={`indicator ${index === currentIndex ? 'active' : ''}`}
+                 onClick={() => {
+                   if (!isAnimating) {
+                     setIsAnimating(true);
+                     setCurrentIndex(index);
+                     setTimeout(() => setIsAnimating(false), 300);
+                   }
+                 }}
+             />
+         ))}
+       </div>
+       <div className="registration-section">
+         <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни
+           кнопку реєстрація</p>
+         <button className="registration-button" onClick={handleRegistration}>
+           Реєстрація
+         </button>
+       </div>
+     </div>
+ );
 };
 
 export default Exchange;
