@@ -16,7 +16,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.3s ease;
+  transition: none;
 }
 
 .exchange-slide {
@@ -34,6 +34,7 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .exchange-slide.active {
@@ -41,6 +42,7 @@
   transform: scale(1);
   left: 5%;
   z-index: 2;
+  pointer-events: auto;
 }
 
 .exchange-slide.next {

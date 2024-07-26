@@ -49,6 +49,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -60,21 +61,27 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
   };
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) {  // Зменшено з 75 до 50
+    if (touchStart - touchEnd > 50) {
       nextExchange();
     }
 
-    if (touchStart - touchEnd < -50) {  // Зменшено з -75 до -50
+    if (touchStart - touchEnd < -50) {
       prevExchange();
     }
   };
 
   const nextExchange = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % exchanges.length);
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const prevExchange = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentIndex((prevIndex) => (prevIndex - 1 + exchanges.length) % exchanges.length);
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const getSlideClass = (index: number) => {
@@ -83,8 +90,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
     if (diff === 0) return 'active';
     if (diff === 1) return 'next';
     if (diff === totalSlides - 1) return 'prev';
-    if (diff === 2 || diff === 3) return 'far-next';
-    return 'far-prev';
+    return '';
   };
 
   return (
@@ -97,8 +103,8 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <button className="carousel-button prev" onClick={prevExchange}>&lt;</button>
-        <div className="exchange-slides">
+        <button className="carousel-button prev" onClick={prevExchange} disabled={isAnimating}>&lt;</button>
+        <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
           {exchanges.map((exchange, index) => (
             <div
               key={exchange.name}
@@ -120,14 +126,20 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect }) => {
             </div>
           ))}
         </div>
-        <button className="carousel-button next" onClick={nextExchange}>&gt;</button>
+        <button className="carousel-button next" onClick={nextExchange} disabled={isAnimating}>&gt;</button>
       </div>
       <div className="carousel-indicators">
         {exchanges.map((_, index) => (
           <span
             key={index}
             className={`indicator ${index === currentIndex ? 'active' : ''}`}
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => {
+              if (!isAnimating) {
+                setIsAnimating(true);
+                setCurrentIndex(index);
+                setTimeout(() => setIsAnimating(false), 300);
+              }
+            }}
           />
         ))}
       </div>
