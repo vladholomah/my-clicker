@@ -4,6 +4,7 @@ import './Exchange.css';
 interface ExchangeProps {
   onExchangeSelect: (exchange: string) => void;
   selectedExchange: string;
+  onScoreChange: (increment: number) => void;
 }
 
 interface ExchangeInfo {
@@ -17,47 +18,51 @@ interface ExchangeInfo {
 const exchanges: ExchangeInfo[] = [
   {
     name: 'Binance',
-    logo: '/images/binance-logo.png',
+    logo: '/images/binance-logo1.png',
     profitPerHour: '11.5K',
-    description: 'Провідна криптовалютна біржа для торгівлі цифровими активами.',
+    description: 'The reward can only be claimed after registering on the selected exchange.',
     registrationLink: 'https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00729U4ZZW'
   },
   {
-    name: 'Holmah',
-    logo: '/images/holmah.png',
+    name: 'HTX',
+    logo: '/images/htx1.png',
     profitPerHour: '10.2K',
-    description: 'Інноваційна біржа з широким спектром торгових інструментів.',
+    description: 'The reward can only be claimed after registering on the selected exchange.',
     registrationLink: 'https://www.htx.com/uk-ua?utm_source=UT&utm_medium=prodnews&inviter_id=11350560'
   },
   {
     name: 'Bybit',
-    logo: '/images/bybit.png',
+    logo: '/images/bybit1.png',
     profitPerHour: '9.8K',
-    description: 'Професійна платформа для торгівлі криптовалютними деривативами.',
+    description: 'The reward can only be claimed after registering on the selected exchange.',
     registrationLink: 'https://www.bybit.com/invite?ref=5QJAAQ4'
   },
   {
     name: 'Qmall',
-    logo: '/images/qmall.png',
+    logo: '/images/qmall1.png',
     profitPerHour: '8.7K',
-    description: 'Швидко зростаюча біржа з інтуїтивно зрозумілим інтерфейсом.',
+    description: 'The reward can only be claimed after registering on the selected exchange.',
     registrationLink: 'https://qmall.io/ua/sign-in'
   },
   {
     name: 'WhiteBit',
-    logo: '/images/whitebit.png',
+    logo: '/images/whitebit1.png',
     profitPerHour: '9.1K',
-    description: 'Європейська біржа з високим рівнем безпеки та підтримкою фіатних валют.',
+    description: 'The reward can only be claimed after registering on the selected exchange.',
     registrationLink: 'https://whitebit.com/ua'
   }
 ];
 
-const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange }) => {
+const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange, onScoreChange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
   const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSwipingUp, setIsSwipingUp] = useState(false);
+  const [registrationBonus, setRegistrationBonus] = useState(() => {
+    const savedBonus = localStorage.getItem('registrationBonus');
+    return savedBonus ? JSON.parse(savedBonus) : false;
+  });
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -73,7 +78,6 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
     const deltaY = touchStart.y - touchEnd.y;
 
     if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 50) {
-      // Свайп вгору
       setIsSwipingUp(true);
       setTimeout(() => {
         onExchangeSelect(exchanges[currentIndex].name);
@@ -124,76 +128,88 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange 
   const handleRegistration = () => {
     const currentExchange = exchanges[currentIndex];
     window.open(currentExchange.registrationLink, '_blank');
+
+    if (!registrationBonus) {
+      onScoreChange(100000);
+      setRegistrationBonus(true);
+      localStorage.setItem('registrationBonus', JSON.stringify(true));
+      alert('Ви отримали 100 000 монет за реєстрацію!');
+    }
   };
 
-return (
-  <div className="exchange-page">
-    <h1>Оберіть біржу</h1>
-    <div
-      className="exchange-carousel"
-      ref={carouselRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <button
-        className="carousel-button prev"
-        onClick={prevExchange}
-        disabled={isAnimating}
+  return (
+    <div className="exchange-page">
+      <h1>Оберіть біржу</h1>
+      <div
+        className="exchange-carousel"
+        ref={carouselRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <img src="/images/swipe-l.png" alt="Previous" />
-      </button>
-         <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
-        {exchanges.map((exchange, index) => (
-          <div
-            key={exchange.name}
-            className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
-          >
-            <h2>{exchange.name}</h2>
-            <div className="profit-info">
-              <img src={exchange.logo} alt={exchange.name} />
-              <span>Прибуток за годину</span>
-              <span>{exchange.profitPerHour}</span>
+        <button
+          className="carousel-button prev"
+          onClick={prevExchange}
+          disabled={isAnimating}
+        >
+          <img src="/images/swipe-l.png" alt="Previous" />
+        </button>
+        <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
+          {exchanges.map((exchange, index) => (
+            <div
+              key={exchange.name}
+              className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
+            >
+              <h2>{exchange.name}</h2>
+              <div className="profit-info">
+                <img src={exchange.logo} alt={exchange.name}/>
+                <div className="reward-info">
+                  <span>Registration reward:</span>
+                  <div className="balance-info">
+                    <img src="/images/balance.png" alt="Balance" className="coin-icon"/>
+                    <span>{exchange.profitPerHour}</span>
+                  </div>
+                </div>
+              </div>
+              <p>{exchange.description}</p>
+              <div className="swipe-indicator">
+                <img src="/images/swipe-up.png" alt="Swipe up"/>
+              </div>
             </div>
-            <p>{exchange.description}</p>
-            <div className="swipe-indicator">
-              <img src="/images/swipe-up.png" alt="Swipe up" />
-            </div>
-          </div>
+          ))}
+        </div>
+        <button
+          className="carousel-button next"
+          onClick={nextExchange}
+          disabled={isAnimating}
+        >
+          <img src="/images/swipe.png" alt="Next"/>
+        </button>
+      </div>
+      <div className="carousel-indicators">
+        {exchanges.map((_, index) => (
+          <span
+            key={index}
+            className={`indicator ${index === currentIndex ? 'active' : ''}`}
+            onClick={() => {
+              if (!isAnimating) {
+                setIsAnimating(true);
+                setCurrentIndex(index);
+                setTimeout(() => setIsAnimating(false), 300);
+              }
+            }}
+          />
         ))}
-         </div>
-      <button
-        className="carousel-button next"
-        onClick={nextExchange}
-        disabled={isAnimating}
-      >
-        <img src="/images/swipe.png" alt="Next" />
-      </button>
+      </div>
+      <div className="registration-section">
+        <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни
+          кнопку реєстрація</p>
+        <button className="registration-button" onClick={handleRegistration}>
+          Реєстрація
+        </button>
+      </div>
     </div>
-       <div className="carousel-indicators">
-         {exchanges.map((_, index) => (
-             <span
-                 key={index}
-                 className={`indicator ${index === currentIndex ? 'active' : ''}`}
-                 onClick={() => {
-                   if (!isAnimating) {
-                     setIsAnimating(true);
-                     setCurrentIndex(index);
-                     setTimeout(() => setIsAnimating(false), 300);
-                   }
-                 }}
-             />
-         ))}
-       </div>
-       <div className="registration-section">
-         <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни
-           кнопку реєстрація</p>
-         <button className="registration-button" onClick={handleRegistration}>
-           Реєстрація
-         </button>
-       </div>
-     </div>
- );
+  );
 };
 
 export default Exchange;

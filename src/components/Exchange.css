@@ -130,10 +130,17 @@
 }
 
 .profit-info img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
   object-fit: contain;
+}
+
+.profit-info img.coin-icon {
+  width: 11px;
+  height: 11px;
+  margin-right: 2px;
+    margin-top: 1px;
 }
 
 .profit-info span {
@@ -145,10 +152,12 @@
 .profit-info span:last-child {
   font-weight: bold;
   color: #ffd700;
+  margin-top: 1px;
 }
 
 .exchange-slide p {
   font-size: 11px;
+   text-align: center;
   margin-bottom: 10px;
   flex-grow: 1;
   overflow-y: auto;
@@ -237,8 +246,24 @@
   color: #000000;
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 15px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-info span {
+  font-size: 11px;
+  color: white;
+  margin-bottom: 1px;
+}
+
+.balance-info {
+  display: flex;
+  align-items: center;
 }

@@ -104,11 +104,12 @@ function AppContent() {
         return <Levels />;
       case 'settings':
         return <Settings />;
-case 'exchange':
-  return <Exchange
-    onExchangeSelect={handleExchangeSelect}
-    selectedExchange={selectedExchange.name}
-  />;
+      case 'exchange':
+        return <Exchange
+          onExchangeSelect={handleExchangeSelect}
+          selectedExchange={selectedExchange.name}
+          onScoreChange={handleScoreChange}
+        />;
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':
