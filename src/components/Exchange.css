@@ -1,15 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+
 .exchange-carousel {
   position: relative;
-  width: calc(100% - 20px);
+  width: calc(200% - 20px);
   max-width: 280px;
-  height: 230px;
+  height: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
   margin: 0 auto;
+  top: 80px;
 }
 
 .exchange-slides {
@@ -40,7 +42,7 @@
 
 .exchange-slide.active {
   transform: scale(1) translateX(0);
-  left: 5%;
+  left: -17%;
   z-index: 2;
   pointer-events: auto;
   background: #302e2e; /* Колір для активного (центрального) слайду */
@@ -55,12 +57,12 @@
 
 .exchange-slide.next {
   transform: scale(0.8) translateX(30%);
-  left: 20%;
+  left: 3%;
 }
 
 .exchange-slide.prev {
   transform: scale(0.8) translateX(-30%);
-  left: -10%;
+  left: -37%;
 }
 
 .exchange-slide.far-next,
@@ -104,11 +106,11 @@
 }
 
 .carousel-button.prev {
-  left: -61px; /* Налаштуйте позицію за потребою */
+  left: -108px; /* Налаштуйте позицію за потребою */
 }
 
 .carousel-button.next {
-  right: -61px; /* Налаштуйте позицію за потребою */
+  right: -28px; /* Налаштуйте позицію за потребою */
 }
 
 .carousel-button:disabled {
@@ -167,7 +169,7 @@
 .carousel-indicators {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 95px;
 }
 
 .indicator {
@@ -189,7 +191,7 @@
 
 .swipe-indicator {
   position: absolute;
-  bottom: 10px;
+  bottom: 5px;
   left: 0;
   right: 0;
   text-align: center;
@@ -197,7 +199,7 @@
 }
 
 .swipe-indicator img {
-  width: 15px; /* Налаштуйте за потребою */
+  width: 12px; /* Налаштуйте за потребою */
   height: auto;
   opacity: 0.8;
   transition: opacity 0.3s ease;
@@ -266,4 +268,24 @@
 .balance-info {
   display: flex;
   align-items: center;
+}
+
+.exchange-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #302e2e;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Додамо відступ зверху для контенту, щоб він не перекривався заголовком */
+.exchange-content {
+  padding-top: 50px;
 }
