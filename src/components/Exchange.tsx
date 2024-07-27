@@ -133,7 +133,6 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
       onScoreChange(100000);
       setRegistrationBonus(true);
       localStorage.setItem('registrationBonus', JSON.stringify(true));
-      alert('Ви отримали 100 000 монет за реєстрацію!');
     }
   };
 
