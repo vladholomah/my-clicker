@@ -1,194 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
 .card-container {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 15px;
+  background-color: #000000;
   color: #ffffff;
   height: calc(100vh - 90px);
-  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  overflow-y: auto;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 15px;
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  color: #ffffff;
+  color: #FFD700;
+  margin-bottom: 5px;
+  text-align: left;
+  line-height: 1.2;
 }
 
-.stock-image {
-  position: relative;
+.subtitle {
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.coin-image {
   width: 100%;
-  height: 180px;
-  background-color: #1e1e1e;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 15px;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
-.stock-image img {
+.coin-image img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
-.investment-tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ffd700;
-  color: #121212;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.info-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.description {
-  font-size: 14px;
-  margin-bottom: 15px;
-  text-align: center;
-  line-height: 1.4;
-}
-
-.benefits {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  gap: 10px; /* Додаємо відступ між елементами */
-}
-
-.benefit-item {
-  flex: 1; /* Кожен елемент займає однакову частину простору */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Центруємо вміст вертикально */
-  font-size: 12px;
-  background-color: #1e1e1e;
-  padding: 10px;
-  border-radius: 8px;
-  height: 80px; /* Фіксована висота для всіх елементів */
-  text-align: center; /* Центруємо текст */
-}
-
-.benefit-icon {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
-
-.benefit-text {
-  /* Новий клас для тексту */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 30px; /* Фіксована висота для тексту */
-}
-
-.benefit-icon {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
-
-.stock-purchase {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  background-color: #1e1e1e;
-  padding: 10px;
-  border-radius: 8px;
-}
-
 .quantity-selector {
   display: flex;
   align-items: center;
+  margin-bottom: 15px;
 }
 
 .quantity-button {
-  background-color: #2c2c2c;
+  background-color: #FFD700;
   border: none;
-  color: #ffffff;
+  color: #000000;
   font-size: 18px;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: 17.5px;
 }
 
 .quantity {
   margin: 0 15px;
   font-size: 18px;
+  color: #ffffff;
+}
+
+.price {
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 
 .highlight {
-  color: #ffd700;
+  color: #FFD700;
   font-weight: bold;
 }
 
 .buy-button {
-  background-color: #ffd700;
+  background-color: #FFD700;
   border: none;
-  color: #121212;
-  padding: 12px;
+  color: #000000;
+  padding: 12px 20px;
   font-size: 16px;
   font-weight: bold;
-  border-radius: 8px;
+  border-radius: 20px;
   cursor: pointer;
-  margin-bottom: 15px;
-}
-
-.reward-inform {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  margin-bottom: 15px;
-  background-color: #1e1e1e;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.reward-icon {
-  font-size: 20px;
-  margin-right: 10px;
-}
-
-.progress-bar {
+  margin-bottom: 10px;
   width: 100%;
-  height: 20px;
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
 }
 
-.progress {
-  height: 100%;
-  background-color: #ffd700;
-}
-
-.progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 12px;
+.info-button {
+  background-color: transparent;
+  border: 2px solid #FFD700;
+  color: #FFD700;
+  padding: 10px 20px;
+  font-size: 16px;
   font-weight: bold;
-  color: #121212;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100%;
 }

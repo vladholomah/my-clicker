@@ -1,72 +1,51 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Card.css';
 
-interface CardProps {
-  balance: number;
+export interface Stock {
+  id: string;
+  name: string;
+  shortDescription: string;
+  price: number;
+  image: string;
 }
 
-const Card: React.FC<CardProps> = ({ balance }) => {
-  const [quantity, setQuantity] = useState(1);
-  const pricePerShare = 1;
+interface CardProps {
+  stock: Stock;
+  onBack: () => void;
+}
+
+const Card: React.FC<CardProps> = ({ stock, onBack }) => {
+  const [quantity, setQuantity] = React.useState(1);
 
   const increaseQuantity = () => setQuantity(quantity + 1);
   const decreaseQuantity = () => quantity > 1 && setQuantity(quantity - 1);
 
   return (
-      <div className="card-container">
-        <div className="header">
-          <h1 className="title">CryptBall Black Sharks</h1>
+    <div className="card-container">
+      <button className="back-button" onClick={onBack}>Back</button>
+      <div className="content">
+        <h1 className="title">{stock.name}</h1>
+        <p className="subtitle">{stock.shortDescription}</p>
+
+        <div className="coin-image">
+          <img src={stock.image} alt={stock.name} />
         </div>
 
-        <div className="stock-image">
-          <img src="/images/path-to-cryptball-image.png" alt="CryptBall"/>
-          <div className="investment-tag">Гаряча інвестиція</div>
+        <div className="quantity-selector">
+          <button className="quantity-button" onClick={decreaseQuantity}>-</button>
+          <span className="quantity">{quantity}</span>
+          <button className="quantity-button" onClick={increaseQuantity}>+</button>
         </div>
 
-        <div className="info-section">
-          <p className="description">
-            Революційна Play-to-Earn платформа. Інвестуйте зараз - отримайте 1 000 000 монет миттєво!
-          </p>
-
-          <div className="benefits">
-            <div className="benefit-item">
-              <span className="benefit-icon">🚀</span>
-              <span className="benefit-text">Ранній доступ</span>
-            </div>
-            <div className="benefit-item">
-              <span className="benefit-icon">💰</span>
-              <span className="benefit-text">Великий потенціал</span>
-            </div>
-            <div className="benefit-item">
-              <span className="benefit-icon">🌐</span>
-              <span className="benefit-text">Глобальна спільнота</span>
-            </div>
-          </div>
-
-          <div className="stock-purchase">
-            <div className="quantity-selector">
-              <button className="quantity-button" onClick={decreaseQuantity}>-</button>
-              <span className="quantity">{quantity}</span>
-              <button className="quantity-button" onClick={increaseQuantity}>+</button>
-            </div>
-            <div className="price">
-              Ціна: <span className="highlight">${(quantity * pricePerShare).toFixed(2)}</span>
-            </div>
-          </div>
-
-          <button className="buy-button">Інвестувати зараз</button>
-
-          <div className="reward-inform">
-            <span className="reward-icon">🎁</span>
-            <span>Ви отримаєте: {quantity * 1000000} монет</span>
-          </div>
+        <div className="price">
+          Price: <span className="highlight">${(quantity * stock.price).toFixed(2)}</span>
         </div>
 
-        <div className="progress-bar">
-          <div className="progress" style={{width: '75%'}}></div>
-          <span className="progress-text">75% цілі досягнуто</span>
-        </div>
+        <button className="buy-button">Buy Now</button>
+
+        <button className="info-button">Learn More</button>
       </div>
+    </div>
   );
 };
 

@@ -5,7 +5,8 @@ import Exchange from './components/Exchange';
 import Settings from './components/Settings';
 import Boost from './components/Boost';
 import Levels from './components/Levels';
-import Card from './components/Card';
+import Card, { Stock } from './components/Card';
+import StockList from './components/StockList';
 import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
 import Earn from './components/Earn';
@@ -23,9 +24,16 @@ function AppContent() {
   const { maxEnergy, setMaxEnergy, refillEnergy, setEnergyRecoveryRate } = useEnergy();
   const [rewardsReceived, setRewardsReceived] = useState(false);
   const [lastRewardLevel, setLastRewardLevel] = useState('');
+  const [selectedStockId, setSelectedStockId] = useState<string | null>(null);
+
+const stocks: Stock[] = [
+  { id: '1', name: 'CryptBall Black Sharks', shortDescription: 'Invest in the future of crypto gaming', price: 1, image: '/images/path-to-cryptball-image.png' },
+  // Додайте інші акції тут
+];
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
+    setSelectedStockId(null);
   };
 
   const handleBinanceClick = () => {
@@ -92,6 +100,14 @@ function AppContent() {
     }
   };
 
+  const handleSelectStock = (stockId: string) => {
+    setSelectedStockId(stockId);
+  };
+
+  const handleBackToList = () => {
+    setSelectedStockId(null);
+  };
+
   useEffect(() => {
     const currentLevel = getLevelInfo(score);
     if (currentLevel.name !== lastRewardLevel) {
@@ -126,10 +142,17 @@ function AppContent() {
           onRewardsClick={handleRewardsClick}
           rewardsReceived={rewardsReceived}
         />;
-        case 'earn':
-      return <Earn />;
+      case 'earn':
+        return <Earn />;
       case 'card':
-        return <Card balance={score} />;
+        return selectedStockId ? (
+          <Card
+            stock={stocks.find(stock => stock.id === selectedStockId)!}
+            onBack={handleBackToList}
+          />
+        ) : (
+          <StockList stocks={stocks} onSelectStock={handleSelectStock} />
+        );
       case 'mine':
       default:
         return <Clicker
