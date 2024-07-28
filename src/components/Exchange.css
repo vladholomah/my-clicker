@@ -226,7 +226,7 @@
 
 .registration-section {
   position: fixed;
-  bottom: 80px;
+  bottom: 100px;
   left: 0;
   right: 0;
   display: flex;
@@ -240,7 +240,7 @@
   color: white;
   font-size: 14px;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 40px;
 }
 
 .registration-button {
@@ -248,7 +248,7 @@
   color: #000000;
   border: none;
   padding: 10px 20px;
-  border-radius: 15px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
@@ -272,17 +272,19 @@
 
 .exchange-header {
   position: fixed;
+  background: #161616;
   top: 0;
   left: 0;
   right: 0;
-  background-color: #302e2e;
-  color: white;
+  color: #ffffff;
   text-align: center;
-  padding: 10px 0;
-  font-size: 20px;
+  padding: 15px 0;
+  font-size: 17px;
   font-weight: bold;
   z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgb(253, 213, 0);
 }
 
 /* Додамо відступ зверху для контенту, щоб він не перекривався заголовком */

@@ -138,7 +138,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
 
    return (
     <div className="exchange-page">
-      <div className="exchange-header">Біржа</div>
+      <div className="exchange-header">Select Exchange</div>
       <div className="exchange-content">
         <div
           className="exchange-carousel"
@@ -203,9 +203,9 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
         </div>
       </div>
       <div className="registration-section">
-        <p className="registration-instruction">Для реєстрації на біржі вибери потрібну біржу в каруселі та натисни кнопку реєстрація</p>
+        <p className="registration-instruction">To register on the exchange, select the desired exchange above and click the registration button.</p>
         <button className="registration-button" onClick={handleRegistration}>
-          Реєстрація
+          Registration
         </button>
       </div>
     </div>
