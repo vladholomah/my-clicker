@@ -151,56 +151,64 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
     }
   }, [selectedExchange]);
 
+  const handleButtonClick = (e: React.MouseEvent, action: () => void) => {
+    e.preventDefault();
+    e.stopPropagation();
+    action();
+  };
+
   return (
     <div className="exchange-page">
       <div className="exchange-header">Select Exchange</div>
       <div className="exchange-content">
-        <div
-          className="exchange-carousel"
-          ref={carouselRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
+        <div className="exchange-carousel-wrapper">
           <button
             className="carousel-button prev"
-            onClick={prevExchange}
+            onClick={(e) => handleButtonClick(e, prevExchange)}
             disabled={isAnimating}
           >
             <img src="/images/swipe-l.png" alt="Previous"/>
           </button>
-          <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
-            {exchanges.map((exchange, index) => (
-              <div
-                key={exchange.name}
-                className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
-              >
-                <h2>
-                  {exchange.name}
-                  {isExchangeSelected(exchange.name) && (
-                    <img src="/images/done.png" alt="Selected" className="selected-icon" />
-                  )}
-                </h2>
-                <div className="profit-info">
-                  <img src={exchange.logo} alt={exchange.name}/>
-                  <div className="reward-info">
-                    <span>Registration reward:</span>
-                    <div className="balance-info">
-                      <img src="/images/balance.png" alt="Balance" className="coin-icon"/>
-                      <span>{exchange.profitPerHour}</span>
+          <div
+            className="exchange-carousel"
+            ref={carouselRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
+              {exchanges.map((exchange, index) => (
+                <div
+                  key={exchange.name}
+                  className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
+                >
+                  <h2>
+                    {exchange.name}
+                    {isExchangeSelected(exchange.name) && (
+                      <img src="/images/done.png" alt="Selected" className="selected-icon" />
+                    )}
+                  </h2>
+                  <div className="profit-info">
+                    <img src={exchange.logo} alt={exchange.name}/>
+                    <div className="reward-info">
+                      <span>Registration reward:</span>
+                      <div className="balance-info">
+                        <img src="/images/balance.png" alt="Balance" className="coin-icon"/>
+                        <span>{exchange.profitPerHour}</span>
+                      </div>
                     </div>
                   </div>
+                  <p>{exchange.description}</p>
+                  <div className="swipe-indicator">
+                    <img src="/images/swipe-up.png" alt="Swipe up"/>
+                  </div>
                 </div>
-                <p>{exchange.description}</p>
-                <div className="swipe-indicator">
-                  <img src="/images/swipe-up.png" alt="Swipe up"/>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
           <button
-             className="carousel-button next"
-            onClick={nextExchange}
+            className="carousel-button next"
+            onClick={(e) => handleButtonClick(e, nextExchange)}
             disabled={isAnimating}
           >
             <img src="/images/swipe.png" alt="Next"/>
