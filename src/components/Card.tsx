@@ -1,69 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Card.css';
 
 interface CardProps {
   balance: number;
 }
+
 const Card: React.FC<CardProps> = ({ balance }) => {
+  const [quantity, setQuantity] = useState(1);
+  const pricePerShare = 1;
+
+  const increaseQuantity = () => setQuantity(quantity + 1);
+  const decreaseQuantity = () => quantity > 1 && setQuantity(quantity - 1);
+
   return (
-    <div className="card-container">
-      <div className="header">
-        <div className="welcome-text">Hi, welcome Akobundu</div>
-        <div className="notifications-icon">🔔</div>
-      </div>
-
-      <div className="balance-section">
-        <div className="balance-label">My Balance</div>
-        <div className="balance-amount">$ {balance.toFixed(2)}</div>
-        <select className="currency-dropdown">
-          <option>USD</option>
-        </select>
-      </div>
-
-      <div className="action-buttons">
-        <button className="action-button">Transfer</button>
-        <button className="action-button">Request</button>
-      </div>
-
-      <div className="additional-actions">
-        <button className="get-plan-button">
-          <span role="img" aria-label="star">⭐</span> Get plan
-        </button>
-        <div className="recent-transactions">
-          <div className="transaction-avatar"></div>
-          <div className="transaction-avatar"></div>
-          <div className="transaction-avatar"></div>
-          <div className="transaction-avatar"></div>
-          <div className="transaction-avatar"></div>
+      <div className="card-container">
+        <div className="header">
+          <h1 className="title">CryptBall Black Sharks</h1>
         </div>
-      </div>
 
-      <div className="transactions-section">
-        <h2>Transactions</h2>
-        <div className="transaction-item">
-          <img src="/path-to-figma-icon.png" alt="Figma" className="transaction-icon" />
-          <div className="transaction-details">
-            <div className="transaction-name">Figma Subscription</div>
-            <div className="transaction-date">20 - 01 2023, 06:00</div>
-          </div>
-          <div className="transaction-info">
-            <div className="transaction-amount">-$1,200.00</div>
-            <div className="transaction-status">Completed</div>
-          </div>
+        <div className="stock-image">
+          <img src="/images/path-to-cryptball-image.png" alt="CryptBall"/>
+          <div className="investment-tag">Гаряча інвестиція</div>
         </div>
-        <div className="transaction-item">
-          <img src="/path-to-mcdonald-icon.png" alt="McDonald" className="transaction-icon" />
-          <div className="transaction-details">
-            <div className="transaction-name">McDonald</div>
-            <div className="transaction-date">20 - 01 2023, 06:00</div>
+
+        <div className="info-section">
+          <p className="description">
+            Революційна Play-to-Earn платформа. Інвестуйте зараз - отримайте 1 000 000 монет миттєво!
+          </p>
+
+          <div className="benefits">
+            <div className="benefit-item">
+              <span className="benefit-icon">🚀</span>
+              <span className="benefit-text">Ранній доступ</span>
+            </div>
+            <div className="benefit-item">
+              <span className="benefit-icon">💰</span>
+              <span className="benefit-text">Великий потенціал</span>
+            </div>
+            <div className="benefit-item">
+              <span className="benefit-icon">🌐</span>
+              <span className="benefit-text">Глобальна спільнота</span>
+            </div>
           </div>
-          <div className="transaction-info">
-            <div className="transaction-amount">+$800.00</div>
-            <div className="transaction-status">Completed</div>
+
+          <div className="stock-purchase">
+            <div className="quantity-selector">
+              <button className="quantity-button" onClick={decreaseQuantity}>-</button>
+              <span className="quantity">{quantity}</span>
+              <button className="quantity-button" onClick={increaseQuantity}>+</button>
+            </div>
+            <div className="price">
+              Ціна: <span className="highlight">${(quantity * pricePerShare).toFixed(2)}</span>
+            </div>
+          </div>
+
+          <button className="buy-button">Інвестувати зараз</button>
+
+          <div className="reward-inform">
+            <span className="reward-icon">🎁</span>
+            <span>Ви отримаєте: {quantity * 1000000} монет</span>
           </div>
         </div>
+
+        <div className="progress-bar">
+          <div className="progress" style={{width: '75%'}}></div>
+          <span className="progress-text">75% цілі досягнуто</span>
+        </div>
       </div>
-    </div>
   );
 };
 

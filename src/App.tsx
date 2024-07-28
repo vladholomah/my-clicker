@@ -8,6 +8,7 @@ import Levels from './components/Levels';
 import Card from './components/Card';
 import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
+import Earn from './components/Earn';
 import './App.css';
 
 function AppContent() {
@@ -125,6 +126,8 @@ function AppContent() {
           onRewardsClick={handleRewardsClick}
           rewardsReceived={rewardsReceived}
         />;
+        case 'earn':
+      return <Earn />;
       case 'card':
         return <Card balance={score} />;
       case 'mine':
