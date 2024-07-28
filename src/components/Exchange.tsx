@@ -125,6 +125,10 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
     return '';
   };
 
+  const isExchangeSelected = (exchangeName: string) => {
+    return selectedExchange === exchangeName;
+  };
+
   const handleRegistration = () => {
     const currentExchange = exchanges[currentIndex];
     window.open(currentExchange.registrationLink, '_blank');
@@ -134,9 +138,20 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
       setRegistrationBonus(true);
       localStorage.setItem('registrationBonus', JSON.stringify(true));
     }
+
+    onExchangeSelect(currentExchange.name);
   };
 
-   return (
+  useEffect(() => {
+    if (selectedExchange) {
+      const selectedIndex = exchanges.findIndex(exchange => exchange.name === selectedExchange);
+      if (selectedIndex !== -1) {
+        setCurrentIndex(selectedIndex);
+      }
+    }
+  }, [selectedExchange]);
+
+  return (
     <div className="exchange-page">
       <div className="exchange-header">Select Exchange</div>
       <div className="exchange-content">
@@ -160,7 +175,12 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
                 key={exchange.name}
                 className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
               >
-                <h2>{exchange.name}</h2>
+                <h2>
+                  {exchange.name}
+                  {isExchangeSelected(exchange.name) && (
+                    <img src="/images/done.png" alt="Selected" className="selected-icon" />
+                  )}
+                </h2>
                 <div className="profit-info">
                   <img src={exchange.logo} alt={exchange.name}/>
                   <div className="reward-info">
@@ -179,7 +199,7 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
             ))}
           </div>
           <button
-            className="carousel-button next"
+             className="carousel-button next"
             onClick={nextExchange}
             disabled={isAnimating}
           >

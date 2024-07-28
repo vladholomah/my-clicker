@@ -122,7 +122,16 @@
   font-size: 18px;
   margin-bottom: 10px;
   color: white;
-  text-align: center; /* Центрування назви слайду */
+  text-align: center;
+  position: relative; /* Додано */
+}
+
+.selected-icon {
+  position: absolute;
+  top: -17px; /* Налаштуйте це значення для правильного розташування */
+  right: 5px; /* Налаштуйте це значення для правильного розташування */
+  width: 15px; /* Налаштуйте розмір за потребою */
+  height: 15px; /* Налаштуйте розмір за потребою */
 }
 
 .profit-info {
