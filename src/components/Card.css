@@ -1,9 +1,14 @@
-.card-container {
-  background-color: #1E1E1E;
-  color: white;
-  padding: 20px;
-  border-radius: 20px;
+body {
+  background-color: #000000;
+  color: #ffffff;
   font-family: Arial, sans-serif;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100vh;
 }
 
 .header {
@@ -13,47 +18,30 @@
   margin-bottom: 20px;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-}
-
-.user-photo {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.notification-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+.welcome-text {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .balance-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
 }
 
-.statistics-btn {
-  background-color: #2C2C2C;
-  color: white;
+.balance-label {
+  font-size: 14px;
+  color: #888;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.currency-dropdown {
+  background-color: transparent;
   border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.currency-selector {
-  background-color: #2C2C2C;
-  display: inline-flex;
-  padding: 5px 10px;
-  border-radius: 15px;
-  margin-bottom: 20px;
+  color: #ffffff;
+  font-size: 16px;
 }
 
 .action-buttons {
@@ -62,79 +50,82 @@
   margin-bottom: 20px;
 }
 
-.transfer-btn, .request-btn {
-  flex: 1;
-  margin: 0 5px;
-  padding: 10px;
+.action-button {
+  background-color: #1e1e1e;
   border: none;
-  border-radius: 10px;
-  background-color: #2C2C2C;
-  color: white;
-  cursor: pointer;
+  border-radius: 20px;
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 16px;
 }
 
-.quick-actions {
+.get-plan-button {
+  background-color: #1e1e1e;
+  border: none;
+  border-radius: 20px;
+  color: #ffd700;
+  padding: 10px 20px;
+  font-size: 16px;
   display: flex;
-  margin-bottom: 20px;
-}
-
-.get-plan-btn {
-  background-color: #FFA500;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 10px;
-  margin-right: 10px;
-  cursor: pointer;
+  align-items: center;
 }
 
 .recent-transactions {
-  flex: 1;
-  background-color: #FF7F50;
-  border-radius: 10px;
+  background-color: #ff6347;
+  border-radius: 20px;
   padding: 10px;
-}
-
-.transaction-avatars {
   display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
-.transaction-avatars img {
+.transaction-avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  margin-right: 5px;
+  background-color: #ffffff;
 }
 
-.transactions-list {
-  background-color: #2C2C2C;
-  border-radius: 20px;
+.transactions-section {
+  background-color: #ffffff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   padding: 20px;
+  color: #000000;
 }
 
 .transaction-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.transaction-logo {
+.transaction-icon {
   width: 40px;
   height: 40px;
+  border-radius: 10px;
   margin-right: 10px;
 }
 
 .transaction-details {
-  flex: 1;
+  flex-grow: 1;
+}
+
+.transaction-name {
+  font-weight: bold;
+}
+
+.transaction-date {
+  font-size: 12px;
+  color: #888;
 }
 
 .transaction-amount {
   font-weight: bold;
 }
 
-.transaction-amount.positive {
-  color: #4CAF50;
-}
-
-.transaction-amount.negative {
-  color: #F44336;
+.transaction-status {
+  font-size: 12px;
+  color: #888;
 }
