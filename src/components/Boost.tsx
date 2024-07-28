@@ -173,7 +173,14 @@ const Boost: React.FC<BoostProps> = ({
         {showRewardModal && (
             <div className="reward-modal">
               <div className="reward-content">
-                <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image"/>
+                <div className="congrats-image-container">
+                  <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image"/>
+                  <div className="flying-circle"></div>
+                  <div className="flying-circle"></div>
+                  <div className="flying-circle"></div>
+                  <div className="flying-circle"></div>
+                  <div className="flying-circle"></div>
+                </div>
                 <h2 className="congrats-text">Congrats!</h2>
                 <p className="reward-text">You have received a reward</p>
                 <div className="reward-amount">
