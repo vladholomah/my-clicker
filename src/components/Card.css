@@ -1,206 +1,140 @@
 .card-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-  padding-top: 95px;
-  perspective: 1000px;
-}
-.card-balance {
-  position: fixed;
-  bottom: 400px;
-  padding: 10px;
-  margin-bottom: 20px;
-  font-size: 30px;
-  font-weight: bold;
-   color: #ffffff;
-  text-align: center;
-}
-
-
-.card-title {
-  margin-bottom: 10px;
-  font-size: 24px;
-}
-
-.card {
- width: 250px;
-  height: 139px;
-  cursor: pointer;
-  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform-style: preserve-3d;
-  transform: rotateX(60deg) translateY(100px); /* Змінено на 70 градусів і збільшено translateY */
-  position: relative;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  bottom: 35px;
-  left: -4px;
-  right: -4px;
-  height: 20px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgb(20, 237, 39) 100%);
-   transform: rotateX(-90deg) translateY(20px);
-  transform-origin: bottom;
-  opacity: 0.7;
-  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  bottom: 10px;
-  left: -2%;
-  right: -2%;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.3);
-  filter: blur(10px);
-  opacity: 1;
-  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: rotateX(-60deg) translateY(20px);
-}
-
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-}
-
-.card.raised {
-  transform: rotateX(0deg) translateY(0);
-}
-
-.card.raised::before {
-  opacity: 0;
-}
-
-.card.raised::after {
-  transform: rotateX(0deg) translateY(0);
-  opacity: 0.5;
-}
-
-.card:hover {
-  transform: rotateX(60deg) translateY(90px);
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
-.card:hover::after {
-  transform: rotateX(-60deg) translateY(15px);
-}
-
-.card.raised:hover {
-  transform: rotateX(0deg) translateY(-10px);
-}
-
-.card.raised:hover::after {
-  transform: rotateX(0deg) translateY(5px);
-  opacity: 0.7;
-}
-
-.card.raised:hover::after {
-  transform: rotateX(0deg) translateY(5px);
-  opacity: 0.7;
-}
-
-.card-info {
-  background-color: white;
-  width: 115%; /* Збільшено ширину */
-  position: fixed;
-  bottom: -25px; /* Змінено: підняли card-info вище, щоб залишити місце для меню */
-  left: -7.5%; /* Зміщуємо вліво, щоб центрувати розширений елемент */
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  background-color: #1E1E1E;
+  color: white;
   padding: 20px;
-  text-align: center;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-  box-sizing: border-box;
+  border-radius: 20px;
+  font-family: Arial, sans-serif;
 }
 
-.card-info-image {
-  width: 40px;
-  height: auto;
-  margin-bottom: 10px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.card-info-text {
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.card-info-subtext {
-  font-size: 10px;
-  color: #666;
-  margin-bottom: 10px; /* Зменшено, оскільки тепер відступ контролюється позицією самого card-info */
-}
-
-.card-info-subtext {
-  color: #666;
-  margin-bottom: 20px; /* Збільшено відступ */
-  font-size: 12px;
-}
-
-.withdraw-button {
-  background-color: #000000;
-  width: 115%;
-  position: fixed;
-  bottom: 205px;
-  left: -7.5%;
-  border-radius: 30px;
-  padding: -10px 20px; /* Зменшено вертикальний padding */
-  text-align: center;
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-  box-sizing: border-box;
-}
-
-.withdraw-text {
-  font-size: 12px; /* Зменшено розмір шрифту */
-  font-weight: bold;
-  margin-bottom: -5px; /* Зменшено відступ між текстом і підтекстом */
-  color: #ffffff;
-  line-height: 1;
-}
-
-.withdraw-subtext {
-  font-size: 8px; /* Зменшено розмір шрифту */
-  color: #9c9a9a;
-  line-height: 1;
-}
-
-.info-button {
-  background-color: rgba(0, 0, 0, 0.46);
-  width: 60px;
-  height: 20px;
-  position: fixed;
-  bottom: 275px; /* Розташовуємо вище withdraw-button */
-  left: 50%;
-  transform: translateX(-50%);
-  border: none;
-  border-radius: 15px;
+.user-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 5px 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.notification-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
   cursor: pointer;
 }
 
-.info-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 3px;
+.balance-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.info-button span {
-  font-size: 12px;
-  color: #ffffff;
+.statistics-btn {
+  background-color: #2C2C2C;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.currency-selector {
+  background-color: #2C2C2C;
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.transfer-btn, .request-btn {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: #2C2C2C;
+  color: white;
+  cursor: pointer;
+}
+
+.quick-actions {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.get-plan-btn {
+  background-color: #FFA500;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.recent-transactions {
+  flex: 1;
+  background-color: #FF7F50;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.transaction-avatars {
+  display: flex;
+}
+
+.transaction-avatars img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.transactions-list {
+  background-color: #2C2C2C;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.transaction-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.transaction-details {
+  flex: 1;
+}
+
+.transaction-amount {
+  font-weight: bold;
+}
+
+.transaction-amount.positive {
+  color: #4CAF50;
+}
+
+.transaction-amount.negative {
+  color: #F44336;
 }

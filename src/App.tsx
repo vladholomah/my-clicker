@@ -10,6 +10,12 @@ import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
 import './App.css';
 
+declare global {
+  interface Window {
+    Telegram: any;
+  }
+}
+
 function AppContent() {
   const [currentView, setCurrentView] = useState('mine');
   const [selectedExchange, setSelectedExchange] = useState({
@@ -22,6 +28,12 @@ function AppContent() {
   const { maxEnergy, setMaxEnergy, refillEnergy, setEnergyRecoveryRate } = useEnergy();
   const [rewardsReceived, setRewardsReceived] = useState(false);
   const [lastRewardLevel, setLastRewardLevel] = useState('');
+
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+  }, []);
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
