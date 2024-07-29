@@ -7,6 +7,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ balance }) => {
   const [chartData, setChartData] = useState<number[]>([]);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   const cardBalance = balance * 0.0004;
 
@@ -21,6 +22,16 @@ const Card: React.FC<CardProps> = ({ balance }) => {
 
     generateChartData();
   }, []);
+
+  const handlePurchase = () => {
+    setShowPurchaseModal(true);
+  };
+
+  const confirmPurchase = () => {
+    // Логіка обробки покупки
+    setShowPurchaseModal(false);
+    // Оновлення балансу після покупки
+  };
 
   return (
     <div className="app-container">
@@ -37,8 +48,8 @@ const Card: React.FC<CardProps> = ({ balance }) => {
             <span className="more-info">⋮</span>
           </div>
           <h1 className="card-balance">${cardBalance.toFixed(2)}</h1>
-          <div className="balance-info">
-            <span className="balance-date">on Jan 21, 11:42</span>
+          <div className="balance-inform">
+            <span className="balance-date">21 січня, 11:42</span>
             <span className="balance-change">↗ 0.00%</span>
           </div>
           <div className="chart-container">
@@ -50,42 +61,49 @@ const Card: React.FC<CardProps> = ({ balance }) => {
                 </linearGradient>
               </defs>
               <path
-                  d={`M0,30 ${chartData.map((point, index) => `L${index * 5},${30 - point / 4}`).join(' ')} V30 H0`}
-                  fill="url(#gradient)"
+                d={`M0,30 ${chartData.map((point, index) => `L${index * 5},${30 - point / 4}`).join(' ')} V30 H0`}
+                fill="url(#gradient)"
               />
               <polyline
-                  fill="none"
-                  stroke="#637DEA"
-                  strokeWidth="2"
-                  points={chartData.map((point, index) => `${index * 5},${30 - point / 4}`).join(' ')}
+                fill="none"
+                stroke="#637DEA"
+                strokeWidth="2"
+                points={chartData.map((point, index) => `${index * 5},${30 - point / 4}`).join(' ')}
               />
             </svg>
           </div>
           <div className="time-filters">
-            <button className="time-filter">1H</button>
-            <button className="time-filter active">1D</button>
-            <button className="time-filter">1W</button>
-            <button className="time-filter">1M</button>
-            <button className="time-filter">1Y</button>
+            <button className="time-filter">1Г</button>
+            <button className="time-filter active">1Д</button>
+            <button className="time-filter">1Т</button>
+            <button className="time-filter">1М</button>
+            <button className="time-filter">1Р</button>
           </div>
         </div>
         <div className="card-bottom">
-          <h2 className="portfolio-title">Your portfolio</h2>
-          <div className="portfolio-item">
-            <span className="coin-icon">₿</span>
-            <span className="coin-name">CryptoBall Coin</span>
-            <div className="coin-details">
-              <span className="coin-amount">{(cardBalance / 3908.25).toFixed(4)} CRB</span>
-              <span className="coin-value">${cardBalance.toFixed(2)}</span>
-              <span className="coin-change positive">▲ 4.51%</span>
-            </div>
-          </div>
-          <div className="action-buttons">
-            <button className="action-button buy">Buy CRB</button>
-            <button className="action-button sell">Sell CRB</button>
+          <div className="offer-card">
+            <h3 className="offer-title">Спеціальна пропозиція</h3>
+            <p className="offer-description">Інвестуйте в CryptoBall Coin (CRB) зараз!</p>
+            <ul className="offer-details">
+              <li>💰 $1 = 1 000 000 CRB</li>
+              <li>📈 Потенціал росту до 1000%</li>
+              <li>🚀 Інноваційна технологія</li>
+              <li>⚡ Швидкі транзакції</li>
+            </ul>
+            <button className="offer-button" onClick={handlePurchase}>Купити зараз</button>
           </div>
         </div>
       </div>
+      {showPurchaseModal && (
+        <div className="purchase-modal">
+          <h3>Підтвердження покупки</h3>
+          <p>Ви впевнені, що хочете придбати 1 000 000 CRB за $1?</p>
+          <div className="modal-buttons">
+            <button onClick={() => setShowPurchaseModal(false)}>Скасувати</button>
+            <button onClick={confirmPurchase}>Підтвердити</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
