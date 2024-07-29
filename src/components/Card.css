@@ -1,110 +1,211 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.app-container {
+  width: 112%;
+  min-height: 85vh;
+  background-color: #020203; /* Синій колір для верхньої частини */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0; /* Видалено відступи */
+  margin-top: -20px;
+}
 
 .card-container {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  background-color: #000000;
-  color: #ffffff;
-  height: calc(100vh - 90px);
-  font-family: 'Poppins', sans-serif;
-  overflow-y: auto;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
+  font-family: Arial, sans-serif;
+  color: white;
+  width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #FFD700;
-  margin-bottom: 5px;
-  text-align: left;
-  line-height: 1.2;
+.card-top {
+background: linear-gradient(to bottom, #141922 0%, #141922 60%, #000000 100%);
+  padding: 20px;
+  flex-grow: 1;
 }
 
-.subtitle {
-  font-size: 14px;
-  color: #ffffff;
-  margin-bottom: 15px;
-  text-align: left;
+.card-bottom {
+background: linear-gradient(to bottom, #141922 0%, #18181e 60%, #000000 100%);
+  padding: 30px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  position: relative;
+  z-index: 1;
 }
 
-.coin-image {
-  width: 100%;
-  height: 150px;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.back-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
 }
 
-.coin-image img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.back-arrow span {
+  color: #8A93B2;
 }
 
-.quantity-selector {
+.crypto-info {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  border-radius: 15px;
 }
 
-.quantity-button {
-  background-color: #FFD700;
-  border: none;
-  color: #000000;
-  font-size: 18px;
-  width: 35px;
-  height: 35px;
+.crypto-icon {
+  margin-right: 5px;
+}
+
+.more-info {
+  font-size: 24px;
+  color: #8A93B2;
+}
+
+.card-balance {
+  font-size: 36px;
+  margin: 0;
+}
+
+.balance-info {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  color: #8A93B2;
+  margin-bottom: 20px;
+}
+
+.balance-change {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.chart-container {
+  margin: 20px 0;
+  width: 95%;
+  height: 120px; /* Можете налаштувати висоту за потребою */
+  margin-left: -20px;
+}
+
+.chart-container svg {
+  width: 130%;
+  height: 140%;
+}
+
+.chart-container path {
+  fill: url(#gradient);
+  transition: d 0.3s ease;
+}
+
+.chart-container polyline {
+  fill: none;
+  stroke: #637DEA;
+  stroke-width: 0.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.3s ease;
+}
+
+.time-filters {
+  display: flex;
+  justify-content: space-between;
+}
+
+.time-filter {
+  background: none;
+  border: none;
+  color: #8A93B2;
   cursor: pointer;
-  border-radius: 17.5px;
+  padding: 5px 10px;
+  border-radius: 10px;
 }
 
-.quantity {
-  margin: 0 15px;
+.time-filter.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.portfolio-title {
   font-size: 18px;
-  color: #ffffff;
-}
-
-.price {
-  font-size: 16px;
   margin-bottom: 15px;
 }
 
-.highlight {
-  color: #FFD700;
-  font-weight: bold;
+.portfolio-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.buy-button {
-  background-color: #FFD700;
+.coin-icon {
+  font-size: 24px;
+  margin-right: 10px;
+  color: #F7931A;
+}
+
+.coin-name {
+  flex-grow: 1;
+}
+
+.coin-details {
+  text-align: right;
+}
+
+.coin-amount, .coin-value {
+  display: block;
+}
+
+.coin-change {
+  color: #4CAF50;
+  font-size: 12px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-button {
+  padding: 15px 0;
+  border-radius: 25px;
   border: none;
-  color: #000000;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 20px;
   cursor: pointer;
-  margin-bottom: 10px;
-  width: 100%;
+  font-weight: bold;
+  width: 48%;
 }
 
-.info-button {
-  background-color: transparent;
-  border: 2px solid #FFD700;
-  color: #FFD700;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 20px;
-  cursor: pointer;
-  width: 100%;
+.action-button.buy {
+  background-color: white;
+  color: black;
+}
+
+.action-button.sell {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Медіа-запит для планшетів та більших екранів */
+@media (min-width: 768px) {
+  .card-container {
+    max-width: none; /* Видалено обмеження максимальної ширини */
+    width: 100%;
+  }
+
+  .card-top, .card-bottom {
+    padding: 20px 5%; /* Додано відступи по боках для кращої читабельності на великих екранах */
+  }
 }
