@@ -10,8 +10,6 @@
   color: #ffffff;
   font-family: 'Roboto', sans-serif;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
   z-index: 1000;
 }
 

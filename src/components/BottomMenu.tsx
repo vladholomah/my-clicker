@@ -57,7 +57,7 @@ const BottomMenu: React.FC<BottomMenuProps> = ({ activeItem, onMenuItemClick }) 
           src={activeItem === 'card' ? "/images/card-active.png" : "/images/card-icon.png"}
           alt="Card"
         />
-        Card
+        Market
       </button>
     </div>
   );
