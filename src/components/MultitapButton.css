@@ -76,15 +76,15 @@
 }
 
 .multitap-modal {
-  box-shadow: 0 -4px 6px rgb(218, 55, 57);
+  box-shadow: 0 -3px 0 rgb(218, 55, 57);
 }
 
 .energy-boost-modal {
-  box-shadow: 0 -4px 6px rgb(253, 178, 42);
+  box-shadow: 0 -3px 0 rgb(253, 178, 42);
 }
 
 .recharging-speed-modal {
-  box-shadow: 0 -4px 6px rgb(60, 241, 178);
+  box-shadow: 0 -3px 0 rgb(60, 241, 178);
 }
 
 .energy-boost-confirm {
