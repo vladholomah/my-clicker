@@ -1,109 +1,156 @@
 import React, { useState, useEffect } from 'react';
 import './Card.css';
+import BottomMenu from './BottomMenu';
 
 interface CardProps {
   balance: number;
+  activeMenuItem: string;
+  onMenuItemClick: (item: string) => void;
 }
 
-const Card: React.FC<CardProps> = ({ balance }) => {
-  const [chartData, setChartData] = useState<number[]>([]);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+interface StockItem {
+  name: string;
+  price: string;
+  image: string;
+  description: string;
+}
 
-  const cardBalance = balance * 0.0004;
+const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick }) => {
+  const [activeTab, setActiveTab] = useState('stocks');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+
+  const stockItems: StockItem[] = [
+    {
+      name: "CryptoBall",
+      price: "$1",
+      image: "/images/cryptoball.png",
+      description: "Our native token. Buy and get 1,000,000 coins as a bonus!"
+    },
+  ];
+
+  const [filteredItems, setFilteredItems] = useState(stockItems);
 
   useEffect(() => {
-    const generateChartData = () => {
-      const data = [];
-      for (let i = 0; i < 20; i++) {
-        data.push(Math.random() * 10 + 90);
-      }
-      setChartData(data);
-    };
-
-    generateChartData();
+    setIsVisible(true);
   }, []);
 
-  const handlePurchase = () => {
-    setShowPurchaseModal(true);
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSearchQuery('');
+    setFilteredItems(tab === 'stocks' ? stockItems : []);
   };
 
-  const confirmPurchase = () => {
-    // Логіка обробки покупки
-    setShowPurchaseModal(false);
-    // Оновлення балансу після покупки
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (activeTab === 'stocks') {
+      const filtered = stockItems.filter(item =>
+        item.name.toLowerCase().includes(query)
+      );
+      setFilteredItems(filtered);
+    } else {
+      setFilteredItems([]);
+    }
+  };
+
+  const handleBuy = (stock: StockItem) => {
+    setSelectedStock(stock);
+    setShowBuyModal(true);
+  };
+
+  const confirmBuy = () => {
+    if (selectedStock) {
+      console.log(`Purchase confirmed: ${selectedStock.name}`);
+      if (selectedStock.name === "CryptoBall") {
+        console.log("Added 1,000,000 coins to balance");
+        // Here you would update the user's balance
+      }
+    }
+    setShowBuyModal(false);
   };
 
   return (
-    <div className="app-container">
-      <div className="card-container">
-        <div className="card-top">
-          <div className="card-header">
-            <div className="back-arrow">
-              <span>←</span>
-            </div>
-            <div className="crypto-info">
-              <span className="crypto-icon">♦</span>
-              <span className="crypto-name">CryptoBall</span>
-            </div>
-            <span className="more-info">⋮</span>
-          </div>
-          <h1 className="card-balance">${cardBalance.toFixed(2)}</h1>
-          <div className="balance-inform">
-            <span className="balance-date">21 січня, 11:42</span>
-            <span className="balance-change">↗ 0.00%</span>
-          </div>
-          <div className="chart-container">
-            <svg viewBox="0 0 100 30">
-              <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(99, 125, 234, 0.5)"/>
-                  <stop offset="100%" stopColor="rgba(99, 125, 234, 0)"/>
-                </linearGradient>
-              </defs>
-              <path
-                d={`M0,30 ${chartData.map((point, index) => `L${index * 5},${30 - point / 4}`).join(' ')} V30 H0`}
-                fill="url(#gradient)"
-              />
-              <polyline
-                fill="none"
-                stroke="#637DEA"
-                strokeWidth="2"
-                points={chartData.map((point, index) => `${index * 5},${30 - point / 4}`).join(' ')}
-              />
-            </svg>
-          </div>
-          <div className="time-filters">
-            <button className="time-filter">1Г</button>
-            <button className="time-filter active">1Д</button>
-            <button className="time-filter">1Т</button>
-            <button className="time-filter">1М</button>
-            <button className="time-filter">1Р</button>
-          </div>
+    <div className={`card-container ${isVisible ? 'visible' : ''}`}>
+      <div className="card-header">
+        <button className="back-button" onClick={() => onMenuItemClick('mine')}>
+          <span className="back-icon">&#8592;</span>
+        </button>
+        <h1>Market</h1>
+      </div>
+
+      <div className="card-content">
+        <div className="tab-selector">
+          <button
+            className={activeTab === 'stocks' ? 'active' : ''}
+            onClick={() => handleTabChange('stocks')}
+          >
+            Stocks
+          </button>
+          <button
+            className={activeTab === 'nft' ? 'active' : ''}
+            onClick={() => handleTabChange('nft')}
+          >
+            NFT
+          </button>
         </div>
-        <div className="card-bottom">
-          <div className="offer-card">
-            <h3 className="offer-title">Спеціальна пропозиція</h3>
-            <p className="offer-description">Інвестуйте в CryptoBall Coin (CRB) зараз!</p>
-            <ul className="offer-details">
-              <li>💰 $1 = 1 000 000 CRB</li>
-              <li>📈 Потенціал росту до 1000%</li>
-              <li>🚀 Інноваційна технологія</li>
-              <li>⚡ Швидкі транзакції</li>
-            </ul>
-            <button className="offer-button" onClick={handlePurchase}>Купити зараз</button>
-          </div>
+
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search stocks or NFTs"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </div>
+
+        <div className="items-section">
+          {activeTab === 'stocks' ? (
+            filteredItems.length > 0 ? (
+              filteredItems.map((item, index) => (
+                <div key={index} className="item-card">
+                  <img src={item.image} alt={item.name} className="item-image" />
+                  <div className="item-info">
+                    <h3>{item.name}</h3>
+                    <p>{item.description}</p>
+                    <div className="price-buy">
+                      <span className="price">{item.price}</span>
+                      <button onClick={() => handleBuy(item)}>Buy</button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="not-found">No results found</div>
+            )
+          ) : (
+            <div className="nft-unavailable">
+              <p>NFTs are currently unavailable</p>
+            </div>
+          )}
         </div>
       </div>
-      {showPurchaseModal && (
-        <div className="purchase-modal">
-          <h3>Підтвердження покупки</h3>
-          <p>Ви впевнені, що хочете придбати 1 000 000 CRB за $1?</p>
-          <div className="modal-buttons">
-            <button onClick={() => setShowPurchaseModal(false)}>Скасувати</button>
-            <button onClick={confirmPurchase}>Підтвердити</button>
+
+      {showBuyModal && selectedStock && (
+        <div className="modal-overlay">
+          <div className="buy-modal">
+            <h2>Confirm Purchase</h2>
+            <p>Are you sure you want to buy {selectedStock.name} for {selectedStock.price}?</p>
+            {selectedStock.name === "CryptoBall" && (
+              <p>You will receive 1,000,000 coins as a bonus!</p>
+            )}
+            <div className="modal-buttons">
+              <button onClick={() => setShowBuyModal(false)}>Cancel</button>
+              <button onClick={confirmBuy}>Confirm</button>
+            </div>
           </div>
         </div>
       )}
+
+      <BottomMenu activeItem={activeMenuItem} onMenuItemClick={onMenuItemClick} />
     </div>
   );
 };

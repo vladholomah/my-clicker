@@ -294,12 +294,11 @@
   color: #ffffff;
   text-align: center;
   padding: 15px 0;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: bold;
   z-index: 1000;
   border-bottom-left-radius: 50px;
   border-bottom-right-radius: 50px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 3px rgb(253, 213, 0);
 }
 
 /* Додамо відступ зверху для контенту, щоб він не перекривався заголовком */

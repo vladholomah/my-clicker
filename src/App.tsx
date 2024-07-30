@@ -128,8 +128,12 @@ function AppContent() {
         />;
       case 'earn':
         return <Earn />;
-       case 'card':
-        return <Card balance={score} />;
+      case 'card':
+        return <Card
+          balance={score}
+          activeMenuItem={currentView}
+          onMenuItemClick={handleMenuItemClick}
+        />;
       case 'mine':
       default:
         return <Clicker
@@ -148,7 +152,9 @@ function AppContent() {
     <div className="App">
       <div className="game-interface">
         {renderView()}
-        <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+        {currentView !== 'card' && (
+          <BottomMenu activeItem={currentView} onMenuItemClick={handleMenuItemClick} />
+        )}
       </div>
     </div>
   );
