@@ -241,34 +241,66 @@
 
 .registration-section {
   position: fixed;
-  bottom: 100px;
+  bottom: 80px;
   left: 0;
   right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.registration-section:hover {
+  transform: translateY(-5px);
 }
 
 .registration-instruction {
   color: white;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  max-width: 300px;
+  line-height: 1.4;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .registration-button {
-  background-color: #ffd700;
+  background: linear-gradient(45deg, #ffd700, #ff8c00);
   color: #000000;
   border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 12px 24px;
+  border-radius: 25px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
 }
 
+.registration-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
 .reward-info {
   display: flex;
   flex-direction: column;

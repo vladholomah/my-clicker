@@ -76,7 +76,7 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
   return (
     <div className={`card-container ${isVisible ? 'visible' : ''}`}>
       <div className="card-header">
-        <button className="back-button" onClick={() => onMenuItemClick('mine')}>
+        <button className="back-buttons" onClick={() => onMenuItemClick('mine')}>
           <span className="back-icon">&#8592;</span>
         </button>
         <h1>Market</h1>
