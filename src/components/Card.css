@@ -9,6 +9,8 @@
   background-color: #000000;
   color: #ffffff;
   font-family: 'Roboto', sans-serif;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .card-content {
@@ -16,145 +18,148 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: 20px;
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  height: 60px;
-  margin-bottom: 20px;
+  height: 50px;
+  margin-bottom: 35px;
 }
 
 .back-buttons {
   background: none;
   border: none;
   color: #ffffff;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   padding: 0;
-  margin-right: 20px;
+  margin-right: 15px;
 }
 
 .card-header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .tab-selector {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .tab-selector button {
   flex: 1;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border: none;
   background-color: transparent;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-.tab-selector button.active {
-  color: #f9ae2f;
-  border-bottom: 2px solid #f7ad2f;
+.search-bar input {
+  width: 100%;
+  padding: 8px;
+  background-color: #2a2a2a;
+  border: none;
+  border-radius: 20px;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 .search-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  width: 95%;
-  padding: 10px;
-  background-color: #2a2a2a;
-  border: none;
-  border-radius: 18px;
-  color: #ffffff;
-  font-size: 16px;
-}
-
-.items-section {
-  flex: 1;
-  overflow-y: auto;
+  margin-bottom: 25px;  /* Збільшуємо нижній відступ */
 }
 
 .item-card {
   background-color: #1e1e1e;
-  border-radius: 25px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
-
 
 .item-image {
   width: 100%;
-  height: 150px;
+  height: 120px;
   object-fit: cover;
 }
 
 .item-info {
-  padding: 15px;
+  padding: 12px;
 }
 
 .item-info h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
+  font-size: 16px;
 }
 
 .item-info p {
-  font-size: 14px;
+  font-size: 12px;
   color: #cccccc;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.price-buy {
+.quantity-selector {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.quantity-control {
+  display: flex;
   align-items: center;
 }
 
-.price {
-  font-weight: bold;
+.quantity-button {
+  background: none;
+  border: none;
+  color: #ffffff;
   font-size: 18px;
+  cursor: pointer;
+  padding: 0 8px;
 }
 
-.price-buy button {
-  padding: 8px 35px;
+.quantity-display {
+  margin: 0 8px;
+  font-size: 16px;
+}
+
+.usdt-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.usdt-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.buy-button {
+  width: 100%;
+  padding: 8px;
   background-color: #f9ae2f;
   color: #000000;
   border: none;
-  border-radius: 15px;
+  border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-}
-
-.price-buy button:hover {
-  background-color: #f9ae2f;
-}
-
-.price-buy button:disabled {
-  background-color: #4a4a4a;
-  color: #8a8a8a;
-  cursor: not-allowed;
-}
-
-.not-found {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
 }
 
 .bottom-menu-container {
-  height: 60px;
+  height: 50px;
 }
 
 /* Modal styles remain unchanged */
