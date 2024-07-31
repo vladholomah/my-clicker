@@ -448,7 +448,7 @@ font-weight: bold;
 }
 
 .confirms-button:disabled {
-  background-color: #fb8e14;
+  background-color: #f5ac2f;
   color: #ffffff;
   cursor: not-allowed;
   transform: none;
