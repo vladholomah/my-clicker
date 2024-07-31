@@ -3,9 +3,8 @@
 
 .exchange-carousel {
   position: relative;
-  width: calc(200% - 20px);
-  max-width: 280px;
-  height: 210px;
+  width: 190px; /* Фіксована ширина */
+  height: 210px; /* Фіксована висота */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,10 +136,11 @@
 
 .selected-icon {
   position: absolute;
-  top: -0.8em;
-  right: 3.7em;
-  width: 0.9em;
-  height: 0.9em;
+  top: -25%;
+  right: 68px; /* Налаштуйте це значення для правильного розташування */
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
 }
 
 .profit-info {
