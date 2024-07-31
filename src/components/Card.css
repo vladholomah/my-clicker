@@ -77,7 +77,7 @@
 .search-bar input {
   width: 100%;
   padding: 8px;
-  background-color: #2a2a2a;
+  background-color: #161616;
   border: none;
   border-radius: 20px;
   color: #ffffff;
@@ -99,7 +99,7 @@
 
 
 .item-card {
-  background-color: #1e1e1e;
+  background-color: #161616;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -237,7 +237,7 @@
 /* Додайте ці стилі в кінець файлу Card.css */
 
 .item-card {
-  background-color: #1e1e1e;
+  background-color: #161616;
   border-radius: 25px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
