@@ -137,11 +137,10 @@
 
 .selected-icon {
   position: absolute;
-  top: -25%;
-  right: 68px; /* Налаштуйте це значення для правильного розташування */
-  transform: translateY(-50%);
-  width: 15px;
-  height: 15px;
+  top: -0.8em;
+  right: 3.7em;
+  width: 0.9em;
+  height: 0.9em;
 }
 
 .profit-info {
