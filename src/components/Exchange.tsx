@@ -5,6 +5,7 @@ interface ExchangeProps {
   onExchangeSelect: (exchange: string) => void;
   selectedExchange: string;
   onScoreChange: (increment: number) => void;
+  balance: number;
 }
 
 interface ExchangeInfo {
@@ -53,7 +54,7 @@ const exchanges: ExchangeInfo[] = [
   }
 ];
 
-const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange, onScoreChange }) => {
+const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange, onScoreChange, balance }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
   const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
@@ -159,8 +160,12 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
 
   return (
       <div className="exchange-page">
-        <div className="exchange-header">Select Exchange</div>
         <div className="exchange-content">
+          <h2 className="balance-title">Your Balance</h2>
+          <div className="balance">
+            <img src="/images/balance.png" alt="Баланс" className="balance-icon"/>
+            <span>{balance}</span>
+          </div>
           <div className="exchange-carousel-wrapper">
             <button
                 className="carousel-button prev"

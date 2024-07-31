@@ -107,10 +107,11 @@ function AppContent() {
         return <Settings />;
       case 'exchange':
         return <Exchange
-          onExchangeSelect={handleExchangeSelect}
-          selectedExchange={selectedExchange.name}
-          onScoreChange={handleScoreChange}
-        />;
+    onExchangeSelect={handleExchangeSelect}
+    selectedExchange={selectedExchange.name}
+    onScoreChange={handleScoreChange}
+    balance={score}  // Додайте цей рядок
+  />;
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':
