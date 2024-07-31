@@ -437,7 +437,7 @@
   margin-top: 20px;
   margin-left: -10px;
   transition: background-color 0.3s, transform 0.1s;
-  background-color: #f9ae2f; /* Змінюємо колір кнопки на жовтий */
+  background-color: #f7ad2f; /* Змінюємо колір кнопки на жовтий */
   color: #000000; /* Змінюємо колір тексту на чорний для кращої читабельності */
 font-weight: bold;
 }
