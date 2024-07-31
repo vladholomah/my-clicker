@@ -241,43 +241,44 @@
 
 .registration-section {
   position: fixed;
-  bottom: 80px;
-  left: 0;
-  right: 0;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(48, 48, 48, 0.9);
   backdrop-filter: blur(5px);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-radius: 40px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out;
 }
 
 .registration-section:hover {
-  transform: translateY(-5px);
+  transform: translateX(-50%) translateY(-5px);
 }
 
 .registration-instruction {
-  color: white;
-  font-size: 16px;
+  color: #ffffff;
+  font-size: 12px;
   text-align: center;
   margin-bottom: 20px;
-  max-width: 300px;
   line-height: 1.4;
   animation: fadeIn 1s ease-in-out;
 }
 
 .registration-button {
-  background: linear-gradient(45deg, #ffd700, #ff8c00);
+  background: linear-gradient(45deg, #ffd700, #f9d200);
   color: #000000;
   border: none;
   padding: 12px 24px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;

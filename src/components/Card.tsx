@@ -8,7 +8,7 @@ interface CardProps {
   onMenuItemClick: (item: string) => void;
 }
 
-interface StockItem {
+interface Item {
   name: string;
   price: string;
   image: string;
@@ -19,10 +19,9 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
   const [activeTab, setActiveTab] = useState('stocks');
   const [searchQuery, setSearchQuery] = useState('');
   const [showBuyModal, setShowBuyModal] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-  const stockItems: StockItem[] = [
+  const stockItems: Item[] = [
     {
       name: "CryptoBall",
       price: "$1",
@@ -31,58 +30,47 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
     },
   ];
 
-  const [filteredItems, setFilteredItems] = useState(stockItems);
+  const nftItems: Item[] = [
+    {
+      name: "CryptoNFT",
+      price: "Coming Soon",
+      image: "/images/crypto-nft.png",
+      description: "Exclusive NFT. Will be available soon!"
+    },
+  ];
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  const [items, setItems] = useState<Item[]>(stockItems);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchQuery('');
-    setFilteredItems(tab === 'stocks' ? stockItems : []);
+    setItems(tab === 'stocks' ? stockItems : nftItems);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
-    if (activeTab === 'stocks') {
-      const filtered = stockItems.filter(item =>
-        item.name.toLowerCase().includes(query)
-      );
-      setFilteredItems(filtered);
-    } else {
-      setFilteredItems([]);
-    }
+    const filteredItems = (activeTab === 'stocks' ? stockItems : nftItems).filter(
+      item => item.name.toLowerCase().includes(query)
+    );
+    setItems(filteredItems);
   };
 
-  const handleBuy = (stock: StockItem) => {
-    setSelectedStock(stock);
+  const handleBuy = (item: Item) => {
+    setSelectedItem(item);
     setShowBuyModal(true);
   };
 
-  const confirmBuy = () => {
-    if (selectedStock) {
-      console.log(`Purchase confirmed: ${selectedStock.name}`);
-      if (selectedStock.name === "CryptoBall") {
-        console.log("Added 1,000,000 coins to balance");
-        // Here you would update the user's balance
-      }
-    }
-    setShowBuyModal(false);
-  };
-
   return (
-    <div className={`card-container ${isVisible ? 'visible' : ''}`}>
-      <div className="card-header">
-        <button className="back-buttons" onClick={() => onMenuItemClick('mine')}>
-          <span className="back-icon">&#8592;</span>
-        </button>
-        <h1>Market</h1>
-      </div>
-
+    <div className="card-container">
       <div className="card-content">
+        <div className="card-header">
+          <button className="back-button" onClick={() => onMenuItemClick('mine')}>
+            <span className="back-icon">&#8592;</span>
+          </button>
+          <h1>Market</h1>
+        </div>
+
         <div className="tab-selector">
           <button
             className={activeTab === 'stocks' ? 'active' : ''}
@@ -108,49 +96,34 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
         </div>
 
         <div className="items-section">
-          {activeTab === 'stocks' ? (
-            filteredItems.length > 0 ? (
-              filteredItems.map((item, index) => (
-                <div key={index} className="item-card">
-                  <img src={item.image} alt={item.name} className="item-image" />
-                  <div className="item-info">
-                    <h3>{item.name}</h3>
-                    <p>{item.description}</p>
-                    <div className="price-buy">
-                      <span className="price">{item.price}</span>
-                      <button onClick={() => handleBuy(item)}>Buy</button>
-                    </div>
+          {items.length > 0 ? (
+            items.map((item, index) => (
+              <div key={index} className="item-card">
+                <img src={item.image} alt={item.name} className="item-image" />
+                <div className="item-info">
+                  <h3>{item.name}</h3>
+                  <p>{item.description}</p>
+                  <div className="price-buy">
+                    <span className="price">{item.price}</span>
+                    <button
+                      onClick={() => handleBuy(item)}
+                      disabled={activeTab === 'nft'}
+                    >
+                      {activeTab === 'stocks' ? 'Buy' : 'Coming Soon'}
+                    </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="not-found">No results found</div>
-            )
+              </div>
+            ))
           ) : (
-            <div className="nft-unavailable">
-              <p>NFTs are currently unavailable</p>
-            </div>
+            <div className="not-found">No results found</div>
           )}
         </div>
       </div>
 
-      {showBuyModal && selectedStock && (
-        <div className="modal-overlay">
-          <div className="buy-modal">
-            <h2>Confirm Purchase</h2>
-            <p>Are you sure you want to buy {selectedStock.name} for {selectedStock.price}?</p>
-            {selectedStock.name === "CryptoBall" && (
-              <p>You will receive 1,000,000 coins as a bonus!</p>
-            )}
-            <div className="modal-buttons">
-              <button onClick={() => setShowBuyModal(false)}>Cancel</button>
-              <button onClick={confirmBuy}>Confirm</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <BottomMenu activeItem={activeMenuItem} onMenuItemClick={onMenuItemClick} />
+      <div className="bottom-menu-container">
+        <BottomMenu activeItem={activeMenuItem} onMenuItemClick={onMenuItemClick} />
+      </div>
     </div>
   );
 };
