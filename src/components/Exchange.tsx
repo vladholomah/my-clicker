@@ -159,90 +159,92 @@ const Exchange: React.FC<ExchangeProps> = ({ onExchangeSelect, selectedExchange,
   };
 
   return (
-      <div className="exchange-page">
-        <div className="exchange-content">
-          <h2 className="balance-title">Your Balance</h2>
-          <div className="balance">
-            <img src="/images/balance.png" alt="Баланс" className="balance-icon"/>
-            <span>{balance}</span>
-          </div>
-          <div className="exchange-carousel-wrapper">
-            <button
-                className="carousel-button prev"
-                onClick={(e) => handleButtonClick(e, prevExchange)}
-                disabled={isAnimating}
-            >
-              <img src="/images/swipe-l.png" alt="Previous"/>
-            </button>
-            <div
-                className="exchange-carousel"
-                ref={carouselRef}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-              <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
-                {exchanges.map((exchange, index) => (
-                    <div
-                        key={exchange.name}
-                        className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
-                    >
-                      <h2>
-                        {exchange.name}
-                        {isExchangeSelected(exchange.name) && (
-                            <img src="/images/done.png" alt="Selected" className="selected-icon"/>
-                        )}
-                      </h2>
-                      <div className="profit-info">
-                        <img src={exchange.logo} alt={exchange.name}/>
-                        <div className="reward-info">
-                          <span>Registration reward:</span>
-                          <div className="balance-info">
-                            <img src="/images/balance.png" alt="Balance" className="coin-icon"/>
-                            <span>{exchange.profitPerHour}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <p>{exchange.description}</p>
-                      <div className="swipe-indicator">
-                        <img src="/images/swipe-up.png" alt="Swipe up"/>
-                      </div>
-                    </div>
-                ))}
-              </div>
-            </div>
-            <button
-                className="carousel-button next"
-                onClick={(e) => handleButtonClick(e, nextExchange)}
-                disabled={isAnimating}
-            >
-              <img src="/images/swipe.png" alt="Next"/>
-            </button>
-          </div>
-          <div className="carousel-indicators">
-            {exchanges.map((_, index) => (
-                <span
-                    key={index}
-                    className={`indicator ${index === currentIndex ? 'active' : ''}`}
-                    onClick={() => {
-                      if (!isAnimating) {
-                        setIsAnimating(true);
-                        setCurrentIndex(index);
-                        setTimeout(() => setIsAnimating(false), 300);
-                      }
-                    }}
-                />
-            ))}
-          </div>
-        </div>
-        <div className="registration-section">
-          <p className="registration-instruction">To register on the exchange, select the desired exchange above and
-            click the registration button.</p>
-          <button className="registration-button" onClick={handleRegistration}>
-            Registration
-          </button>
+    <div className="exchange-page">
+      <div className="balance-displays">
+        <h2 className="balance-titles">Your Balance</h2>
+        <div className="balances">
+          <img src="/images/balance.png" alt="Balance" className="balance-iconse"/>
+          <span>{balance}</span>
         </div>
       </div>
+      <div className="exchange-content">
+        <div className="exchange-carousel-wrapper">
+          <button
+            className="carousel-button prev"
+            onClick={(e) => handleButtonClick(e, prevExchange)}
+            disabled={isAnimating}
+          >
+            <img src="/images/swipe-l.png" alt="Previous"/>
+          </button>
+          <div
+            className="exchange-carousel"
+            ref={carouselRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className={`exchange-slides ${isAnimating ? 'animating' : ''}`}>
+              {exchanges.map((exchange, index) => (
+                <div
+                  key={exchange.name}
+                  className={`exchange-slide ${getSlideClass(index)} ${isSwipingUp && index === currentIndex ? 'swiping-up' : ''}`}
+                >
+                  <h2>
+                    {exchange.name}
+                    {isExchangeSelected(exchange.name) && (
+                      <img src="/images/done.png" alt="Selected" className="selected-icon"/>
+                    )}
+                  </h2>
+                  <div className="profit-info">
+                    <img src={exchange.logo} alt={exchange.name}/>
+                    <div className="reward-info">
+                      <span>Registration reward:</span>
+                      <div className="balance-info">
+                        <img src="/images/balance.png" alt="Balance" className="coin-icon"/>
+                        <span>{exchange.profitPerHour}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p>{exchange.description}</p>
+                  <div className="swipe-indicator">
+                    <img src="/images/swipe-up.png" alt="Swipe up"/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            className="carousel-button next"
+            onClick={(e) => handleButtonClick(e, nextExchange)}
+            disabled={isAnimating}
+          >
+            <img src="/images/swipe.png" alt="Next"/>
+          </button>
+        </div>
+        <div className="carousel-indicators">
+          {exchanges.map((_, index) => (
+            <span
+              key={index}
+              className={`indicator ${index === currentIndex ? 'active' : ''}`}
+              onClick={() => {
+                if (!isAnimating) {
+                  setIsAnimating(true);
+                  setCurrentIndex(index);
+                  setTimeout(() => setIsAnimating(false), 300);
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="registration-section">
+        <p className="registration-instruction">To register on the exchange, select the desired exchange above and
+          click the registration button.</p>
+        <button className="registration-button" onClick={handleRegistration}>
+          Registration
+        </button>
+      </div>
+    </div>
   );
 };
 
