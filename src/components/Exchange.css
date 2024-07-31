@@ -41,7 +41,7 @@
 
 .exchange-slide.active {
   transform: scale(1) translateX(0);
-  left: -17%;
+  left: 5%;
   z-index: 2;
   pointer-events: auto;
   background: #161616; /* Колір для активного (центрального) слайду */
@@ -56,12 +56,12 @@
 
 .exchange-slide.next {
   transform: scale(0.8) translateX(30%);
-  left: 3%;
+  left: 23%;
 }
 
 .exchange-slide.prev {
   transform: scale(0.8) translateX(-30%);
-  left: -37%;
+  left: -13%;
 }
 
 .exchange-slide.far-next,
@@ -111,11 +111,11 @@
 }
 
 .carousel-button.prev {
-  left: -114px; /* Налаштуйте позицію за потребою */
+  left: -66px; /* Налаштуйте позицію за потребою */
 }
 
 .carousel-button.next {
-  right: -115px; /* Налаштуйте позицію за потребою */
+  right: -66px; /* Налаштуйте позицію за потребою */
 }
 
 .carousel-button:disabled {
@@ -137,7 +137,7 @@
 .selected-icon {
   position: absolute;
   top: -25%;
-  right: 68px; /* Налаштуйте це значення для правильного розташування */
+  right: 65px; /* Налаштуйте це значення для правильного розташування */
   transform: translateY(-50%);
   width: 15px;
   height: 15px;
