@@ -48,18 +48,23 @@
 .tab-selector {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .tab-selector button {
   flex: 1;
-  padding: 8px 15px;
+  padding: 10px 20px;
   border: none;
   background-color: transparent;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.tab-selector button.active {
+  color: #f9ae2f;
+  border-bottom: 2px solid #f7ad2f;
 }
 
 .search-bar input {
@@ -87,7 +92,7 @@
 
 .item-image {
   width: 100%;
-  height: 120px;
+  height: 160px;
   object-fit: cover;
 }
 
