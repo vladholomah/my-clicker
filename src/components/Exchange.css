@@ -10,7 +10,7 @@
   justify-content: center;
   overflow: visible;
   margin: 0 auto;
-  top: 20px;
+  top: 60px;
 }
 
 .exchange-slides {
@@ -91,7 +91,7 @@
   border: none;
   cursor: pointer;
   position: absolute;
-  top: 58%;
+  top: 78%;
   transform: translateY(-50%);
    z-index: 10;
   padding: 0;
@@ -136,7 +136,7 @@
 
 .selected-icon {
   position: absolute;
-  top: -25%;
+  top: -35%;
   right: 65px; /* Налаштуйте це значення для правильного розташування */
   transform: translateY(-50%);
   width: 15px;
@@ -187,7 +187,7 @@
 .carousel-indicators {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 80px;
 }
 
 .indicator {
@@ -254,7 +254,7 @@
   align-items: center;
   padding: 20px;
   z-index: 10;
-  background: rgb(22, 22, 22);
+  background: rgb(0, 0, 0);
   backdrop-filter: blur(5px);
   border-radius: 40px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -278,7 +278,7 @@
   background: linear-gradient(45deg, #f7ad2f, #f7ad2f);
   color: #000000;
   border: none;
-  padding: 12px 84px;
+  padding: 12px 44px;
   border-radius: 25px;
   cursor: pointer;
   font-size: 10px;
@@ -287,7 +287,6 @@
   letter-spacing: 1px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  animation: pulse 2s infinite;
 }
 
 .registration-button:hover {
@@ -325,7 +324,7 @@
   font-size: 18px;
   color: #ffffff;
   text-align: center;
-  margin-bottom: 15px;
+  margin-top: 45px;
 }
 
 .balances {
@@ -335,7 +334,7 @@
   font-size: 20px;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: -20px;
+  margin-bottom: -60px;
 }
 
 .balance-iconse {
@@ -346,4 +345,19 @@
 
 .exchange-content {
   padding-top: 30px; /* Збільшуємо це значення, щоб врахувати новий елемент балансу */
+}
+
+.separator {
+  width: 340%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 60px auto;
+}
+
+.balance-displays {
+  margin-bottom: 10px;
+}
+
+.exchange-content {
+  margin-bottom: 10px;
 }
