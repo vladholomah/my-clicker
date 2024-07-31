@@ -59,8 +59,8 @@
 }
 
 .tab-selector button.active {
-  color: #ffd700;
-  border-bottom: 2px solid #ffd700;
+  color: #f9ae2f;
+  border-bottom: 2px solid #f7ad2f;
 }
 
 .search-bar {
@@ -91,9 +91,6 @@
   margin-bottom: 20px;
 }
 
-.item-card:hover {
-  transform: scale(1.02);
-}
 
 .item-image {
   width: 100%;
@@ -128,7 +125,7 @@
 
 .price-buy button {
   padding: 8px 35px;
-  background-color: #ffd700;
+  background-color: #f9ae2f;
   color: #000000;
   border: none;
   border-radius: 15px;
@@ -137,7 +134,7 @@
 }
 
 .price-buy button:hover {
-  background-color: #e6c200;
+  background-color: #f9ae2f;
 }
 
 .price-buy button:disabled {
@@ -203,7 +200,7 @@
 }
 
 .modal-buttons button:last-child {
-  background-color: #ffd700;
+  background-color: #f9ae2f;
   color: #000000;
 }
 
@@ -211,3 +208,79 @@
   opacity: 0.8;
 }
 
+/* Додайте ці стилі в кінець файлу Card.css */
+
+.item-card {
+  background-color: #1e1e1e;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.item-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+}
+
+.quantity-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.quantity-display {
+  margin: 0 10px;
+  font-size: 18px;
+}
+
+.usdt-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.usdt-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.buy-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #f9ae2f;
+  color: #000000;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.buy-button:hover {
+  background-color: #f9ae2f;
+}
+
+.buy-button:disabled {
+  background-color: #4a4a4a;
+  color: #8a8a8a;
+  cursor: not-allowed;
+}

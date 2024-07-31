@@ -10,9 +10,10 @@ interface CardProps {
 
 interface Item {
   name: string;
-  price: string;
+  price: number;
   image: string;
   description: string;
+  bonus: number;
 }
 
 const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick }) => {
@@ -20,26 +21,37 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
   const [searchQuery, setSearchQuery] = useState('');
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [quantities, setQuantities] = useState<{[key: string]: number}>({});
 
   const stockItems: Item[] = [
     {
       name: "CryptoBall",
-      price: "$1",
+      price: 1,
       image: "/images/cryptoball.png",
-      description: "Our native token. Buy and get 1,000,000 coins as a bonus!"
+      description: "Our native token. Buy and get 100,000 coins as a bonus!",
+      bonus: 100000
     },
   ];
 
   const nftItems: Item[] = [
     {
       name: "CryptoNFT",
-      price: "Coming Soon",
+      price: 0,
       image: "/images/crypto-nft.png",
-      description: "Exclusive NFT. Will be available soon!"
+      description: "Exclusive NFT. Will be available soon!",
+      bonus: 0
     },
   ];
 
   const [items, setItems] = useState<Item[]>(stockItems);
+
+  useEffect(() => {
+    const initialQuantities = items.reduce((acc, item) => {
+      acc[item.name] = 1;
+      return acc;
+    }, {} as {[key: string]: number});
+    setQuantities(initialQuantities);
+  }, [items]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -59,6 +71,13 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
   const handleBuy = (item: Item) => {
     setSelectedItem(item);
     setShowBuyModal(true);
+  };
+
+  const handleQuantityChange = (itemName: string, change: number) => {
+    setQuantities(prev => ({
+      ...prev,
+      [itemName]: Math.max(1, (prev[itemName] || 1) + change)
+    }));
   };
 
   return (
@@ -103,15 +122,25 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
                 <div className="item-info">
                   <h3>{item.name}</h3>
                   <p>{item.description}</p>
-                  <div className="price-buy">
-                    <span className="price">{item.price}</span>
-                    <button
-                      onClick={() => handleBuy(item)}
-                      disabled={activeTab === 'nft'}
-                    >
-                      {activeTab === 'stocks' ? 'Buy' : 'Coming Soon'}
-                    </button>
+                  <div className="quantity-selector">
+                    <div className="quantity-control">
+                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, -1)}>-</button>
+                      <span className="quantity-display">{quantities[item.name] || 1}</span>
+                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, 1)}>+</button>
+                    </div>
+                    <div className="usdt-info">
+                      <img src="/images/usdt-icon.png" alt="USDT" className="usdt-icon" />
+                      <span>{((item.price * (quantities[item.name] || 1))).toFixed(2)} USDT</span>
+                    </div>
                   </div>
+                  <p>You will receive: {item.bonus * (quantities[item.name] || 1)} coins</p>
+                  <button
+                    className="buy-button"
+                    onClick={() => handleBuy(item)}
+                    disabled={activeTab === 'nft'}
+                  >
+                    {activeTab === 'stocks' ? 'Buy' : 'Coming Soon'}
+                  </button>
                 </div>
               </div>
             ))
