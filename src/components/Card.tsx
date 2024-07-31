@@ -124,20 +124,24 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
                   <p>{item.description}</p>
                   <div className="quantity-selector">
                     <div className="quantity-control">
-                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, -1)}>-</button>
+                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, -1)}>
+                        <img src="/images/minus.png" alt="-"/>
+                      </button>
                       <span className="quantity-display">{quantities[item.name] || 1}</span>
-                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, 1)}>+</button>
+                      <button className="quantity-button" onClick={() => handleQuantityChange(item.name, 1)}>
+                        <img src="/images/plus.png" alt="+"/>
+                      </button>
                     </div>
                     <div className="usdt-info">
-                      <img src="/images/usdt-icon.png" alt="USDT" className="usdt-icon" />
+                      <img src="/images/usdt-icon.png" alt="USDT" className="usdt-icon"/>
                       <span>{((item.price * (quantities[item.name] || 1))).toFixed(2)} USDT</span>
                     </div>
                   </div>
                   <p>You will receive: {item.bonus * (quantities[item.name] || 1)} coins</p>
                   <button
-                    className="buy-button"
-                    onClick={() => handleBuy(item)}
-                    disabled={activeTab === 'nft'}
+                      className="buy-button"
+                      onClick={() => handleBuy(item)}
+                      disabled={activeTab === 'nft'}
                   >
                     {activeTab === 'stocks' ? 'Buy' : 'Coming Soon'}
                   </button>
