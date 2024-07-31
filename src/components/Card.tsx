@@ -73,6 +73,15 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
     setShowBuyModal(true);
   };
 
+  const handleConfirmBuy = () => {
+    // Логіка покупки тут
+    setShowBuyModal(false);
+  };
+
+  const handleCancelBuy = () => {
+    setShowBuyModal(false);
+  };
+
   const handleQuantityChange = (itemName: string, change: number) => {
     setQuantities(prev => ({
       ...prev,
@@ -139,9 +148,9 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
                   </div>
                   <p>You will receive: {item.bonus * (quantities[item.name] || 1)} coins</p>
                   <button
-                      className="buy-button"
-                      onClick={() => handleBuy(item)}
-                      disabled={activeTab === 'nft'}
+                    className="buy-button"
+                    onClick={() => handleBuy(item)}
+                    disabled={activeTab === 'nft'}
                   >
                     {activeTab === 'stocks' ? 'Buy' : 'Coming Soon'}
                   </button>
@@ -157,6 +166,32 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
       <div className="bottom-menu-container">
         <BottomMenu activeItem={activeMenuItem} onMenuItemClick={onMenuItemClick} />
       </div>
+
+      {showBuyModal && selectedItem && (
+          <div className="confirmations-overlay">
+            <div className="confirmations-modal">
+              <button className="close-button" onClick={handleCancelBuy}>×</button>
+              <img src="/images/tap1.png" alt="Tap" className="multitap-image"/>
+              <div className="multitap-info">
+                Підтвердити покупку
+              </div>
+              <div className="price-info">
+                <img src="/images/usdt-icon.png" alt="USDT" className="price-icon"/>
+                <span>{(selectedItem.price * (quantities[selectedItem.name] || 1)).toFixed(2)} USDT</span>
+              </div>
+              <div className="stocks-info">
+                You will receive: {selectedItem.bonus * (quantities[selectedItem.name] || 1)} coins
+              </div>
+              <button
+                  className="confirms-button stocks-confirm"
+                  onClick={handleConfirmBuy}
+                  disabled={balance < selectedItem.price * (quantities[selectedItem.name] || 1)}
+              >
+                Підтвердити
+              </button>
+            </div>
+          </div>
+      )}
     </div>
   );
 };

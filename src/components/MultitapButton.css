@@ -90,16 +90,22 @@
 .energy-boost-confirm {
   background-color: #fdb02b; /* Зелений колір для Energy Boost */
   color: #ffffff;
+  margin-left: -10px;
+  font-weight: bold;
 }
 
 .recharging-speed-confirm {
   background-color: #3bf1b7; /* Синій колір для Recharging Speed */
   color: #ffffff;
+    margin-left: -10px;
+  font-weight: bold;
 }
 
 .multitap-confirm {
   background-color: #da3837; /* Жовтий колір для Multitap */
   color: #ffffff;
+    margin-left: -10px;
+  font-weight: bold;
 }
 
 .confirm-button:hover {
