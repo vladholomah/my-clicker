@@ -1,83 +1,120 @@
 .earn-container {
-  padding: 85px;
-  color: white;
-  background-color: black;
+  padding: 20px;
+  color: black;
+  background-color: #000000;
   min-height: 100vh;
   font-family: Arial, sans-serif;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: 95vh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.earn-coin-image {
-  width: 100px;
-  height: 100px;
-  display: block;
-  margin: 0 auto 20px;
 }
 
 .earn-container h1 {
-  font-size: 20px;
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #ffffff;
+  margin-left: -15px;
+}
+
+.task-buttons {
+  display: flex;
+  gap: 10px;
   margin-bottom: 20px;
-  text-align: center;
+  width: 112%;
+  margin-left: -19px;
+}
+
+.task-button {
+  flex: 1;
+  padding: 20px;
+  border: none;
+  border-radius: 15px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   color: white;
+  height: 120px;
+  position: relative;
+}
+
+.task-icon {
+  width: 30px;
+  height: 30px;
+  align-self: flex-start;
+}
+
+.task-button-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.task-title {
+  font-weight: bold;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.sketch {
+  background-color: #f50000;
+}
+
+.ui\/ux {  /* Змінено з .ui-ux на .ui\/ux */
+  background-color: #2b9dd4 !important;
 }
 
 .task-section {
-  width: 200%;
-  max-width: 400px;
-  margin: 0 auto;
-  margin-left: -80px;
+  background-color: #000000;
+  border-radius: 15px;
+  padding: 20px;
+  width: 126%;
+  margin-left: -39px;
+  box-sizing: border-box;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .earn-container h2 {
-  font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  color: white;
-  text-align: left;
-  width: 100%;
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #ffffff;
 }
 
 .tasks-list1 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(100vh - 200px);
-  padding-right: 5px;
-  width: 100%;
-}
-
-.tasks-list1::-webkit-scrollbar {
-  width: 5px;
-}
-
-.tasks-list1::-webkit-scrollbar-track {
-  background: #1e1e1e;
-}
-
-.tasks-list1::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
 }
 
 .task-item1 {
   display: flex;
   align-items: center;
   background-color: #161616;
-  border-radius: 25px;
-  padding: 14px;
+  border-radius: 15px;
+  padding: 20px;
   cursor: pointer;
+  width: 100%;
+  height: 23%;
+  box-sizing: border-box;
 }
 
 .task-icon1 {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   margin-right: 10px;
 }
 
@@ -87,24 +124,37 @@
   flex-direction: column;
 }
 
-.task-info1 h3 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.reward-info1 {
+.task-reward1 {
   display: flex;
   align-items: center;
+}
+
+.coin-icon1 {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
   margin-top: 5px;
 }
 
-.reward-icon1 {
-  width: 16px;
-  height: 16px;
-  margin-right: 5px;
+.coin-amount1 {
+  color: #ffffff; /* Жовтий колір, схожий на колір монети */
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 5px;
 }
 
-.complete-icon1 {
+.task-info1 h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.arrow-icon1 {
+  width: 15px;
+  height: 15px;
+}
+
+.arrow-icon12 {
   width: 20px;
   height: 20px;
 }
@@ -141,6 +191,12 @@
   }
 }
 
+.coin-icon11 {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
 .close-button1 {
   position: absolute;
   top: 10px;
@@ -161,14 +217,38 @@
 .multitap-info1 {
   font-size: 18px;
   margin-bottom: 20px;
+  color: white;
+}
+
+.task-info {
+  color: white;
+  margin-bottom: 20px;
 }
 
 .confirms-button1 {
   background-color: #f9ae2f;
   color: black;
   border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 16px;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 18px;
   cursor: pointer;
+  margin-top: 20px;
+}
+
+.tasks-list1::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tasks-list1::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tasks-list1::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+.tasks-list1::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
