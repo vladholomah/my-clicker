@@ -50,9 +50,11 @@ body {
 }
 
 .task-icon {
-  width: 30px;
-  height: 30px;
-  align-self: flex-start;
+  width: 60px;
+  height: 60px;
+  align-self: center; /* Змінено з flex-start на center */
+  margin: 15px; /* Додано для горизонтального центрування */
+  display: block; /* Додано для кращого контролю над розміщенням */
 }
 
 .task-button-content {

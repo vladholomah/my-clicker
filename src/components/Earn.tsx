@@ -31,7 +31,7 @@ const Earn: React.FC = () => {
     {
       id: 3,
       type: 'product',
-      title: 'Product Design Task',
+      title: 'Subscribe to our X',
       icon: '/images/product-icon.png',
       reward: 3000,
       completed: false
@@ -39,7 +39,7 @@ const Earn: React.FC = () => {
     {
       id: 4,
       type: 'packaging',
-      title: 'Packaging',
+      title: 'Subscribe to our Telegram',
       icon: '/images/packaging-icon.png',
       reward: 2500,
       completed: false
@@ -47,7 +47,7 @@ const Earn: React.FC = () => {
     {
       id: 5,
       type: 'mascot',
-      title: 'Sketching mascot',
+      title: 'Subscribe to our Instagram',
       icon: '/images/mascot-icon.png',
       reward: 1500,
       completed: false
