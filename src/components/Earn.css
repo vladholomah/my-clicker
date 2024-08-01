@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden; /* Додано для запобігання скролінгу на рівні body */
+}
+
 .earn-container {
   padding: 20px;
   color: black;
@@ -12,6 +16,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .earn-container h1 {
@@ -26,7 +31,7 @@
   gap: 10px;
   margin-bottom: 20px;
   width: 112%;
-  margin-left: -19px;
+  position: relative;
 }
 
 .task-button {
@@ -79,11 +84,16 @@
   border-radius: 15px;
   padding: 20px;
   width: 126%;
-  margin-left: -39px;
   box-sizing: border-box;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.tasks-list1 {
+  width: 100%;
+  overflow-x: hidden; /* Додано для запобігання горизонтального скролінгу */
 }
 
 .earn-container h2 {
@@ -251,4 +261,23 @@
 
 .tasks-list1::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+@media screen and (max-width: 768px) {
+  .earn-container {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .task-buttons,
+  .task-section {
+    width: calc(100% + 38px); /* Розширюємо на ширину лівого та правого відступів */
+    left: -19px; /* Зміщуємо вліво на половину додаткової ширини */
+    position: relative;
+  }
+
+  .task-section {
+    width: calc(100% + 78px); /* Розширюємо на ширину лівого та правого відступів */
+    left: -39px; /* Зміщуємо вліво на половину додаткової ширини */
+  }
 }
