@@ -1,5 +1,5 @@
 body {
-  overflow-x: hidden; /* Додано для запобігання скролінгу на рівні body */
+  overflow-x: hidden;
 }
 
 .earn-container {
@@ -52,19 +52,41 @@ body {
 .task-icon {
   width: 60px;
   height: 60px;
-  align-self: center; /* Змінено з flex-start на center */
-  margin: 15px; /* Додано для горизонтального центрування */
-  display: block; /* Додано для кращого контролю над розміщенням */
+  align-self: flex-start;
 }
 
 .task-button-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   width: 100%;
 }
 
+.task-title-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .task-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.task-reward-button {
+  display: flex;
+  align-items: center;
+}
+
+.coin-icon-button {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+.coin-amount-button {
+  color: #ffffff;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -77,9 +99,11 @@ body {
   background-color: #f50000;
 }
 
-.ui\/ux {  /* Змінено з .ui-ux на .ui\/ux */
+.ui\/ux {
   background-color: #2b9dd4 !important;
 }
+
+/* Решта CSS залишається без змін */
 
 .task-section {
   background-color: #000000;
@@ -167,8 +191,9 @@ body {
 }
 
 .arrow-icon12 {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 3px;
 }
 
 .confirmations-overlay1 {

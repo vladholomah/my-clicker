@@ -15,7 +15,7 @@ const Earn: React.FC = () => {
     {
       id: 1,
       type: 'sketch',
-      title: 'Youtube',
+      title: 'YouTube',
       icon: '/images/sketch-icon.png',
       reward: 100,
       completed: false
@@ -72,69 +72,75 @@ const Earn: React.FC = () => {
   };
 
   return (
-      <div className="earn-container">
-        <h1>My Task</h1>
+    <div className="earn-container">
+      <h1>My Task</h1>
 
-        <div className="task-buttons">
-          {tasks.slice(0, 2).map(task => (
-              <button
-                  key={task.id}
-                  className={`task-button ${task.type}`}
-                  onClick={() => handleTaskComplete(task)}
-              >
-                <img src={task.icon} alt={task.title} className="task-icon"/>
-                <div className="task-button-content">
-                  <span className="task-title">{task.title}</span>
-                  <img src="/images/arrow-right1.png" alt="Arrow" className="arrow-icon12"/>
+      <div className="task-buttons">
+        {tasks.slice(0, 2).map(task => (
+          <button
+            key={task.id}
+            className={`task-button ${task.type}`}
+            onClick={() => handleTaskComplete(task)}
+          >
+            <img src={task.icon} alt={task.title} className="task-icon"/>
+            <div className="task-button-content">
+              <div className="task-title-reward">
+                <span className="task-title">{task.title}</span>
+                <div className="task-reward-button">
+                  <img src="/images/coin-icon.png" alt="Coin" className="coin-icon-button"/>
+                  <span className="coin-amount-button">+{task.reward}</span>
                 </div>
-              </button>
+              </div>
+              <img src="/images/arrow-right1.png" alt="Arrow" className="arrow-icon12"/>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <div className="task-section">
+        <h2>Pending</h2>
+        <div className="tasks-list1">
+          {tasks.slice(2).map(task => (
+            <div key={task.id} className="task-item1" onClick={() => handleTaskComplete(task)}>
+              <img src={task.icon} alt={task.title} className="task-icon1"/>
+              <div className="task-info1">
+                <h3>{task.title}</h3>
+                <div className="task-reward1">
+                  <img src="/images/coin-icon.png" alt="Coin" className="coin-icon1"/>
+                  <span className="coin-amount1">+{task.reward}</span>
+                </div>
+              </div>
+              <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon1"/>
+            </div>
           ))}
         </div>
+      </div>
 
-        <div className="task-section">
-          <h2>Pending</h2>
-          <div className="tasks-list1">
-            {tasks.slice(2).map(task => (
-                <div key={task.id} className="task-item1" onClick={() => handleTaskComplete(task)}>
-                  <img src={task.icon} alt={task.title} className="task-icon1"/>
-                  <div className="task-info1">
-                    <h3>{task.title}</h3>
-                    <div className="task-reward1">
-                      <img src="/images/coin-icon.png" alt="Coin" className="coin-icon1"/>
-                      <span className="coin-amount1">+{task.reward}</span>
-                    </div>
-                  </div>
-                  <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon1"/>
-                </div>
-            ))}
-          </div>
-        </div>
-
-        {showConfirmation && selectedTask && (
-            <div className="confirmations-overlay1">
-              <div className="confirmations-modal1">
-                <button className="close-button1" onClick={() => setShowConfirmation(false)}>×</button>
-                <img src="/images/tap1.png" alt="Tap" className="multitap-image1"/>
-                <div className="multitap-info1">
-                  Підтвердити виконання
-                </div>
-                <div className="task-info">
-                  <h3>{selectedTask.title}</h3>
-                  <div className="task-reward">
-                    <img src="/images/coin-icon.png" alt="Coin" className="coin-icon11"/>
-                    <span>+{selectedTask.reward}</span>
-                  </div>
-                </div>
-                <button
-                    className="confirms-button1"
-                    onClick={confirmTaskCompletion}
-                >
-                  Підтвердити
-                </button>
+      {showConfirmation && selectedTask && (
+        <div className="confirmations-overlay1">
+          <div className="confirmations-modal1">
+            <button className="close-button1" onClick={() => setShowConfirmation(false)}>×</button>
+            <img src="/images/tap1.png" alt="Tap" className="multitap-image1"/>
+            <div className="multitap-info1">
+              Підтвердити виконання
+            </div>
+            <div className="task-info">
+              <h3>{selectedTask.title}</h3>
+              <div className="task-reward">
+                <img src="/images/coin-icon.png" alt="Coin" className="coin-icon11"/>
+                <span>+{selectedTask.reward}</span>
               </div>
             </div>
-        )}
-      </div>
+            <button
+              className="confirms-button1"
+              onClick={confirmTaskCompletion}
+            >
+              Підтвердити
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
