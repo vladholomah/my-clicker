@@ -11,16 +11,62 @@ interface EnergyContextType {
   setMaxEnergy: (newMaxEnergy: number) => void;
   refillEnergy: () => void;
   setEnergyRecoveryRate: (newRate: number) => void;
+  setEnergyRefillCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const EnergyContext = createContext<EnergyContextType | undefined>(undefined);
 
 const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [energy, setEnergy] = useState(1500);
-  const [maxEnergy, setMaxEnergy] = useState(1500);
-  const [energyRefillCount, setEnergyRefillCount] = useState(3);
-  const [energyRefillCooldown, setEnergyRefillCooldown] = useState(0);
-  const [energyRecoveryRate, setEnergyRecoveryRate] = useState(5000); // 5000 мс за замовчуванням
+  const [energy, setEnergy] = useState(() => {
+    const savedEnergy = localStorage.getItem('energy');
+    return savedEnergy ? parseInt(savedEnergy, 10) : 1500;
+  });
+  const [maxEnergy, setMaxEnergy] = useState(() => {
+    const savedMaxEnergy = localStorage.getItem('maxEnergy');
+    return savedMaxEnergy ? parseInt(savedMaxEnergy, 10) : 1500;
+  });
+  const [energyRefillCount, setEnergyRefillCount] = useState(() => {
+    const savedEnergyRefillCount = localStorage.getItem('energyRefillCount');
+    const lastActivation = localStorage.getItem('energyLastActivation');
+    if (lastActivation) {
+      const timePassed = (Date.now() - parseInt(lastActivation, 10)) / 1000;
+      if (timePassed >= 60) {
+        localStorage.removeItem('energyLastActivation');
+        return 3;
+      }
+    }
+    return savedEnergyRefillCount ? parseInt(savedEnergyRefillCount, 10) : 3;
+  });
+  const [energyRefillCooldown, setEnergyRefillCooldown] = useState(() => {
+    const lastActivation = localStorage.getItem('energyLastActivation');
+    if (lastActivation) {
+      const timePassed = (Date.now() - parseInt(lastActivation, 10)) / 1000;
+      if (timePassed < 60) {
+        return Math.max(60 - Math.floor(timePassed), 0);
+      }
+    }
+    return 0;
+  });
+  const [energyRecoveryRate, setEnergyRecoveryRate] = useState(() => {
+    const savedEnergyRecoveryRate = localStorage.getItem('energyRecoveryRate');
+    return savedEnergyRecoveryRate ? parseInt(savedEnergyRecoveryRate, 10) : 5000;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('energy', energy.toString());
+  }, [energy]);
+
+  useEffect(() => {
+    localStorage.setItem('maxEnergy', maxEnergy.toString());
+  }, [maxEnergy]);
+
+  useEffect(() => {
+    localStorage.setItem('energyRefillCount', energyRefillCount.toString());
+  }, [energyRefillCount]);
+
+  useEffect(() => {
+    localStorage.setItem('energyRecoveryRate', energyRecoveryRate.toString());
+  }, [energyRecoveryRate]);
 
   const activateEnergyRefill = useCallback(() => {
     if (energyRefillCount > 0 && energyRefillCooldown === 0) {
@@ -29,6 +75,7 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
       console.log('Energy refilled');
       if (energyRefillCount === 1) {
         setEnergyRefillCooldown(60);
+        localStorage.setItem('energyLastActivation', Date.now().toString());
       }
     }
   }, [energyRefillCount, energyRefillCooldown, maxEnergy]);
@@ -66,6 +113,7 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
         setEnergyRefillCooldown(prev => {
           if (prev === 1) {
             setEnergyRefillCount(3);
+            localStorage.removeItem('energyLastActivation');
             console.log('Energy refill cooldown finished, attempts reset to 3');
             return 0;
           }
@@ -90,7 +138,8 @@ const EnergyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
       decreaseEnergy,
       setMaxEnergy: updateMaxEnergy,
       refillEnergy,
-      setEnergyRecoveryRate: updateEnergyRecoveryRate
+      setEnergyRecoveryRate: updateEnergyRecoveryRate,
+      setEnergyRefillCount
     }}>
       {children}
     </EnergyContext.Provider>

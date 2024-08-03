@@ -17,12 +17,23 @@ function AppContent() {
     name: 'Holmah',
     logo: '/images/holmah.png'
   });
-  const [score, setScore] = useState(0);
-  const [multitapLevel, setMultitapLevel] = useState(1);
-  const [energyRecoveryRate, setLocalEnergyRecoveryRate] = useState(5);
+  const [score, setScore] = useState(() => {
+    const savedScore = localStorage.getItem('userScore');
+    return savedScore ? parseInt(savedScore, 10) : 0;
+  });
+  const [multitapLevel, setMultitapLevel] = useState(() => {
+    const savedLevel = localStorage.getItem('multitapLevel');
+    return savedLevel ? parseInt(savedLevel, 10) : 1;
+  });
+  const [energyRecoveryRate, setLocalEnergyRecoveryRate] = useState(() => {
+    const savedRate = localStorage.getItem('energyRecoveryRate');
+    return savedRate ? parseInt(savedRate, 10) : 5;
+  });
   const { maxEnergy, setMaxEnergy, refillEnergy, setEnergyRecoveryRate } = useEnergy();
   const [rewardsReceived, setRewardsReceived] = useState(false);
-  const [lastRewardLevel, setLastRewardLevel] = useState('');
+  const [lastRewardLevel, setLastRewardLevel] = useState(() => {
+    return localStorage.getItem('lastRewardLevel') || '';
+  });
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
@@ -49,29 +60,48 @@ function AppContent() {
 
   const handleMultitapUpgrade = (level: number, cost: number) => {
     if (score >= cost) {
-      setScore(score - cost);
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
       setMultitapLevel(level);
+      localStorage.setItem('multitapLevel', level.toString());
     }
   };
 
   const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
     if (score >= cost) {
-      setScore(score - cost);
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
       setMaxEnergy(newMaxEnergy);
+      localStorage.setItem('maxEnergy', newMaxEnergy.toString());
       refillEnergy();
     }
   };
 
   const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
     if (score >= cost) {
-      setScore(prevScore => prevScore - cost);
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
       setLocalEnergyRecoveryRate(newRate);
       setEnergyRecoveryRate(newRate);
+      localStorage.setItem('energyRecoveryRate', newRate.toString());
     }
   };
 
   const handleScoreChange = (increment: number) => {
-    setScore(prevScore => prevScore + increment);
+    setScore(prevScore => {
+      const newScore = prevScore + increment;
+      localStorage.setItem('userScore', newScore.toString());
+      return newScore;
+    });
   };
 
   const getLevelInfo = (score: number) => {
@@ -86,9 +116,14 @@ function AppContent() {
   const handleRewardsClick = () => {
     const currentLevel = getLevelInfo(score);
     if (currentLevel.name !== lastRewardLevel && !rewardsReceived) {
-      setScore(prevScore => prevScore + currentLevel.reward);
+      setScore(prevScore => {
+        const newScore = prevScore + currentLevel.reward;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
       setRewardsReceived(true);
       setLastRewardLevel(currentLevel.name);
+      localStorage.setItem('lastRewardLevel', currentLevel.name);
     }
   };
 
@@ -99,6 +134,29 @@ function AppContent() {
     }
   }, [score, lastRewardLevel]);
 
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'userScore') {
+        setScore(parseInt(e.newValue || '0', 10));
+      }
+      if (e.key === 'multitapLevel') {
+        setMultitapLevel(parseInt(e.newValue || '1', 10));
+      }
+      if (e.key === 'energyRecoveryRate') {
+        setLocalEnergyRecoveryRate(parseInt(e.newValue || '5', 10));
+      }
+      if (e.key === 'lastRewardLevel') {
+        setLastRewardLevel(e.newValue || '');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const renderView = () => {
     switch(currentView) {
       case 'levels':
@@ -107,11 +165,11 @@ function AppContent() {
         return <Settings />;
       case 'exchange':
         return <Exchange
-    onExchangeSelect={handleExchangeSelect}
-    selectedExchange={selectedExchange.name}
-    onScoreChange={handleScoreChange}
-    balance={score}  // Додайте цей рядок
-  />;
+          onExchangeSelect={handleExchangeSelect}
+          selectedExchange={selectedExchange.name}
+          onScoreChange={handleScoreChange}
+          balance={score}
+        />;
       case 'friends':
         return <h1>Friends</h1>;
       case 'boost':

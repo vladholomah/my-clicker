@@ -25,27 +25,32 @@ const Boost: React.FC<BoostProps> = ({
   onMultitapUpgrade,
   onEnergyBoostUpgrade,
   onEnergyRecoveryUpgrade,
-  currentEnergyRecoveryRate,
   currentLevel,
   currentMaxEnergy,
+  currentEnergyRecoveryRate,
   onRewardsClick,
-  rewardsReceived
+  rewardsReceived: initialRewardsReceived
 }) => {
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [rewardAmount, setRewardAmount] = useState(0);
+  const [localRewardsReceived, setLocalRewardsReceived] = useState(initialRewardsReceived);
   const {
     turboCount,
     turboTimer,
     cooldownTimer,
-    activateTurbo
+    activateTurbo,
+    setTurboCount
   } = useBoost();
 
   const {
     energyRefillCount,
     energyRefillCooldown,
-    activateEnergyRefill
+    activateEnergyRefill,
+    setEnergyRefillCount
   } = useEnergy();
 
+  const [localTurboCount, setLocalTurboCount] = useState(turboCount);
+  const [localEnergyRefillCount, setLocalEnergyRefillCount] = useState(energyRefillCount);
 
   useEffect(() => {
     const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png', '/images/donefree.png'];
@@ -53,23 +58,61 @@ const Boost: React.FC<BoostProps> = ({
       const img = new Image();
       img.src = src;
     });
+
+    const savedRewardsReceived = localStorage.getItem('rewardsReceived') === 'true';
+    const savedMultitapLevel = parseInt(localStorage.getItem('multitapLevel') || '1', 10);
+    const savedMaxEnergy = parseInt(localStorage.getItem('maxEnergy') || '1500', 10);
+    const savedEnergyRecoveryRate = parseInt(localStorage.getItem('energyRecoveryRate') || '5', 10);
+    const savedTurboCount = parseInt(localStorage.getItem('turboCount') || '3', 10);
+    const savedEnergyRefillCount = parseInt(localStorage.getItem('energyRefillCount') || '3', 10);
+
+    setLocalRewardsReceived(savedRewardsReceived);
+    onMultitapUpgrade(savedMultitapLevel, 0);
+    onEnergyBoostUpgrade(savedMaxEnergy, 0);
+    onEnergyRecoveryUpgrade(savedEnergyRecoveryRate, 0);
+    setLocalTurboCount(savedTurboCount);
+    setLocalEnergyRefillCount(savedEnergyRefillCount);
+    setTurboCount(savedTurboCount);
+    setEnergyRefillCount(savedEnergyRefillCount);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('turboCount', localTurboCount.toString());
+    setTurboCount(localTurboCount);
+  }, [localTurboCount, setTurboCount]);
+
+  useEffect(() => {
+    localStorage.setItem('energyRefillCount', localEnergyRefillCount.toString());
+    setEnergyRefillCount(localEnergyRefillCount);
+  }, [localEnergyRefillCount, setEnergyRefillCount]);
 
   const handleActivateTurbo = () => {
     activateTurbo();
+    setLocalTurboCount(prevCount => {
+      const newCount = prevCount > 0 ? prevCount - 1 : 0;
+      localStorage.setItem('turboCount', newCount.toString());
+      return newCount;
+    });
     setCurrentView('mine');
   };
 
   const handleActivateEnergyRefill = () => {
     activateEnergyRefill();
+    setLocalEnergyRefillCount(prevCount => {
+      const newCount = prevCount > 0 ? prevCount - 1 : 0;
+      localStorage.setItem('energyRefillCount', newCount.toString());
+      return newCount;
+    });
     setCurrentView('mine');
   };
 
   const handleRewardsClick = () => {
-    if (!rewardsReceived) {
+    if (!localRewardsReceived) {
       const reward = calculateReward(balance);
       setRewardAmount(reward);
       setShowRewardModal(true);
+      setLocalRewardsReceived(true);
+      localStorage.setItem('rewardsReceived', 'true');
       onRewardsClick();
     }
   };
@@ -97,101 +140,116 @@ const Boost: React.FC<BoostProps> = ({
     );
   };
 
+  const handleMultitapUpgrade = (level: number, cost: number) => {
+    onMultitapUpgrade(level, cost);
+    localStorage.setItem('multitapLevel', level.toString());
+  };
+
+  const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
+    onEnergyBoostUpgrade(newMaxEnergy, cost);
+    localStorage.setItem('maxEnergy', newMaxEnergy.toString());
+  };
+
+  const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
+    onEnergyRecoveryUpgrade(newRate, cost);
+    localStorage.setItem('energyRecoveryRate', newRate.toString());
+  };
+
   return (
-      <div className="boost">
-        <h1 className="boost-title"></h1>
-        <h2 className="balance-title">Your Balance</h2>
-        <div className="balance">
-          <img src="/images/balance.png" alt="Balance" className="balance-icon"/>
-          <span>{balance}</span>
+    <div className="boost">
+      <h1 className="boost-title"></h1>
+      <h2 className="balance-title">Your Balance</h2>
+      <div className="balance">
+        <img src="/images/balance.png" alt="Balance" className="balance-icon"/>
+        <span>{balance}</span>
+      </div>
+      <div className="boost-section">
+        <h3 className="boost-section-title">Free Daily Boosters</h3>
+        <div className="boost-buttons-container">
+          <button
+            onClick={handleActivateTurbo}
+            disabled={localTurboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
+            className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
+          >
+            {getButtonContent(
+              "/images/x5.png",
+              "Turbo",
+              turboTimer > 0 ? `${turboTimer}s` :
+                cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
+                  `${localTurboCount}/3`
+            )}
+          </button>
+          <button
+            onClick={handleActivateEnergyRefill}
+            disabled={localEnergyRefillCount === 0 || energyRefillCooldown > 0}
+            className="boost-button energy-button"
+          >
+            {getButtonContent(
+              "/images/fullenergy.png",
+              "Energy",
+              energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : `${localEnergyRefillCount}/3`
+            )}
+          </button>
+          <button
+            onClick={handleRewardsClick}
+            className={`boost-button rewards-button ${!localRewardsReceived ? 'active' : ''}`}
+            disabled={localRewardsReceived}
+          >
+            {getButtonContent(
+              "/images/level-b.png",
+              "Rewards",
+              localRewardsReceived ? (
+                <img src="/images/done.png" alt="Done" className="done-icon boost-timer"/>
+              ) : (
+                <>
+                  <span className="rewards-notification"></span>
+                  "Get"
+                </>
+              )
+            )}
+          </button>
         </div>
-        <div className="boost-section">
-          <h3 className="boost-section-title">Free Daily Boosters</h3>
-          <div className="boost-buttons-container">
-            <button
-                onClick={handleActivateTurbo}
-                disabled={turboCount === 0 || turboTimer > 0 || cooldownTimer > 0}
-                className={`boost-button ${turboTimer > 0 ? 'active' : ''}`}
-            >
-              {getButtonContent(
-                  "/images/x5.png",
-                  "Turbo",
-                  turboTimer > 0 ? `${turboTimer}s` :
-                      cooldownTimer > 0 ? `Cooldown: ${cooldownTimer}s` :
-                          `${turboCount}/3`
-              )}
-            </button>
-            <button
-                onClick={handleActivateEnergyRefill}
-                disabled={energyRefillCount === 0 || energyRefillCooldown > 0}
-                className="boost-button energy-button"
-            >
-              {getButtonContent(
-                  "/images/fullenergy.png",
-                  "Energy",
-                  energyRefillCooldown > 0 ? `Cooldown: ${energyRefillCooldown}s` : `${energyRefillCount}/3`
-              )}
-            </button>
-            <button
-                onClick={handleRewardsClick}
-                className={`boost-button rewards-button ${!rewardsReceived ? 'active' : ''}`}
-                disabled={rewardsReceived}
-            >
-              {getButtonContent(
-                  "/images/level-b.png",
-                  "Rewards",
-                  rewardsReceived ? (
-                      <img src="/images/done.png" alt="Done" className="done-icon boost-timer"/>
-                  ) : (
-                      <>
-                        <span className="rewards-notification"></span>
-                        "Get"
-                      </>
-                  )
-              )}
-            </button>
+      </div>
+      <div className="boost-section">
+        <h3 className="boost-section-title">Boosters</h3>
+        <MultitapButton
+          balance={balance}
+          onMultitapUpgrade={handleMultitapUpgrade}
+          currentLevel={currentLevel}
+        />
+        <EnergyBoostButton
+          balance={balance}
+          onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
+          currentMaxEnergy={currentMaxEnergy}
+        />
+        <EnergyRecoveryButton
+          balance={balance}
+          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgrade}
+          currentEnergyRecoveryRate={currentEnergyRecoveryRate}
+        />
+      </div>
+      {showRewardModal && (
+        <div className="reward-modal">
+          <div className="reward-content">
+            <div className="congrats-image-container">
+              <img src="/images/donefree.png" alt="Congratulations" className="congrats-image"/>
+              <div className="flying-circle"></div>
+              <div className="flying-circle"></div>
+              <div className="flying-circle"></div>
+              <div className="flying-circle"></div>
+              <div className="flying-circle"></div>
+            </div>
+            <h2 className="congrats-text">Congratulations!</h2>
+            <p className="reward-text">You have received a reward</p>
+            <div className="reward-amount">
+              <img src="/images/balance.png" alt="Balance" className="balance-icons"/>
+              <span>{rewardAmount}</span>
+            </div>
+            <button className="back-button" onClick={() => setShowRewardModal(false)}>Back</button>
           </div>
         </div>
-        <div className="boost-section">
-          <h3 className="boost-section-title">Boosters</h3>
-          <MultitapButton
-              balance={balance}
-              onMultitapUpgrade={onMultitapUpgrade}
-              currentLevel={currentLevel}
-          />
-          <EnergyBoostButton
-              balance={balance}
-              onEnergyBoostUpgrade={onEnergyBoostUpgrade}
-              currentMaxEnergy={currentMaxEnergy}
-          />
-          <EnergyRecoveryButton
-              balance={balance}
-              onEnergyRecoveryUpgrade={onEnergyRecoveryUpgrade}
-              currentEnergyRecoveryRate={currentEnergyRecoveryRate}
-          />
-        </div>
-        {showRewardModal && (
-            <div className="reward-modal">
-              <div className="reward-content">
-                <div className="congrats-image-container">
-                  <img src="/images/donefree.png" alt="Вітаємо" className="congrats-image"/>
-                  <div className="flying-circle"></div>
-                  <div className="flying-circle"></div>
-                  <div className="flying-circle"></div>
-                  <div className="flying-circle"></div>
-                  <div className="flying-circle"></div>
-                </div>
-                <h2 className="congrats-text">Congrats!</h2>
-                <p className="reward-text">You have received a reward</p>
-                <div className="reward-amount">
-                  <img src="/images/balance.png" alt="Balance" className="balance-icons"/>
-                  <span>{rewardAmount}</span>
-                </div>
-                <button className="back-button" onClick={() => setShowRewardModal(false)}>Back</button>
-              </div>
-            </div>
-        )}
-      </div>
+      )}
+    </div>
   );
 };
 

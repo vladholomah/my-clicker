@@ -41,14 +41,16 @@ const Clicker: React.FC<ClickerProps> = ({
   const { energy, maxEnergy, decreaseEnergy } = useEnergy();
   const levelInfo = getLevelInfo(score);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-    if (energy >= multitapLevel) {
-      const baseIncrement = multitapLevel;
-      const increment = isTurboActive ? baseIncrement * 5 : baseIncrement;
-      onScoreChange(increment);
+const handleClick = (e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+  if (energy >= multitapLevel || isTurboActive) {
+    const baseIncrement = multitapLevel;
+    const increment = isTurboActive ? baseIncrement * 5 : baseIncrement;
+    onScoreChange(increment);
+    if (!isTurboActive) {
       decreaseEnergy(multitapLevel);
     }
-  };
+  }
+};
 
   return (
       <div className="clicker">
