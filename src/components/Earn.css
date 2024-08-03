@@ -100,7 +100,7 @@ body {
 }
 
 .ui\/ux {
-  background-color: #2b9dd4 !important;
+  background-color: #161616 !important;
 }
 
 /* Решта CSS залишається без змін */
@@ -110,7 +110,7 @@ body {
   border-radius: 15px;
   padding: 10px;
   width: 105%;
-  margin-left: -8px;
+  margin-left: -7px;
   box-sizing: border-box;
   flex-grow: 1;
   display: flex;
@@ -303,7 +303,7 @@ body {
 
   .task-buttons {
     width: calc(87% + 38px); /* Розширюємо на ширину лівого та правого відступів */
-    left: 2px; /* Зміщуємо вліво на половину додаткової ширини */
+    left: 3px; /* Зміщуємо вліво на половину додаткової ширини */
     position: relative;
   }
 
