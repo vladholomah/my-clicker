@@ -308,3 +308,79 @@ body {
     left: -39px; /* Зміщуємо вліво на половину додаткової ширини */
   }
 }
+
+.confirms-button1:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.daily-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.daily-reward {
+  background-color: #2b2b2b;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.daily-reward.claimed {
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
+}
+
+.daily-reward.current {
+  border: 2px solid #f9ae2f;
+}
+
+.day {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.reward {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #f9ae2f;
+}
+
+.daily-reward.claimed {
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
+}
+
+.daily-reward.current {
+  border: 2px solid #f9ae2f;
+}
+
+.daily-reward.current.claimed {
+  background-color: #4CAF50;
+  border: 2px solid #f9ae2f;
+}
+
+.confirms-button1.claimed {
+  background-color: #4f504f;
+  color: white;
+}
+
+.earn-container {
+  /* ... існуючі стилі ... */
+}
+
+.task-section {
+  /* ... існуючі стилі ... */
+  transition: padding-bottom 0.3s ease;
+}
+
+.tasks-list1 {
+  /* ... існуючі стилі ... */
+  padding-bottom: 60px; /* Додайте цей рядок */
+}
+
+/* ... інші існуючі стилі ... */
