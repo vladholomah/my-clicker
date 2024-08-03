@@ -92,8 +92,8 @@ body {
   background-color: #000000;
   border-radius: 15px;
   padding: 20px;
-  width: calc(100% + 40px);
-  margin-left: -20px;
+  width: 126%;
+  margin-left: -40px;
   box-sizing: border-box;
   flex-grow: 1;
   display: flex;
@@ -303,8 +303,7 @@ body {
     overflow-x: hidden;
   }
 
-  .task-buttons,
-  .task-section {
+  .task-buttons {
     width: calc(100% + 40px);
     margin-left: -20px;
     position: relative;
