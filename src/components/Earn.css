@@ -4,13 +4,13 @@ body {
 
 .earn-container {
   padding: 20px;
-  color: black;
+  color: #000000;
   background-color: #000000;
   min-height: 100vh;
   font-family: Arial, sans-serif;
   width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
+  max-width: 120%;
+  margin-left: -2px;
   overflow-y: auto;
   max-height: 95vh;
   box-sizing: border-box;
@@ -23,7 +23,7 @@ body {
   font-size: 20px;
   margin-bottom: 10px;
   color: #ffffff;
-  margin-left: -15px;
+  margin-left: 2px;
 }
 
 .task-buttons {
@@ -109,8 +109,8 @@ body {
   background-color: #000000;
   border-radius: 15px;
   padding: 10px;
-  width: 119%;
-  margin-left: -26px;
+  width: 105%;
+  margin-left: -8px;
   box-sizing: border-box;
   flex-grow: 1;
   display: flex;
@@ -302,8 +302,8 @@ body {
   }
 
   .task-buttons {
-    width: calc(100% + 38px); /* Розширюємо на ширину лівого та правого відступів */
-    left: -19px; /* Зміщуємо вліво на половину додаткової ширини */
+    width: calc(87% + 38px); /* Розширюємо на ширину лівого та правого відступів */
+    left: 2px; /* Зміщуємо вліво на половину додаткової ширини */
     position: relative;
   }
 
