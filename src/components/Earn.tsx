@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Earn.css';
 
 interface Task {
@@ -82,8 +82,6 @@ const Earn: React.FC = () => {
   const [currentDay, setCurrentDay] = useState(1);
   const [lastClaimTime, setLastClaimTime] = useState<number | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const storedRewards = localStorage.getItem('dailyRewards');
     const storedLastClaimTime = localStorage.getItem('lastClaimTime');
@@ -108,35 +106,6 @@ const Earn: React.FC = () => {
 
     if (storedCurrentDay) {
       setCurrentDay(parseInt(storedCurrentDay, 10));
-    }
-
-    const container = containerRef.current;
-    if (container) {
-      let startY: number;
-
-      const handleTouchStart = (e: TouchEvent) => {
-        startY = e.touches[0].clientY;
-      };
-
-      const handleTouchMove = (e: TouchEvent) => {
-        const currentY = e.touches[0].clientY;
-        const diffY = startY - currentY;
-
-        if (container.scrollTop === 0 && diffY < 0) {
-          e.preventDefault();
-        }
-        if ((container.scrollHeight - container.scrollTop <= container.clientHeight) && diffY > 0) {
-          e.preventDefault();
-        }
-      };
-
-      container.addEventListener('touchstart', handleTouchStart);
-      container.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-      return () => {
-        container.removeEventListener('touchstart', handleTouchStart);
-        container.removeEventListener('touchmove', handleTouchMove);
-      };
     }
   }, []);
 
@@ -192,7 +161,7 @@ const Earn: React.FC = () => {
   const isRewardAvailable = lastClaimTime === null || Date.now() - lastClaimTime > 24 * 60 * 60 * 1000;
 
   return (
-    <div className="earn-container" ref={containerRef}>
+    <div className="earn-container">
       <div className="earn-content">
         <h1>My Tasks</h1>
 
