@@ -29,7 +29,7 @@ const Earn: React.FC = () => {
     {
       id: 2,
       type: 'ui/ux',
-      title: 'Telegram',
+      title: 'Friends',
       icon: '/images/ui-ux-icon.png',
       reward: 200,
       completed: false

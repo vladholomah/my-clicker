@@ -95,12 +95,12 @@ body {
   height: 20px;
 }
 
-.sketch {
-  background-color: #f50000;
+.calendar {
+  background-color: #161616;
 }
 
 .ui\/ux {
-  background-color: #2b9dd4 !important;
+  background-color: #161616 !important;
 }
 
 /* Решта CSS залишається без змін */
@@ -141,15 +141,11 @@ body {
   align-items: center;
   background-color: #161616;
   border-radius: 25px;
-  padding: 20px;
+  padding: 12px; /* зменшено padding */
   cursor: pointer;
-  width: 100%;
-  height: 22%;
+  width: 100%; /* тепер займає всю ширину батьківського елемента */
   box-sizing: border-box;
-  will-change: transform;
-   transform: translateZ(0);
-   -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+  margin-bottom: 0px; /* додано відступ знизу */
 }
 
 .task-icon1 {
