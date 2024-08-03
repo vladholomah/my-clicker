@@ -1,6 +1,5 @@
 body {
   overflow-x: hidden;
-  overscroll-behavior-y: none;
 }
 
 .earn-container {
@@ -13,17 +12,11 @@ body {
   max-width: 100%;
   margin: 0 auto;
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: 95vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   position: relative;
-  -webkit-overflow-scrolling: touch;
-}
-
-.earn-content {
-  position: relative;
-  z-index: 1;
 }
 
 .earn-container h1 {
@@ -39,7 +32,6 @@ body {
   margin-bottom: 20px;
   width: 112%;
   position: relative;
-  z-index: 2;
 }
 
 .task-button {
@@ -55,7 +47,6 @@ body {
   color: white;
   height: 170px;
   position: relative;
-  background-color: #161616;
 }
 
 .task-icon {
@@ -82,25 +73,54 @@ body {
   margin-bottom: 5px;
 }
 
-.arrow-icon12 {
-  width: 30px;
-  height: 30px;
-  margin-bottom: 3px;
+.task-reward-button {
+  display: flex;
+  align-items: center;
 }
+
+.coin-icon-button {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+.coin-amount-button {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.calendar {
+  background-color: #161616;
+}
+
+.ui\/ux {
+  background-color: #2b9dd4 !important;
+}
+
+/* Решта CSS залишається без змін */
 
 .task-section {
   background-color: #000000;
   border-radius: 15px;
-  padding: 20px;
-  width: calc(113% + 40px);
-  margin-left: -40px;
+  padding: 10px;
+  width: 119%;
+  margin-left: -26px;
   box-sizing: border-box;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-y: visible;
-  z-index: 1;
+}
+
+.tasks-list1 {
+  width: 100%;
+  overflow-x: hidden; /* Додано для запобігання горизонтального скролінгу */
 }
 
 .earn-container h2 {
@@ -110,19 +130,15 @@ body {
 }
 
 .tasks-list1 {
-  position: relative;
-  overflow-y: visible;
-  padding-bottom: 65px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
-  overscroll-behavior: contain;
-  z-index: 2;
+  overflow-y: auto;
 }
 
 .task-item1 {
-  position: relative;
+ position: relative;
   display: flex;
   align-items: center;
   background-color: #161616;
@@ -133,7 +149,8 @@ body {
   box-sizing: border-box;
   transform: translateZ(0);
   will-change: transform;
-  z-index: 3;
+   -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
 }
 
 .task-icon1 {
@@ -161,7 +178,7 @@ body {
 }
 
 .coin-amount1 {
-  color: #ffffff;
+  color: #ffffff; /* Жовтий колір, схожий на колір монети */
   font-size: 12px;
   font-weight: bold;
   margin-top: 5px;
@@ -176,6 +193,12 @@ body {
 .arrow-icon1 {
   width: 15px;
   height: 15px;
+}
+
+.arrow-icon12 {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 3px;
 }
 
 .confirmations-overlay1 {
@@ -199,12 +222,21 @@ body {
   text-align: center;
   position: relative;
   animation: slideUp 0.3s ease-out;
-  z-index: 1001;
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.coin-icon11 {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
 }
 
 .close-button1 {
@@ -246,6 +278,37 @@ body {
   margin-top: 20px;
 }
 
+.tasks-list1::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tasks-list1::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tasks-list1::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+.tasks-list1::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media screen and (max-width: 768px) {
+  .earn-container {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .task-buttons {
+    width: calc(100% + 38px); /* Розширюємо на ширину лівого та правого відступів */
+    left: -19px; /* Зміщуємо вліво на половину додаткової ширини */
+    position: relative;
+  }
+
+}
+
 .confirms-button1:disabled {
   background-color: #888;
   cursor: not-allowed;
@@ -268,7 +331,7 @@ body {
 }
 
 .daily-reward.claimed {
-  background-color: #4CAF50;
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
 }
 
 .daily-reward.current {
@@ -288,24 +351,32 @@ body {
   color: #f9ae2f;
 }
 
+.daily-reward.claimed {
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
+}
+
+.daily-reward.current {
+  border: 2px solid #f9ae2f;
+}
+
+.daily-reward.current.claimed {
+  background-color: #4CAF50;
+  border: 2px solid #f9ae2f;
+}
+
 .confirms-button1.claimed {
   background-color: #4f504f;
   color: white;
 }
 
-* {
-  -webkit-tap-highlight-color: transparent;
+.earn-container {
+  /* ... існуючі стилі ... */
 }
 
-@media screen and (max-width: 768px) {
-  .earn-container {
-    width: 100vw;
-    overflow-x: hidden;
-  }
 
-  .task-buttons {
-    width: calc(100% + 40px);
-    margin-left: -20px;
-    position: relative;
-  }
+.tasks-list1 {
+  overscroll-behavior: contain;
+  padding-bottom: 60px; /* Додайте цей рядок */
 }
+
+/* ... інші існуючі стилі ... */
