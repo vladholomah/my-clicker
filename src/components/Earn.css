@@ -17,6 +17,11 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+    top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .earn-container h1 {
@@ -119,7 +124,9 @@ body {
 
 .tasks-list1 {
   width: 100%;
-  overflow-x: hidden; /* Додано для запобігання горизонтального скролінгу */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px;
 }
 
 .earn-container h2 {
@@ -137,6 +144,7 @@ body {
 }
 
 .task-item1 {
+  position: relative;
   display: flex;
   align-items: center;
   background-color: #161616;
@@ -369,9 +377,6 @@ body {
   color: white;
 }
 
-.earn-container {
-  /* ... існуючі стилі ... */
-}
 
 .task-section {
   /* ... існуючі стилі ... */
@@ -383,4 +388,10 @@ body {
   padding-bottom: 60px; /* Додайте цей рядок */
 }
 
-/* ... інші існуючі стилі ... */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overscroll-behavior-y: none;
+}
