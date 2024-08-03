@@ -12,7 +12,7 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding-bottom: 58px; /* Збільшений відступ для нижнього меню */
+  padding-bottom: 54px; /* Збільшений відступ для нижнього меню */
 }
 
 .earn-content {
@@ -23,6 +23,8 @@ body {
 .earn-container h1 {
   font-size: 20px;
   margin-bottom: 10px;
+  width: 87%;
+  margin-left: 25px;
   color: #ffffff;
 }
 
@@ -89,6 +91,8 @@ body {
 .earn-container h2 {
   font-size: 15px;
   margin-bottom: 15px;
+    width: 87%;
+    margin-left: 25px;
   color: #ffffff;
 }
 
@@ -105,7 +109,8 @@ body {
   border-radius: 25px;
   padding: 12px;
   cursor: pointer;
-  width: 100%;
+    width: 87%;
+    margin-left: 25px;
   box-sizing: border-box;
 }
 
@@ -269,10 +274,11 @@ body {
 
 @media screen and (max-width: 768px) {
   .earn-container {
-    width: 100%;
+    width: 112%;
   }
 
   .task-buttons {
-    width: 100%;
+    width: 87%;
+    margin-left: 25px;
   }
 }
