@@ -383,7 +383,7 @@ body {
 }
 
 .tasks-list1 {
-  /* ... існуючі стилі ... */
+  overscroll-behavior: contain;
   padding-bottom: 60px; /* Додайте цей рядок */
 }
 
