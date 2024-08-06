@@ -47,7 +47,7 @@
 
 .market-description-box {
   background-color: #161616;
-  border-radius: 30px;
+  border-radius: 10px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -80,7 +80,8 @@
   border: none;
   background-color: transparent;
   color: #cccccc;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
   border-radius: 10px;
