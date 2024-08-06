@@ -455,3 +455,97 @@ font-weight: bold;
 }
 
 
+/* Додайте або оновіть ці стилі у вашому Card.css */
+
+.items-section {
+  padding: 0 15px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.items-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 15px;
+  padding-bottom: 20px;
+}
+
+.item-card {
+  flex: 0 0 calc(50% - 7.5px);
+  background-color: #161616;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.item-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.item-info {
+  padding: 10px;
+}
+
+.item-info h3 {
+  font-size: 14px;
+  margin: 0 0 5px;
+}
+
+.item-info p {
+  font-size: 12px;
+  margin: 0 0 5px;
+}
+
+.quantity-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+}
+
+.quantity-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.quantity-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.quantity-display {
+  margin: 0 5px;
+  font-size: 14px;
+}
+
+.usdt-info {
+  display: flex;
+  align-items: center;
+}
+
+.usdt-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 3px;
+}
+
+.buy-button {
+  width: 100%;
+  padding: 8px;
+  background-color: #f9ae2f;
+  color: #000000;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Інші стилі залишаються без змін */
