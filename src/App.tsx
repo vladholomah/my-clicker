@@ -35,65 +35,51 @@ function AppContent() {
     return localStorage.getItem('lastRewardLevel') || '';
   });
 
-  const handleMenuItemClick = (item: string) => {
-    setCurrentView(item);
-  };
+  useEffect(() => {
+    const initTelegramWebApp = () => {
+      if (window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
 
-  const handleBinanceClick = () => {
-    setCurrentView('exchange');
-  };
+        tg.setHeaderColor('#000000');
+        tg.setBackgroundColor('#000000');
+        tg.setThemeParams({
+          bg_color: '#000000',
+          text_color: '#ffffff',
+          hint_color: '#999999',
+          link_color: '#00aaff',
+          button_color: '#00aaff',
+          button_text_color: '#ffffff'
+        });
+
+        if (tg.MainButton) {
+          tg.MainButton.setParams({
+            text_color: '#ffffff',
+            color: '#000000'
+          });
+        }
+
+        console.log('Telegram WebApp initialized and theme set');
+      } else {
+        console.log('Telegram WebApp is not available');
+      }
+    };
+
+    initTelegramWebApp();
+  }, []);
+
+  const handleMenuItemClick = (item: string) => setCurrentView(item);
+  const handleBinanceClick = () => setCurrentView('exchange');
+  const handleSettingsClick = () => setCurrentView('settings');
 
   const handleExchangeSelect = (exchangeName: string) => {
-    const newExchange = {
+    setSelectedExchange({
       name: exchangeName,
       logo: exchangeName === 'Holmah'
         ? '/images/holmah.png'
         : `/images/${exchangeName.toLowerCase()}${exchangeName === 'Binance' ? '-logo' : ''}.png`
-    };
-    setSelectedExchange(newExchange);
+    });
     setCurrentView('mine');
-  };
-
-  const handleSettingsClick = () => {
-    setCurrentView('settings');
-  };
-
-  const handleMultitapUpgrade = (level: number, cost: number) => {
-    if (score >= cost) {
-      setScore(prevScore => {
-        const newScore = prevScore - cost;
-        localStorage.setItem('userScore', newScore.toString());
-        return newScore;
-      });
-      setMultitapLevel(level);
-      localStorage.setItem('multitapLevel', level.toString());
-    }
-  };
-
-  const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
-    if (score >= cost) {
-      setScore(prevScore => {
-        const newScore = prevScore - cost;
-        localStorage.setItem('userScore', newScore.toString());
-        return newScore;
-      });
-      setMaxEnergy(newMaxEnergy);
-      localStorage.setItem('maxEnergy', newMaxEnergy.toString());
-      refillEnergy();
-    }
-  };
-
-  const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
-    if (score >= cost) {
-      setScore(prevScore => {
-        const newScore = prevScore - cost;
-        localStorage.setItem('userScore', newScore.toString());
-        return newScore;
-      });
-      setLocalEnergyRecoveryRate(newRate);
-      setEnergyRecoveryRate(newRate);
-      localStorage.setItem('energyRecoveryRate', newRate.toString());
-    }
   };
 
   const handleScoreChange = (increment: number) => {
@@ -102,6 +88,33 @@ function AppContent() {
       localStorage.setItem('userScore', newScore.toString());
       return newScore;
     });
+  };
+
+  const handleUpgrade = (upgradeType: string, newValue: number, cost: number) => {
+    if (score >= cost) {
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
+
+      switch (upgradeType) {
+        case 'multitap':
+          setMultitapLevel(newValue);
+          localStorage.setItem('multitapLevel', newValue.toString());
+          break;
+        case 'energyBoost':
+          setMaxEnergy(newValue);
+          localStorage.setItem('maxEnergy', newValue.toString());
+          refillEnergy();
+          break;
+        case 'energyRecovery':
+          setLocalEnergyRecoveryRate(newValue);
+          setEnergyRecoveryRate(newValue);
+          localStorage.setItem('energyRecoveryRate', newValue.toString());
+          break;
+      }
+    }
   };
 
   const getLevelInfo = (score: number) => {
@@ -116,11 +129,7 @@ function AppContent() {
   const handleRewardsClick = () => {
     const currentLevel = getLevelInfo(score);
     if (currentLevel.name !== lastRewardLevel && !rewardsReceived) {
-      setScore(prevScore => {
-        const newScore = prevScore + currentLevel.reward;
-        localStorage.setItem('userScore', newScore.toString());
-        return newScore;
-      });
+      handleScoreChange(currentLevel.reward);
       setRewardsReceived(true);
       setLastRewardLevel(currentLevel.name);
       localStorage.setItem('lastRewardLevel', currentLevel.name);
@@ -138,23 +147,17 @@ function AppContent() {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'userScore') {
         setScore(parseInt(e.newValue || '0', 10));
-      }
-      if (e.key === 'multitapLevel') {
+      } else if (e.key === 'multitapLevel') {
         setMultitapLevel(parseInt(e.newValue || '1', 10));
-      }
-      if (e.key === 'energyRecoveryRate') {
+      } else if (e.key === 'energyRecoveryRate') {
         setLocalEnergyRecoveryRate(parseInt(e.newValue || '5', 10));
-      }
-      if (e.key === 'lastRewardLevel') {
+      } else if (e.key === 'lastRewardLevel') {
         setLastRewardLevel(e.newValue || '');
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const renderView = () => {
@@ -176,9 +179,9 @@ function AppContent() {
         return <Boost
           balance={score}
           setCurrentView={setCurrentView}
-          onMultitapUpgrade={handleMultitapUpgrade}
-          onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
-          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgrade}
+          onMultitapUpgrade={(level, cost) => handleUpgrade('multitap', level, cost)}
+          onEnergyBoostUpgrade={(newMaxEnergy, cost) => handleUpgrade('energyBoost', newMaxEnergy, cost)}
+          onEnergyRecoveryUpgrade={(newRate, cost) => handleUpgrade('energyRecovery', newRate, cost)}
           currentLevel={multitapLevel}
           currentMaxEnergy={maxEnergy}
           currentEnergyRecoveryRate={energyRecoveryRate}
