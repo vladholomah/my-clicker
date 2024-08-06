@@ -68,7 +68,10 @@
 .tab-selector {
   display: flex;
   justify-content: center;
-  padding: 10px 15px;
+  padding: 5px 15px;
+  background-color: #161616;
+  border-radius: 10px;
+  margin: 0 15px 10px;
 }
 
 .tab-selector button {
@@ -76,15 +79,23 @@
   padding: 10px 20px;
   border: none;
   background-color: transparent;
-  color: #ffffff;
-  font-size: 14px;
+  color: #cccccc;
+  font-size: 10px;
   cursor: pointer;
-  transition: color 0.3s ease, border-color 0.3s ease;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  margin: 0 5px;
 }
 
 .tab-selector button.active {
+  color: #000000;
+  background-color: #f7ad2f;
+  box-shadow: 0 2px 10px rgba(247, 173, 47, 0.3);
+}
+
+.tab-selector button:hover:not(.active) {
+  background-color: rgba(247, 173, 47, 0.1);
   color: #ffffff;
-  border-bottom: 2px solid #f7ad2f;
 }
 
 .search-bar {
