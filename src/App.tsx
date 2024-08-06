@@ -209,6 +209,9 @@ function AppContent() {
 
   return (
     <div className="App">
+      <div className="fake-header">
+        <h1>Crypto Miner</h1>
+      </div>
       <div className="game-interface">
         {renderView()}
         {currentView !== 'card' && (
