@@ -28,19 +28,21 @@
 
 .card-header {
   display: flex;
+  justify-content: center;
   align-items: center;
   height: 50px;
   padding: 10px 15px;
+  text-align: center;
 }
-
 
 .card-header h1 {
   margin: 0;
-  font-size: 25px;
+  font-size: 20px;
+  width: 100%; /* Це забезпечить, що заголовок займає всю ширину */
 }
 
 .market-description {
-  padding: 40px 15px;
+  padding: 10px 15px;
 }
 
 .market-description-box {
