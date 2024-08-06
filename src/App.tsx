@@ -34,62 +34,66 @@ function AppContent() {
   const [lastRewardLevel, setLastRewardLevel] = useState(() => {
     return localStorage.getItem('lastRewardLevel') || '';
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const initTelegramWebApp = () => {
-      try {
-        if (window.Telegram?.WebApp) {
-          const tg = window.Telegram.WebApp;
-          tg.ready();
+  const handleMenuItemClick = (item: string) => {
+    setCurrentView(item);
+  };
 
-          tg.setHeaderColor('#000000');
-          tg.setBackgroundColor('#000000');
-          tg.setThemeParams({
-            bg_color: '#000000',
-            text_color: '#ffffff',
-            hint_color: '#999999',
-            link_color: '#00aaff',
-            button_color: '#00aaff',
-            button_text_color: '#ffffff'
-          });
-
-          if (tg.MainButton) {
-            tg.MainButton.setParams({
-              text_color: '#ffffff',
-              color: '#000000'
-            });
-          }
-
-          console.log('Telegram WebApp initialized and theme set');
-        } else {
-          console.log('Telegram WebApp is not available');
-        }
-      } catch (error) {
-        console.error('Error initializing Telegram WebApp:', error);
-        setError('Failed to initialize Telegram WebApp');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initTelegramWebApp();
-  }, []);
-
-
-  const handleMenuItemClick = (item: string) => setCurrentView(item);
-  const handleBinanceClick = () => setCurrentView('exchange');
-  const handleSettingsClick = () => setCurrentView('settings');
+  const handleBinanceClick = () => {
+    setCurrentView('exchange');
+  };
 
   const handleExchangeSelect = (exchangeName: string) => {
-    setSelectedExchange({
+    const newExchange = {
       name: exchangeName,
       logo: exchangeName === 'Holmah'
         ? '/images/holmah.png'
         : `/images/${exchangeName.toLowerCase()}${exchangeName === 'Binance' ? '-logo' : ''}.png`
-    });
+    };
+    setSelectedExchange(newExchange);
     setCurrentView('mine');
+  };
+
+  const handleSettingsClick = () => {
+    setCurrentView('settings');
+  };
+
+  const handleMultitapUpgrade = (level: number, cost: number) => {
+    if (score >= cost) {
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
+      setMultitapLevel(level);
+      localStorage.setItem('multitapLevel', level.toString());
+    }
+  };
+
+  const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
+    if (score >= cost) {
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
+      setMaxEnergy(newMaxEnergy);
+      localStorage.setItem('maxEnergy', newMaxEnergy.toString());
+      refillEnergy();
+    }
+  };
+
+  const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
+    if (score >= cost) {
+      setScore(prevScore => {
+        const newScore = prevScore - cost;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
+      setLocalEnergyRecoveryRate(newRate);
+      setEnergyRecoveryRate(newRate);
+      localStorage.setItem('energyRecoveryRate', newRate.toString());
+    }
   };
 
   const handleScoreChange = (increment: number) => {
@@ -98,33 +102,6 @@ function AppContent() {
       localStorage.setItem('userScore', newScore.toString());
       return newScore;
     });
-  };
-
-  const handleUpgrade = (upgradeType: string, newValue: number, cost: number) => {
-    if (score >= cost) {
-      setScore(prevScore => {
-        const newScore = prevScore - cost;
-        localStorage.setItem('userScore', newScore.toString());
-        return newScore;
-      });
-
-      switch (upgradeType) {
-        case 'multitap':
-          setMultitapLevel(newValue);
-          localStorage.setItem('multitapLevel', newValue.toString());
-          break;
-        case 'energyBoost':
-          setMaxEnergy(newValue);
-          localStorage.setItem('maxEnergy', newValue.toString());
-          refillEnergy();
-          break;
-        case 'energyRecovery':
-          setLocalEnergyRecoveryRate(newValue);
-          setEnergyRecoveryRate(newValue);
-          localStorage.setItem('energyRecoveryRate', newValue.toString());
-          break;
-      }
-    }
   };
 
   const getLevelInfo = (score: number) => {
@@ -139,7 +116,11 @@ function AppContent() {
   const handleRewardsClick = () => {
     const currentLevel = getLevelInfo(score);
     if (currentLevel.name !== lastRewardLevel && !rewardsReceived) {
-      handleScoreChange(currentLevel.reward);
+      setScore(prevScore => {
+        const newScore = prevScore + currentLevel.reward;
+        localStorage.setItem('userScore', newScore.toString());
+        return newScore;
+      });
       setRewardsReceived(true);
       setLastRewardLevel(currentLevel.name);
       localStorage.setItem('lastRewardLevel', currentLevel.name);
@@ -157,86 +138,77 @@ function AppContent() {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'userScore') {
         setScore(parseInt(e.newValue || '0', 10));
-      } else if (e.key === 'multitapLevel') {
+      }
+      if (e.key === 'multitapLevel') {
         setMultitapLevel(parseInt(e.newValue || '1', 10));
-      } else if (e.key === 'energyRecoveryRate') {
+      }
+      if (e.key === 'energyRecoveryRate') {
         setLocalEnergyRecoveryRate(parseInt(e.newValue || '5', 10));
-      } else if (e.key === 'lastRewardLevel') {
+      }
+      if (e.key === 'lastRewardLevel') {
         setLastRewardLevel(e.newValue || '');
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const renderView = () => {
-    console.log('Rendering view:', currentView);
-    try {
-      switch(currentView) {
-        case 'levels':
-          return <Levels />;
-        case 'settings':
-          return <Settings />;
-        case 'exchange':
-          return <Exchange
-            onExchangeSelect={handleExchangeSelect}
-            selectedExchange={selectedExchange.name}
-            onScoreChange={handleScoreChange}
-            balance={score}
-          />;
-        case 'friends':
-          return <h1>Friends</h1>;
-        case 'boost':
-          return <Boost
-            balance={score}
-            setCurrentView={setCurrentView}
-            onMultitapUpgrade={(level, cost) => handleUpgrade('multitap', level, cost)}
-            onEnergyBoostUpgrade={(newMaxEnergy, cost) => handleUpgrade('energyBoost', newMaxEnergy, cost)}
-            onEnergyRecoveryUpgrade={(newRate, cost) => handleUpgrade('energyRecovery', newRate, cost)}
-            currentLevel={multitapLevel}
-            currentMaxEnergy={maxEnergy}
-            currentEnergyRecoveryRate={energyRecoveryRate}
-            onRewardsClick={handleRewardsClick}
-            rewardsReceived={rewardsReceived}
-          />;
-        case 'earn':
-          return <Earn />;
-        case 'card':
-          return <Card
-            balance={score}
-            activeMenuItem={currentView}
-            onMenuItemClick={handleMenuItemClick}
-          />;
-        case 'mine':
-        default:
-          console.log('Rendering default view');
-          return <Clicker
-            onBinanceClick={handleBinanceClick}
-            selectedExchange={selectedExchange}
-            onSettingsClick={handleSettingsClick}
-            score={score}
-            onScoreChange={handleScoreChange}
-            onLevelClick={() => setCurrentView('levels')}
-            multitapLevel={multitapLevel}
-          />;
-      }
-    } catch (error) {
-      console.error('Error rendering view:', error);
-      return <div>Error rendering view. Please try again.</div>;
+    switch(currentView) {
+      case 'levels':
+        return <Levels />;
+      case 'settings':
+        return <Settings />;
+      case 'exchange':
+        return <Exchange
+          onExchangeSelect={handleExchangeSelect}
+          selectedExchange={selectedExchange.name}
+          onScoreChange={handleScoreChange}
+          balance={score}
+        />;
+      case 'friends':
+        return <h1>Friends</h1>;
+      case 'boost':
+        return <Boost
+          balance={score}
+          setCurrentView={setCurrentView}
+          onMultitapUpgrade={handleMultitapUpgrade}
+          onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
+          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgrade}
+          currentLevel={multitapLevel}
+          currentMaxEnergy={maxEnergy}
+          currentEnergyRecoveryRate={energyRecoveryRate}
+          onRewardsClick={handleRewardsClick}
+          rewardsReceived={rewardsReceived}
+        />;
+      case 'earn':
+        return <Earn />;
+      case 'card':
+        return <Card
+          balance={score}
+          activeMenuItem={currentView}
+          onMenuItemClick={handleMenuItemClick}
+        />;
+      case 'mine':
+      default:
+        return <Clicker
+          onBinanceClick={handleBinanceClick}
+          selectedExchange={selectedExchange}
+          onSettingsClick={handleSettingsClick}
+          score={score}
+          onScoreChange={handleScoreChange}
+          onLevelClick={() => setCurrentView('levels')}
+          multitapLevel={multitapLevel}
+        />;
     }
   };
 
-  if (isLoading) {
-    return <div style={{color: 'white', backgroundColor: 'black', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>Loading...</div>;
-  }
-
-  if (error) {
-    return <div style={{color: 'white', backgroundColor: 'black', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{error}</div>;
-  }
-
   return (
-    <div className="App" style={{color: 'white', backgroundColor: 'black', minHeight: '100vh'}}>
+    <div className="App">
       <div className="game-interface">
         {renderView()}
         {currentView !== 'card' && (
