@@ -104,9 +104,6 @@ const Card: React.FC<CardProps> = ({ balance, activeMenuItem, onMenuItemClick })
     <div className="card-container">
       <div className="card-content">
         <div className="fixed-top">
-          <div className="card-header">
-            <h1>Market</h1>
-          </div>
 
           <div className="market-description">
             <div className="market-description-box">

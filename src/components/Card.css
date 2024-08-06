@@ -33,23 +33,14 @@
   padding: 10px 15px;
 }
 
-.back-buttons {
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0;
-  margin-right: 15px;
-}
 
 .card-header h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 .market-description {
-  padding: 10px 15px;
+  padding: 40px 15px;
 }
 
 .market-description-box {
@@ -84,13 +75,13 @@
   border: none;
   background-color: transparent;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .tab-selector button.active {
-  color: #f9ae2f;
+  color: #ffffff;
   border-bottom: 2px solid #f7ad2f;
 }
 
@@ -105,7 +96,7 @@
   border: none;
   border-radius: 20px;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 12px;
   box-sizing: border-box;
 }
 
@@ -133,7 +124,7 @@
 }
 
 .item-image-container {
-  width: 100%;
+  width: 80%;
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
@@ -155,14 +146,14 @@
 }
 
 .item-info h3 {
-  font-size: 16px;
-  margin: 5px 0;
+  font-size: 14px;
+  margin: 1px 0;
   width: 100%;
 }
 
 .item-info p {
-  font-size: 12px;
-  margin: 5px 0;
+  font-size: 10px;
+  margin: 1px 0;
   width: 100%;
   color: #cccccc;
 }
@@ -192,7 +183,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 5px 0;
+  margin: 2px 0;
 }
 
 .quantity-button {
@@ -211,7 +202,7 @@
 }
 
 .quantity-display {
-  margin: 0 15px;
+  margin: 0 5px;
   font-size: 16px;
 }
 
