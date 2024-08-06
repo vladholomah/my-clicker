@@ -34,39 +34,49 @@ function AppContent() {
   const [lastRewardLevel, setLastRewardLevel] = useState(() => {
     return localStorage.getItem('lastRewardLevel') || '';
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const initTelegramWebApp = () => {
-      if (window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+      try {
+        if (window.Telegram?.WebApp) {
+          const tg = window.Telegram.WebApp;
+          tg.ready();
 
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
-        tg.setThemeParams({
-          bg_color: '#000000',
-          text_color: '#ffffff',
-          hint_color: '#999999',
-          link_color: '#00aaff',
-          button_color: '#00aaff',
-          button_text_color: '#ffffff'
-        });
-
-        if (tg.MainButton) {
-          tg.MainButton.setParams({
+          tg.setHeaderColor('#000000');
+          tg.setBackgroundColor('#000000');
+          tg.setThemeParams({
+            bg_color: '#000000',
             text_color: '#ffffff',
-            color: '#000000'
+            hint_color: '#999999',
+            link_color: '#00aaff',
+            button_color: '#00aaff',
+            button_text_color: '#ffffff'
           });
-        }
 
-        console.log('Telegram WebApp initialized and theme set');
-      } else {
-        console.log('Telegram WebApp is not available');
+          if (tg.MainButton) {
+            tg.MainButton.setParams({
+              text_color: '#ffffff',
+              color: '#000000'
+            });
+          }
+
+          console.log('Telegram WebApp initialized and theme set');
+        } else {
+          console.log('Telegram WebApp is not available');
+        }
+      } catch (error) {
+        console.error('Error initializing Telegram WebApp:', error);
+        setError('Failed to initialize Telegram WebApp');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     initTelegramWebApp();
   }, []);
+
 
   const handleMenuItemClick = (item: string) => setCurrentView(item);
   const handleBinanceClick = () => setCurrentView('exchange');
@@ -161,57 +171,72 @@ function AppContent() {
   }, []);
 
   const renderView = () => {
-    switch(currentView) {
-      case 'levels':
-        return <Levels />;
-      case 'settings':
-        return <Settings />;
-      case 'exchange':
-        return <Exchange
-          onExchangeSelect={handleExchangeSelect}
-          selectedExchange={selectedExchange.name}
-          onScoreChange={handleScoreChange}
-          balance={score}
-        />;
-      case 'friends':
-        return <h1>Friends</h1>;
-      case 'boost':
-        return <Boost
-          balance={score}
-          setCurrentView={setCurrentView}
-          onMultitapUpgrade={(level, cost) => handleUpgrade('multitap', level, cost)}
-          onEnergyBoostUpgrade={(newMaxEnergy, cost) => handleUpgrade('energyBoost', newMaxEnergy, cost)}
-          onEnergyRecoveryUpgrade={(newRate, cost) => handleUpgrade('energyRecovery', newRate, cost)}
-          currentLevel={multitapLevel}
-          currentMaxEnergy={maxEnergy}
-          currentEnergyRecoveryRate={energyRecoveryRate}
-          onRewardsClick={handleRewardsClick}
-          rewardsReceived={rewardsReceived}
-        />;
-      case 'earn':
-        return <Earn />;
-      case 'card':
-        return <Card
-          balance={score}
-          activeMenuItem={currentView}
-          onMenuItemClick={handleMenuItemClick}
-        />;
-      case 'mine':
-      default:
-        return <Clicker
-          onBinanceClick={handleBinanceClick}
-          selectedExchange={selectedExchange}
-          onSettingsClick={handleSettingsClick}
-          score={score}
-          onScoreChange={handleScoreChange}
-          onLevelClick={() => setCurrentView('levels')}
-          multitapLevel={multitapLevel}
-        />;
+    console.log('Rendering view:', currentView);
+    try {
+      switch(currentView) {
+        case 'levels':
+          return <Levels />;
+        case 'settings':
+          return <Settings />;
+        case 'exchange':
+          return <Exchange
+            onExchangeSelect={handleExchangeSelect}
+            selectedExchange={selectedExchange.name}
+            onScoreChange={handleScoreChange}
+            balance={score}
+          />;
+        case 'friends':
+          return <h1>Friends</h1>;
+        case 'boost':
+          return <Boost
+            balance={score}
+            setCurrentView={setCurrentView}
+            onMultitapUpgrade={(level, cost) => handleUpgrade('multitap', level, cost)}
+            onEnergyBoostUpgrade={(newMaxEnergy, cost) => handleUpgrade('energyBoost', newMaxEnergy, cost)}
+            onEnergyRecoveryUpgrade={(newRate, cost) => handleUpgrade('energyRecovery', newRate, cost)}
+            currentLevel={multitapLevel}
+            currentMaxEnergy={maxEnergy}
+            currentEnergyRecoveryRate={energyRecoveryRate}
+            onRewardsClick={handleRewardsClick}
+            rewardsReceived={rewardsReceived}
+          />;
+        case 'earn':
+          return <Earn />;
+        case 'card':
+          return <Card
+            balance={score}
+            activeMenuItem={currentView}
+            onMenuItemClick={handleMenuItemClick}
+          />;
+        case 'mine':
+        default:
+          console.log('Rendering default view');
+          return <Clicker
+            onBinanceClick={handleBinanceClick}
+            selectedExchange={selectedExchange}
+            onSettingsClick={handleSettingsClick}
+            score={score}
+            onScoreChange={handleScoreChange}
+            onLevelClick={() => setCurrentView('levels')}
+            multitapLevel={multitapLevel}
+          />;
+      }
+    } catch (error) {
+      console.error('Error rendering view:', error);
+      return <div>Error rendering view. Please try again.</div>;
     }
   };
 
+  if (isLoading) {
+    return <div style={{color: 'white', backgroundColor: 'black', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>Loading...</div>;
+  }
+
+  if (error) {
+    return <div style={{color: 'white', backgroundColor: 'black', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{error}</div>;
+  }
+
   return (
-    <div className="App">
+    <div className="App" style={{color: 'white', backgroundColor: 'black', minHeight: '100vh'}}>
       <div className="game-interface">
         {renderView()}
         {currentView !== 'card' && (
