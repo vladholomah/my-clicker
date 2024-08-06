@@ -43,6 +43,7 @@
 
 .market-description {
   padding: 10px 15px;
+  margin-top: -10px;
 }
 
 .market-description-box {
@@ -223,7 +224,7 @@
 
 .buy-button {
   width: 80%;
-  padding: 10px;
+  padding: 7px;
   background-color: #f9ae2f;
   color: #000000;
   border: none;
