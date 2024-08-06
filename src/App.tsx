@@ -11,24 +11,6 @@ import { EnergyProvider, useEnergy } from './EnergyContext';
 import Earn from './components/Earn';
 import './App.css';
 
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        setHeaderColor: (color: string) => void;
-        setThemeParams: (params: {
-          bg_color?: string;
-          text_color?: string;
-          hint_color?: string;
-          link_color?: string;
-          button_color?: string;
-          button_text_color?: string;
-        }) => void;
-      };
-    };
-  }
-}
-
 function AppContent() {
   const [currentView, setCurrentView] = useState('mine');
   const [selectedExchange, setSelectedExchange] = useState({
@@ -52,25 +34,6 @@ function AppContent() {
   const [lastRewardLevel, setLastRewardLevel] = useState(() => {
     return localStorage.getItem('lastRewardLevel') || '';
   });
-
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const webApp = window.Telegram.WebApp;
-
-      // Встановлюємо темний колір для верхньої панелі
-      webApp.setHeaderColor('#000000');
-
-      // Налаштовуємо загальну тему додатка
-      webApp.setThemeParams({
-        bg_color: '#000000',
-        text_color: '#ffffff',
-        hint_color: '#999999',
-        link_color: '#00aaff',
-        button_color: '#00aaff',
-        button_text_color: '#ffffff'
-      });
-    }
-  }, []);
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
