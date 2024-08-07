@@ -7,8 +7,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  background-color: var(--tg-theme-bg-color, #000000);
+  color: var(--tg-theme-text-color, #ffffff);
 }
 
 code {
@@ -16,17 +16,15 @@ code {
     monospace;
 }
 
-/* Додамо стилі для адаптації до теми Telegram */
 :root {
-  --tg-theme-bg-color: #ffffff;
-  --tg-theme-text-color: #000000;
+  --tg-theme-bg-color: #000000;
+  --tg-theme-text-color: #ffffff;
   --tg-theme-hint-color: #999999;
-  --tg-theme-link-color: #2678b6;
+  --tg-theme-link-color: #3390ec;
   --tg-theme-button-color: #3390ec;
   --tg-theme-button-text-color: #ffffff;
 }
 
-/* Стиль для запобігання виділенню тексту */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;

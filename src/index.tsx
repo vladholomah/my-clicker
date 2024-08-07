@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -14,14 +14,21 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-// Налаштування Telegram Web App
-const tg = window.Telegram.WebApp;
-tg.expand();
-tg.setHeaderColor('secondary_bg_color');
+const TelegramWebAppWrapper: React.FC = () => {
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#000000');
+    tg.setBackgroundColor('#000000');
+  }, []);
+
+  return <App />;
+};
 
 root.render(
   <React.StrictMode>
-    <App />
+    <TelegramWebAppWrapper />
   </React.StrictMode>
 );
 
