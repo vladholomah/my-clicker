@@ -32,7 +32,7 @@
   align-items: center;
   height: 50px;
   padding: 10px 15px;
-  text-align: center;
+  text-align: left;
 }
 
 .card-header h1 {
@@ -63,7 +63,7 @@
 .market-description p {
   margin: 0;
   font-size: 14px;
-  color: #cccccc;
+  color: #ffffff;
 }
 
 .tab-selector {
