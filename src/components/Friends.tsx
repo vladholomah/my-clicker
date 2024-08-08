@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
-import { getReferrals } from '../api';
+import axios from 'axios';
 
 interface Friend {
   id: string;
@@ -14,8 +14,7 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      const link = `https://t.me/YourBot?start=${user.id}`;
-      setReferralLink(link);
+      setReferralLink(`https://t.me/holmah_coin_bot?start=${user.id}`);
       fetchFriends();
     }
   }, [user]);
@@ -23,8 +22,8 @@ const Friends: React.FC = () => {
   const fetchFriends = async () => {
     if (user) {
       try {
-        const response = await getReferrals(user.id);
-        setFriends(response.referrals);
+        const response = await axios.get(`/api/referral?userId=${user.id}`);
+        setFriends(response.data.referrals.map((id: string) => ({ id, name: `User ${id}` })));
       } catch (error) {
         console.error('Failed to fetch friends:', error);
       }

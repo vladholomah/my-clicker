@@ -19,7 +19,9 @@
     "react-transition-group": "^4.4.5",
     "recharts": "^2.12.7",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "mongodb": "^4.1.0",
+    "node-telegram-bot-api": "^0.54.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,7 +30,8 @@
     "eject": "react-scripts eject",
     "server": "cd server && node server.js",
     "bot": "cd server && node bot.js",
-    "dev": "concurrently \"npm start\" \"npm run server\" \"npm run bot\""
+    "dev": "concurrently \"npm start\" \"npm run server\" \"npm run bot\"",
+    "vercel-build": "npm run build"
   },
   "eslintConfig": {
     "extends": [
