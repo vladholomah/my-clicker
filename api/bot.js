@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
       const chatId = body.message.chat.id;
       const text = body.message.text;
 
-      console.log('Received message:', text);  // Додаємо логування
+      console.log('Received message:', text);
 
       if (text.startsWith('/start')) {
         const referralCode = text.split(' ')[1];

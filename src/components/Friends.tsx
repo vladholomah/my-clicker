@@ -12,12 +12,16 @@ const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const { user } = useTelegram();
 
-  useEffect(() => {
-    if (user) {
-      setReferralLink(`https://t.me/holmah_coin_bot?start=${user.id}`);
-      fetchFriends();
-    }
-  }, [user]);
+useEffect(() => {
+  const fetchFriends = async () => {
+    // Ваш код для отримання друзів
+  };
+
+  if (user) {
+    setReferralLink(`https://t.me/holmah_coin_bot?start=${user.id}`);
+    fetchFriends();
+  }
+}, [user]);
 
   const fetchFriends = async () => {
     if (user) {

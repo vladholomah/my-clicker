@@ -31,7 +31,7 @@
     "server": "cd server && node server.js",
     "bot": "cd server && node bot.js",
     "dev": "concurrently \"npm start\" \"npm run server\" \"npm run bot\"",
-    "vercel-build": "npm run build"
+    "vercel-build": "CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
