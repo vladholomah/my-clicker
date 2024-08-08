@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTelegram } from '../hooks/useTelegram';
+import WebApp from '@twa-dev/sdk';
 import axios from 'axios';
 
 interface Friend {
@@ -11,34 +11,35 @@ const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useTelegram();
 
   useEffect(() => {
     const fetchFriends = async () => {
-      if (user) {
-        try {
-          setLoading(true);
-          const response = await axios.get(`/api/getFriends?userId=${user.id}`);
-          setFriends(response.data.friends);
-          setError(null);
-        } catch (error) {
-          console.error('Failed to fetch friends:', error);
-          setError('Не вдалося завантажити список друзів. Спробуйте пізніше.');
-        } finally {
-          setLoading(false);
+      try {
+        setLoading(true);
+        const userId = WebApp.initDataUnsafe.user?.id;
+        if (!userId) {
+          throw new Error('User ID not found');
         }
+        const response = await axios.get(`/api/getFriends?userId=${userId}`);
+        setFriends(response.data.friends);
+        setError(null);
+      } catch (error) {
+        console.error('Failed to fetch friends:', error);
+        setError('Не вдалося завантажити список друзів. Спробуйте пізніше.');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchFriends();
-  }, [user]);
+  }, []);
 
   if (loading) {
-    return <div>Завантаження...</div>;
+    return <div className="friends-container">Завантаження...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="friends-container">{error}</div>;
   }
 
   return (

@@ -19,10 +19,10 @@ const EnergyBoostButton: React.FC<EnergyBoostButtonProps> = ({ balance, currentM
     } else {
       cost = 200;
     }
-    return { level: nextLevel, cost, newMaxEnergy: currentMaxEnergy + 500 };
+    return { cost, newMaxEnergy: currentMaxEnergy + 500 };
   };
 
-  const { level: nextLevel, cost: upgradeCost, newMaxEnergy } = getNextLevelInfo();
+  const { cost: upgradeCost, newMaxEnergy } = getNextLevelInfo();
 
   const handleClick = () => {
     setShowConfirmation(true);
@@ -38,51 +38,51 @@ const EnergyBoostButton: React.FC<EnergyBoostButtonProps> = ({ balance, currentM
   };
 
   return (
-      <>
-        <button
-            className="multitap-button energy-boost-specific"
-            onClick={handleClick}
-            disabled={balance < upgradeCost || currentMaxEnergy >= 100000}
-        >
-          <div className="multitap-button-content">
-            <div className="multitap-content">
-              <img src="/images/energy.png" alt="Energy Boost" className="multitap-icon"/>
-              <div className="multitap-text">
-                <span className="multitap-title">Energy boost</span>
-                <span className="multitap-levels">{currentMaxEnergy} to {newMaxEnergy}</span>
-              </div>
-            </div>
-            <div className="multitap-cost">
-              <img src="/images/balance.png" alt="Balance" className="balance-batton"/>
-              <span>{upgradeCost}</span>
-              <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon"/>
+    <>
+      <button
+        className="multitap-button energy-boost-specific"
+        onClick={handleClick}
+        disabled={balance < upgradeCost || currentMaxEnergy >= 100000}
+      >
+        <div className="multitap-button-content">
+          <div className="multitap-content">
+            <img src="/images/energy.png" alt="Energy Boost" className="multitap-icon"/>
+            <div className="multitap-text">
+              <span className="multitap-title">Energy boost</span>
+              <span className="multitap-levels">{currentMaxEnergy} to {newMaxEnergy}</span>
             </div>
           </div>
-        </button>
+          <div className="multitap-cost">
+            <img src="/images/balance.png" alt="Balance" className="balance-batton"/>
+            <span>{upgradeCost}</span>
+            <img src="/images/arrow-right.png" alt="Arrow" className="arrow-icon"/>
+          </div>
+        </div>
+      </button>
 
-        {showConfirmation && (
-            <div className="confirmation-overlay">
-              <div className="confirmation-modal energy-boost-modal">
-                <button className="close-button" onClick={handleCancel}>×</button>
-                <img src="/images/energy.png" alt="Energy Boost" className="multitap-image"/>
-                <div className="multitap-info">
-                  Energy boost збільшить вашу максимальну енергію до {newMaxEnergy}
-                </div>
-                <div className="price-info">
-                  <img src="/images/balance.png" alt="Balance" className="price-icon"/>
-                  <span>{upgradeCost}</span>
-                </div>
-                <button
-                    className="confirm-button energy-boost-confirm"
-                    onClick={handleConfirm}
-                    disabled={balance < upgradeCost}
-                >
-                  Підтвердити
-                </button>
-              </div>
+      {showConfirmation && (
+        <div className="confirmation-overlay">
+          <div className="confirmation-modal energy-boost-modal">
+            <button className="close-button" onClick={handleCancel}>×</button>
+            <img src="/images/energy.png" alt="Energy Boost" className="multitap-image"/>
+            <div className="multitap-info">
+              Energy boost збільшить вашу максимальну енергію до {newMaxEnergy}
             </div>
-        )}
-      </>
+            <div className="price-info">
+              <img src="/images/balance.png" alt="Balance" className="price-icon"/>
+              <span>{upgradeCost}</span>
+            </div>
+            <button
+              className="confirm-button energy-boost-confirm"
+              onClick={handleConfirm}
+              disabled={balance < upgradeCost}
+            >
+              Підтвердити
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

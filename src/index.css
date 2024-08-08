@@ -7,8 +7,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--tg-theme-bg-color, #000000);
-  color: var(--tg-theme-text-color, #ffffff);
+  background-color: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #000000);
 }
 
 code {
@@ -16,18 +16,43 @@ code {
     monospace;
 }
 
-:root {
-  --tg-theme-bg-color: #000000;
-  --tg-theme-text-color: #ffffff;
-  --tg-theme-hint-color: #999999;
-  --tg-theme-link-color: #3390ec;
-  --tg-theme-button-color: #3390ec;
-  --tg-theme-button-text-color: #ffffff;
-}
-
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.friends-container {
+  padding: 16px;
+}
+
+.friends-container h2 {
+  margin-bottom: 16px;
+}
+
+.friends-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.friends-container li {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+/* Додаткові стилі для кращої адаптації до теми Telegram */
+button {
+  background-color: var(--tg-theme-button-color, #3390ec);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+a {
+  color: var(--tg-theme-link-color, #3390ec);
 }

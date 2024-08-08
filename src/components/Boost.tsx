@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useBoost } from '../BoostContext';
 import { useEnergy } from '../EnergyContext';
 import MultitapButton from './MultitapButton';
@@ -52,6 +52,21 @@ const Boost: React.FC<BoostProps> = ({
   const [localTurboCount, setLocalTurboCount] = useState(turboCount);
   const [localEnergyRefillCount, setLocalEnergyRefillCount] = useState(energyRefillCount);
 
+  const handleMultitapUpgradeCallback = useCallback((level: number, cost: number) => {
+    onMultitapUpgrade(level, cost);
+    localStorage.setItem('multitapLevel', level.toString());
+  }, [onMultitapUpgrade]);
+
+  const handleEnergyBoostUpgradeCallback = useCallback((newMaxEnergy: number, cost: number) => {
+    onEnergyBoostUpgrade(newMaxEnergy, cost);
+    localStorage.setItem('maxEnergy', newMaxEnergy.toString());
+  }, [onEnergyBoostUpgrade]);
+
+  const handleEnergyRecoveryUpgradeCallback = useCallback((newRate: number, cost: number) => {
+    onEnergyRecoveryUpgrade(newRate, cost);
+    localStorage.setItem('energyRecoveryRate', newRate.toString());
+  }, [onEnergyRecoveryUpgrade]);
+
   useEffect(() => {
     const images = ['/images/x5.png', '/images/fullenergy.png', '/images/level-b.png', '/images/balance.png', '/images/done.png', '/images/donefree.png'];
     images.forEach(src => {
@@ -67,14 +82,14 @@ const Boost: React.FC<BoostProps> = ({
     const savedEnergyRefillCount = parseInt(localStorage.getItem('energyRefillCount') || '3', 10);
 
     setLocalRewardsReceived(savedRewardsReceived);
-    onMultitapUpgrade(savedMultitapLevel, 0);
-    onEnergyBoostUpgrade(savedMaxEnergy, 0);
-    onEnergyRecoveryUpgrade(savedEnergyRecoveryRate, 0);
+    handleMultitapUpgradeCallback(savedMultitapLevel, 0);
+    handleEnergyBoostUpgradeCallback(savedMaxEnergy, 0);
+    handleEnergyRecoveryUpgradeCallback(savedEnergyRecoveryRate, 0);
     setLocalTurboCount(savedTurboCount);
     setLocalEnergyRefillCount(savedEnergyRefillCount);
     setTurboCount(savedTurboCount);
     setEnergyRefillCount(savedEnergyRefillCount);
-  }, []);
+  }, [handleMultitapUpgradeCallback, handleEnergyBoostUpgradeCallback, handleEnergyRecoveryUpgradeCallback, setTurboCount, setEnergyRefillCount]);
 
   useEffect(() => {
     localStorage.setItem('turboCount', localTurboCount.toString());
@@ -140,24 +155,9 @@ const Boost: React.FC<BoostProps> = ({
     );
   };
 
-  const handleMultitapUpgrade = (level: number, cost: number) => {
-    onMultitapUpgrade(level, cost);
-    localStorage.setItem('multitapLevel', level.toString());
-  };
-
-  const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
-    onEnergyBoostUpgrade(newMaxEnergy, cost);
-    localStorage.setItem('maxEnergy', newMaxEnergy.toString());
-  };
-
-  const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
-    onEnergyRecoveryUpgrade(newRate, cost);
-    localStorage.setItem('energyRecoveryRate', newRate.toString());
-  };
-
   return (
     <div className="boost">
-      <h1 className="boost-title"></h1>
+      <h1 className="boost-title">Boost</h1>
       <h2 className="balance-title">Your Balance</h2>
       <div className="balance">
         <img src="/images/balance.png" alt="Balance" className="balance-icon"/>
@@ -214,17 +214,17 @@ const Boost: React.FC<BoostProps> = ({
         <h3 className="boost-section-title">Boosters</h3>
         <MultitapButton
           balance={balance}
-          onMultitapUpgrade={handleMultitapUpgrade}
+          onMultitapUpgrade={handleMultitapUpgradeCallback}
           currentLevel={currentLevel}
         />
         <EnergyBoostButton
           balance={balance}
-          onEnergyBoostUpgrade={handleEnergyBoostUpgrade}
+          onEnergyBoostUpgrade={handleEnergyBoostUpgradeCallback}
           currentMaxEnergy={currentMaxEnergy}
         />
         <EnergyRecoveryButton
           balance={balance}
-          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgrade}
+          onEnergyRecoveryUpgrade={handleEnergyRecoveryUpgradeCallback}
           currentEnergyRecoveryRate={currentEnergyRecoveryRate}
         />
       </div>
