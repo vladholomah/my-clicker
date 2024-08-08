@@ -1,6 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 
 module.exports = async (req, res) => {
+  console.log('Received request:', req.method, req.url);
+  console.log('Request body:', JSON.stringify(req.body));
+
   const bot = new TelegramBot(process.env.BOT_TOKEN);
 
   if (req.method === 'POST') {
@@ -19,6 +22,7 @@ module.exports = async (req, res) => {
         } else {
           await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Використовуйте кнопку "Запросити друга" для отримання реферального посилання.');
         }
+        console.log('Sent response for /start command');
       }
     }
   }
