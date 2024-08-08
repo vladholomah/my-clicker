@@ -10,6 +10,7 @@ const TelegramWebAppWrapper: React.FC = () => {
     WebApp.ready();
     WebApp.expand();
 
+    WebApp.setHeaderColor('#000000');
     // Встановлення кольору шапки та фону
     WebApp.MainButton.setParams({
       text: "Play Now",

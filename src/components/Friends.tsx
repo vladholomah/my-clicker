@@ -34,6 +34,10 @@ const Friends: React.FC = () => {
     fetchFriends();
   }, []);
 
+  const handleInviteFriend = () => {
+    WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(`https://t.me/holmah_coin_bot?start=${WebApp.initDataUnsafe.user?.id}`)}`);
+  };
+
   if (loading) {
     return <div className="friends-container">Завантаження...</div>;
   }
@@ -45,6 +49,7 @@ const Friends: React.FC = () => {
   return (
     <div className="friends-container">
       <h2>Ваші друзі</h2>
+      <button onClick={handleInviteFriend}>Запросити друга</button>
       {friends.length > 0 ? (
         <ul>
           {friends.map((friend) => (
