@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --tg-theme-bg-color: #ffffff;
+  --tg-theme-text-color: #000000;
+  --tg-theme-hint-color: #999999;
+  --tg-theme-link-color: #3390ec;
+  --tg-theme-button-color: #3390ec;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f0f0f0;
+}
 
 body {
   margin: 0;
@@ -7,8 +17,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  color: var(--tg-theme-text-color, #000000);
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 code {
@@ -17,6 +29,7 @@ code {
 }
 
 * {
+  box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -25,10 +38,14 @@ code {
 
 .friends-container {
   padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .friends-container h2 {
   margin-bottom: 16px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
 }
 
 .friends-container ul {
@@ -37,22 +54,66 @@ code {
 }
 
 .friends-container li {
-  margin-bottom: 8px;
-  padding: 8px;
-  background-color: rgba(0, 0, 0, 0.05);
+  margin-bottom: 12px;
+  padding: 12px;
+  background-color: var(--tg-theme-secondary-bg-color, rgba(0, 0, 0, 0.05));
   border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Додаткові стилі для кращої адаптації до теми Telegram */
 button {
-  background-color: var(--tg-theme-button-color, #3390ec);
-  color: var(--tg-theme-button-text-color, #ffffff);
+  background-color: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
   border: none;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:active {
+  opacity: 0.7;
 }
 
 a {
-  color: var(--tg-theme-link-color, #3390ec);
+  color: var(--tg-theme-link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  color: var(--tg-theme-hint-color);
+}
+
+.coin-balance {
+  font-weight: 500;
+  color: var(--tg-theme-text-color);
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .friends-container {
+    padding: 12px;
+  }
+
+  button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
 }
