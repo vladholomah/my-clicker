@@ -1,28 +1,23 @@
 const TelegramBot = require('node-telegram-bot-api');
 
 module.exports = async (req, res) => {
-  console.log('Received request:', req.method, req.url);
-  console.log('Request body:', JSON.stringify(req.body));
+  console.log('Отримано запит до бота');
 
   const bot = new TelegramBot(process.env.BOT_TOKEN);
 
   if (req.method === 'POST') {
     const { body } = req;
+    console.log('Тіло запиту:', JSON.stringify(body));
 
     if (body.message && body.message.text) {
       const chatId = body.message.chat.id;
       const text = body.message.text;
 
-      console.log('Received message:', text);
+      console.log('Отримано повідомлення:', text);
 
       if (text.startsWith('/start')) {
-        const referralCode = text.split(' ')[1];
-        if (referralCode) {
-          await bot.sendMessage(chatId, `Ви приєдналися за реферальним кодом: ${referralCode}`);
-        } else {
-          await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Використовуйте кнопку "Запросити друга" для отримання реферального посилання.');
-        }
-        console.log('Sent response for /start command');
+        await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті!');
+        console.log('Відправлено відповідь на команду /start');
       }
     }
   }

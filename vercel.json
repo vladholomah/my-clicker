@@ -9,6 +9,10 @@
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
+    {
+      "src": "/api/bot",
+      "dest": "/api/bot.js"
+    },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
