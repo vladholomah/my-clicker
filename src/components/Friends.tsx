@@ -3,57 +3,43 @@ import { useTelegram } from '../hooks/useTelegram';
 import axios from 'axios';
 
 interface Friend {
-  id: string;
-  name: string;
+  telegramId: string;
+  coins: number;
 }
 
 const Friends: React.FC = () => {
-  const [referralLink, setReferralLink] = useState<string>('');
   const [friends, setFriends] = useState<Friend[]>([]);
   const { user } = useTelegram();
 
-useEffect(() => {
-  const fetchFriends = async () => {
-    // Ваш код для отримання друзів
-  };
-
-  if (user) {
-    setReferralLink(`https://t.me/holmah_coin_bot?start=${user.id}`);
-    fetchFriends();
-  }
-}, [user]);
-
-  const fetchFriends = async () => {
-    if (user) {
-      try {
-        const response = await axios.get(`/api/referral?userId=${user.id}`);
-        setFriends(response.data.referrals.map((id: string) => ({ id, name: `User ${id}` })));
-      } catch (error) {
-        console.error('Failed to fetch friends:', error);
+  useEffect(() => {
+    const fetchFriends = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`/api/getFriends?userId=${user.id}`);
+          setFriends(response.data.friends);
+        } catch (error) {
+          console.error('Failed to fetch friends:', error);
+        }
       }
-    }
-  };
+    };
 
-  const shareFriendsLink = () => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.sendData(JSON.stringify({
-        type: 'share_referral',
-        link: referralLink
-      }));
-    }
-  };
+    fetchFriends();
+  }, [user]);
 
   return (
     <div className="friends-container">
-      <h2>Друзі</h2>
-      <button onClick={shareFriendsLink}>Запросити друзів</button>
-      <p>Ваше реферальне посилання: {referralLink}</p>
-      <h3>Список друзів:</h3>
-      <ul>
-        {friends.map((friend) => (
-          <li key={friend.id}>{friend.name}</li>
-        ))}
-      </ul>
+      <h2>Ваші друзі</h2>
+      {friends.length > 0 ? (
+        <ul>
+          {friends.map((friend) => (
+            <li key={friend.telegramId}>
+              Користувач {friend.telegramId}: {friend.coins} монет
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>У вас поки немає запрошених друзів.</p>
+      )}
     </div>
   );
 };
