@@ -26,7 +26,6 @@ module.exports = async (req, res) => {
         if (text.startsWith('/start')) {
           const referralCode = text.split(' ')[1];
 
-          // Зберігаємо або оновлюємо користувача
           await users.updateOne(
             { telegramId: userId },
             { $setOnInsert: { telegramId: userId, coins: 0, referrals: [] } },
@@ -34,7 +33,6 @@ module.exports = async (req, res) => {
           );
 
           if (referralCode && referralCode !== userId) {
-            // Обробка реферального коду
             await users.updateOne(
               { telegramId: referralCode },
               { $addToSet: { referrals: userId } }
@@ -43,23 +41,27 @@ module.exports = async (req, res) => {
           }
 
           const keyboard = {
-            inline_keyboard: [
-              [{ text: 'Play Now', web_app: { url: 'https://your-vercel-app-url.vercel.app' } }],
-              [{ text: 'Запросити друзів', callback_data: 'invite_friends' }]
-            ]
+            keyboard: [
+              [{ text: 'Play Now', web_app: { url: 'https://my-clicker-tau.vercel.app/' } }],
+              [{ text: 'Запросити друга' }]
+            ],
+            resize_keyboard: true
           };
 
           await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Оберіть опцію:', {
             reply_markup: JSON.stringify(keyboard)
           });
-        }
-      } else if (body.callback_query) {
-        const chatId = body.callback_query.message.chat.id;
-        const userId = body.callback_query.from.id.toString();
+        } else if (text === 'Запросити друга') {
+          const referralLink = `https://t.me/holmah_coin_bot?start=${userId}`;
+          const inviteText = `Приєднуйся до Holmah Coin! Ось моє реферальне посилання: ${referralLink}`;
 
-        if (body.callback_query.data === 'invite_friends') {
-          const referralLink = `https://t.me/your_bot_username?start=${userId}`;
-          await bot.sendMessage(chatId, `Ось ваше реферальне посилання: ${referralLink}`);
+          await bot.sendMessage(chatId, 'Ось ваше реферальне посилання. Натисніть кнопку нижче, щоб поділитися ним:', {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: 'Поділитися посиланням', switch_inline_query: inviteText }]
+              ]
+            }
+          });
         }
       }
     }

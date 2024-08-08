@@ -9,22 +9,37 @@ interface Friend {
 
 const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useTelegram();
 
   useEffect(() => {
     const fetchFriends = async () => {
       if (user) {
         try {
+          setLoading(true);
           const response = await axios.get(`/api/getFriends?userId=${user.id}`);
           setFriends(response.data.friends);
+          setError(null);
         } catch (error) {
           console.error('Failed to fetch friends:', error);
+          setError('Не вдалося завантажити список друзів. Спробуйте пізніше.');
+        } finally {
+          setLoading(false);
         }
       }
     };
 
     fetchFriends();
   }, [user]);
+
+  if (loading) {
+    return <div>Завантаження...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="friends-container">

@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
     const friends = await users.find({ telegramId: { $in: user.referrals } }).toArray();
     const friendsData = friends.map(friend => ({
       telegramId: friend.telegramId,
-      coins: friend.coins
+      coins: friend.coins || 0
     }));
 
     res.status(200).json({ friends: friendsData });
