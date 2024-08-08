@@ -1,43 +1,27 @@
-// api/bot.js
-const TelegramBot = require('7362436326:AAGYoUiT5HXdjpS5T78jMYgWn23Tqlti11c');
-const { MongoClient } = require('mongodb');
-
-// Ініціалізація бота
-const bot = new TelegramBot(process.env.BOT_TOKEN);
+const TelegramBot = require('node-telegram-bot-api');
 
 module.exports = async (req, res) => {
+  const bot = new TelegramBot(process.env.BOT_TOKEN);
+
   if (req.method === 'POST') {
-    const { message } = req.body;
+    const { body } = req;
 
-    if (message && message.text.startsWith('/start')) {
-      const referralCode = message.text.split(' ')[1];
-      if (referralCode) {
-        const client = new MongoClient(process.env.MONGODB_URI);
-        try {
-          await client.connect();
-          const db = client.db('your_database_name');
-          const users = db.collection('users');
+    if (body.message && body.message.text) {
+      const chatId = body.message.chat.id;
+      const text = body.message.text;
 
-          await users.updateOne(
-            { telegramId: referralCode },
-            { $addToSet: { referrals: message.from.id.toString() } },
-            { upsert: true }
-          );
+      console.log('Received message:', text);  // Додаємо логування
 
-          await bot.sendMessage(message.chat.id, 'Ви успішно приєдналися за реферальним посиланням!');
-        } catch (error) {
-          console.error('Error processing referral:', error);
-          await bot.sendMessage(message.chat.id, 'Виникла помилка при обробці реферального посилання.');
-        } finally {
-          await client.close();
+      if (text.startsWith('/start')) {
+        const referralCode = text.split(' ')[1];
+        if (referralCode) {
+          await bot.sendMessage(chatId, `Ви приєдналися за реферальним кодом: ${referralCode}`);
+        } else {
+          await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Використовуйте кнопку "Запросити друга" для отримання реферального посилання.');
         }
-      } else {
-        await bot.sendMessage(message.chat.id, 'Вітаємо в боті!');
       }
     }
-
-    res.status(200).json({ success: true });
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
   }
+
+  res.status(200).json({ ok: true });
 };
