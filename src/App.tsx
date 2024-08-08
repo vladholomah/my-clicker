@@ -9,6 +9,7 @@ import Card from './components/Card';
 import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
 import Earn from './components/Earn';
+import Friends from './components/Friends';
 import './App.css';
 
 function AppContent() {
@@ -170,8 +171,8 @@ function AppContent() {
           onScoreChange={handleScoreChange}
           balance={score}
         />;
-      case 'friends':
-        return <h1>Friends</h1>;
+    case 'friends':
+      return <Friends />;
       case 'boost':
         return <Boost
           balance={score}
