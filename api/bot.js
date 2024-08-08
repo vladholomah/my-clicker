@@ -16,8 +16,16 @@ module.exports = async (req, res) => {
       console.log('Отримано повідомлення:', text);
 
       if (text.startsWith('/start')) {
-        await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті!');
-        console.log('Відправлено відповідь на команду /start');
+        const keyboard = {
+          inline_keyboard: [
+            [{ text: 'Play Now', web_app: { url: 'https://my-clicker-tau.vercel.app/' } }]
+          ]
+        };
+
+        await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Натисніть кнопку нижче, щоб почати гру:', {
+          reply_markup: JSON.stringify(keyboard)
+        });
+        console.log('Відправлено відповідь на команду /start з кнопкою Play Now');
       }
     }
   }
