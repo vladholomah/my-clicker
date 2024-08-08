@@ -34,9 +34,14 @@ const Friends: React.FC = () => {
     fetchFriends();
   }, []);
 
-  const handleInviteFriend = () => {
+const handleInviteFriend = () => {
+  if (WebApp.initDataUnsafe.query_id) {
     WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(`https://t.me/holmah_coin_bot?start=${WebApp.initDataUnsafe.user?.id}`)}`);
-  };
+  } else {
+    // Альтернативна дія для браузерної версії, наприклад:
+    alert('This feature is only available in the Telegram app.');
+  }
+};
 
   if (loading) {
     return <div className="friends-container">Завантаження...</div>;
