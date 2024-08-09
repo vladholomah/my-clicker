@@ -5,11 +5,12 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 app.use((req, res, next) => {
-  console.log('Received headers:', req.headers);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 

@@ -72,12 +72,11 @@ const fetchFriends = async () => {
       throw new Error('User ID not found');
     }
 
-    console.log('Sending request to /api/getFriends');
-    const response = await axios.get(`/api/getFriends`, {
-      params: { userId },
-      headers: {
-        'Content-Type': 'application/json',
-      },
+const response = await axios.get(`/api/getFriends`, {
+  params: { userId },
+  headers: {
+    'Content-Type': 'application/json',
+  },
       maxContentLength: Infinity,
       maxBodyLength: Infinity
     });
