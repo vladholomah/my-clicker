@@ -1,8 +1,8 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { MongoClient } = require('mongodb');
-require('dotenv').config();
 
 let db;
+let bot;
 
 const connectToDatabase = async () => {
   if (!db) {
@@ -14,39 +14,38 @@ const connectToDatabase = async () => {
   return db;
 };
 
+const initBot = () => {
+  if (!bot) {
+    bot = new TelegramBot(process.env.BOT_TOKEN);
+  }
+  return bot;
+};
+
 module.exports = async (req, res) => {
   console.log('Отримано запит до бота');
-
-  const bot = new TelegramBot(process.env.BOT_TOKEN);
 
   try {
     const db = await connectToDatabase();
     const users = db.collection('users');
+    const bot = initBot();
 
     if (req.method === 'POST') {
       const { body } = req;
-      console.log('Тіло запиту:', JSON.stringify(body));
-
       if (body.message && body.message.text) {
-        const chatId = body.message.chat.id;
-        const text = body.message.text;
-        const userId = body.message.from.id.toString();
-
-        console.log('Отримано повідомлення:', text);
+        const { chat: { id: chatId }, text, from: { id: userId } } = body.message;
 
         if (text.startsWith('/start')) {
           const referralCode = text.split(' ')[1];
-
           await users.updateOne(
-            { telegramId: userId },
-            { $setOnInsert: { telegramId: userId, coins: 0, referrals: [] } },
+            { telegramId: userId.toString() },
+            { $setOnInsert: { telegramId: userId.toString(), coins: 0, referrals: [] } },
             { upsert: true }
           );
 
-          if (referralCode && referralCode !== userId) {
+          if (referralCode && referralCode !== userId.toString()) {
             await users.updateOne(
               { telegramId: referralCode },
-              { $addToSet: { referrals: userId } }
+              { $addToSet: { referrals: userId.toString() } }
             );
             await bot.sendMessage(chatId, 'Ви приєдналися за реферальним посиланням!');
           }
