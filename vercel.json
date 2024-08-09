@@ -4,7 +4,10 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "build" }
+      "config": {
+        "distDir": "build",
+        "installCommand": "npm install --legacy-peer-deps"
+      }
     },
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
@@ -16,7 +19,8 @@
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
-    "MONGODB_URI": "@mongodb_uri"
+    "MONGODB_URI": "@mongodb_uri",
+    "BOT_TOKEN": "@bot_token"
   },
   "headers": [
     {
