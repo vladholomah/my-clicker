@@ -39,8 +39,12 @@ const MockWebApp: WebApp = {
   }
 };
 
-// Використовуємо реальний WebApp в Telegram, або заглушку в браузері
-const WebApp: WebApp = (window as any).Telegram?.WebApp || MockWebApp;
+const isTelegramWebAppAvailable = !!(window as any).Telegram?.WebApp;
+console.log('Is Telegram WebApp available:', isTelegramWebAppAvailable);
+
+const WebApp: WebApp = isTelegramWebAppAvailable ? (window as any).Telegram.WebApp : MockWebApp;
+
+console.log('WebApp initDataUnsafe:', WebApp.initDataUnsafe);
 
 const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -48,43 +52,73 @@ const Friends: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('Friends component mounted');
     const fetchFriends = async () => {
+      console.log('Starting fetchFriends function');
       try {
         setLoading(true);
-        const userId = WebApp.initDataUnsafe.user?.id.toString();
+        let userId: string | undefined;
+
+        if (WebApp.initDataUnsafe.user?.id) {
+          userId = WebApp.initDataUnsafe.user.id.toString();
+        } else if (MockWebApp.initDataUnsafe.user?.id) {
+          console.log('Using MockWebApp user ID');
+          userId = MockWebApp.initDataUnsafe.user.id.toString();
+        }
+
+        console.log('User ID:', userId);
+
         if (!userId) {
           throw new Error('User ID not found');
         }
+
+        console.log('Sending request to /api/getFriends');
         const response = await axios.get(`/api/getFriends?userId=${userId}`);
+        console.log('Received response:', response.data);
         setFriends(response.data.friends);
-      } catch (error) {
-        console.error('Failed to fetch friends:', error);
-        setError('Не вдалося завантажити список друзів. Спробуйте пізніше.');
+      } catch (error: unknown) {
+        console.error('Error in fetchFriends:', error);
+        if (axios.isAxiosError(error)) {
+          console.error('Axios error details:', error.response?.data);
+          setError(`Помилка завантаження: ${error.response?.status} ${error.response?.statusText}`);
+        } else if (error instanceof Error) {
+          setError(`Не вдалося завантажити список друзів: ${error.message}`);
+        } else {
+          setError('Не вдалося завантажити список друзів: Невідома помилка');
+        }
       } finally {
         setLoading(false);
+        console.log('fetchFriends function completed');
       }
     };
 
     fetchFriends();
+    return () => {
+      console.log('Friends component will unmount');
+    };
   }, []);
 
   const handleInviteFriend = () => {
-    const userId = WebApp.initDataUnsafe.user?.id.toString();
+    console.log('handleInviteFriend called');
+    const userId = WebApp.initDataUnsafe.user?.id.toString() || MockWebApp.initDataUnsafe.user?.id.toString();
     const referralLink = `https://t.me/holmah_coin_bot?start=${userId}`;
-    if (WebApp.initDataUnsafe.query_id) {
+    if (isTelegramWebAppAvailable) {
+      console.log('Opening Telegram link');
       WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
     } else {
-      // Заглушка для браузера
+      console.log('Showing browser alert');
       alert(`Скопіюйте це посилання для запрошення друга: ${referralLink}`);
     }
   };
+
+  console.log('Rendering Friends component. State:', { loading, error, friendsCount: friends.length });
 
   if (loading) {
     return <div className="friends-container">Завантаження...</div>;
   }
 
   if (error) {
-    return <div className="friends-container">{error}</div>;
+    return <div className="friends-container">Помилка: {error}</div>;
   }
 
   return (
