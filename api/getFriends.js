@@ -21,20 +21,13 @@ module.exports = async (req, res) => {
     const db = client.db('holmah_coin_db');
     const users = db.collection('users');
 
-    // Перевіряємо, чи існує користувач
-    let user = await users.findOne({ telegramId: userId });
-
+    const user = await users.findOne({ telegramId: userId });
     if (!user) {
       console.log('User not found, creating new user');
-      user = { telegramId: userId, referrals: [], coins: 0 };
-      await users.insertOne(user);
-      console.log('New user created:', user);
-    } else {
-      console.log('User found:', user);
+      await users.insertOne({ telegramId: userId, referrals: [], coins: 0 });
     }
 
-    // Отримуємо друзів (рефералів) користувача
-    const friends = await users.find({ telegramId: { $in: user.referrals } }).toArray();
+    const friends = await users.find({ telegramId: { $in: user ? user.referrals : [] } }).toArray();
     console.log('Friends found:', friends.length);
 
     const friendsData = friends.map(friend => ({
@@ -42,13 +35,11 @@ module.exports = async (req, res) => {
       coins: friend.coins || 0
     }));
 
-    console.log('Sending response:', { friendsCount: friendsData.length });
     res.status(200).json({ friends: friendsData });
   } catch (error) {
     console.error('Error in getFriends:', error);
     res.status(500).json({ error: 'Internal server error', details: error.message });
   } finally {
     await client.close();
-    console.log('MongoDB connection closed');
   }
 };

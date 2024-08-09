@@ -53,30 +53,37 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     console.log('Friends component mounted');
-    const fetchFriends = async () => {
-      console.log('Starting fetchFriends function');
-      try {
-        setLoading(true);
-        let userId: string | undefined;
+const fetchFriends = async () => {
+  console.log('Starting fetchFriends function');
+  try {
+    setLoading(true);
+    let userId: string | undefined;
 
-        if (WebApp.initDataUnsafe.user?.id) {
-          userId = WebApp.initDataUnsafe.user.id.toString();
-        } else if (MockWebApp.initDataUnsafe.user?.id) {
-          console.log('Using MockWebApp user ID');
-          userId = MockWebApp.initDataUnsafe.user.id.toString();
-        }
+    if (WebApp.initDataUnsafe.user?.id) {
+      userId = WebApp.initDataUnsafe.user.id.toString();
+    } else if (MockWebApp.initDataUnsafe.user?.id) {
+      console.log('Using MockWebApp user ID');
+      userId = MockWebApp.initDataUnsafe.user.id.toString();
+    }
 
-        console.log('User ID:', userId);
+    console.log('User ID:', userId);
 
-        if (!userId) {
-          throw new Error('User ID not found');
-        }
+    if (!userId) {
+      throw new Error('User ID not found');
+    }
 
-        console.log('Sending request to /api/getFriends');
-        const response = await axios.get(`/api/getFriends?userId=${userId}`);
-        console.log('Received response:', response.data);
-        setFriends(response.data.friends);
-      } catch (error: unknown) {
+    console.log('Sending request to /api/getFriends');
+    const response = await axios.get(`/api/getFriends`, {
+      params: { userId },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    });
+    console.log('Received response:', response.data);
+    setFriends(response.data.friends);
+  } catch (error: unknown) {
         console.error('Error in fetchFriends:', error);
         if (axios.isAxiosError(error)) {
           console.error('Axios error details:', error.response?.data);
