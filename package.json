@@ -34,7 +34,10 @@
     "server:dev": "nodemon api/server.js",
     "bot": "node api/bot.js",
     "dev": "concurrently \"npm start\" \"npm run server:dev\" \"npm run bot\"",
-    "vercel-build": "CI=false npm run build"
+    "vercel-build": "CI=false npm run build",
+    "start:bot": "node api/bot.js",
+    "heroku-postbuild": "npm run build",
+    "start:prod": "npm run start:bot"
   },
   "eslintConfig": {
     "extends": [
@@ -59,5 +62,7 @@
     "concurrently": "^6.5.1",
     "nodemon": "^2.0.22"
   },
-  "proxy": "http://localhost:5000"
+  "engines": {
+    "node": "14.x"
+  }
 }
