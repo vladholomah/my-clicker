@@ -72,7 +72,7 @@ const fetchFriends = async () => {
       throw new Error('User ID not found');
     }
 
-const response = await axios.get(`/api/getFriends`, {
+const response = await axios.get(`https://my-clicker-tau.vercel.app//api/getFriends`, {
   params: { userId },
   headers: {
     'Content-Type': 'application/json',
@@ -104,18 +104,19 @@ const response = await axios.get(`/api/getFriends`, {
     };
   }, []);
 
-  const handleInviteFriend = () => {
-    console.log('handleInviteFriend called');
-    const userId = WebApp.initDataUnsafe.user?.id.toString() || MockWebApp.initDataUnsafe.user?.id.toString();
-    const referralLink = `https://t.me/holmah_coin_bot?start=${userId}`;
-    if (isTelegramWebAppAvailable) {
-      console.log('Opening Telegram link');
-      WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
-    } else {
-      console.log('Showing browser alert');
-      alert(`Скопіюйте це посилання для запрошення друга: ${referralLink}`);
-    }
-  };
+const handleInviteFriend = () => {
+  console.log('handleInviteFriend called');
+  const userId = WebApp.initDataUnsafe.user?.id.toString() || MockWebApp.initDataUnsafe.user?.id.toString();
+  const referralLink = `https://t.me/holmah_coin_bot?start=${userId}`;
+  console.log('Referral link:', referralLink);
+  if (isTelegramWebAppAvailable) {
+    console.log('Opening Telegram link');
+    WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
+  } else {
+    console.log('Showing browser alert');
+    alert(`Скопіюйте це посилання для запрошення друга: ${referralLink}`);
+  }
+};
 
   console.log('Rendering Friends component. State:', { loading, error, friendsCount: friends.length });
 

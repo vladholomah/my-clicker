@@ -1,18 +1,24 @@
 const { MongoClient } = require('mongodb');
 
 module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   console.log('getFriends API called with query:', req.query);
   const { userId } = req.query;
 
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+     }
   if (!userId) {
     console.error('User ID not provided');
     return res.status(400).json({ error: 'User ID is required' });
   }
 
-  const client = new MongoClient(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+const client = new MongoClient(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
   try {
     await client.connect();
