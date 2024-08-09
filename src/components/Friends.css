@@ -1,0 +1,38 @@
+.friends-container {
+  padding: 20px;
+  background-color: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #000000);
+  font-family: Arial, sans-serif;
+}
+
+.friends-heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.friends-button {
+  background-color: var(--tg-theme-button-color, #3390ec);
+  color: var(--tg-theme-button-text-color, #ffffff);
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.friends-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.friends-list-item {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+}
+
+.friends-text {
+  font-size: 16px;
+}
