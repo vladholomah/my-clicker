@@ -1,28 +1,5 @@
-interface TelegramUser {
-  id: string;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-}
-
-interface WebAppInitData {
-  user?: TelegramUser;
-}
-
-interface WebAppInstance {
-  initDataUnsafe: WebAppInitData;
-  // Додайте інші методи та властивості, які ви використовуєте
-}
-
-declare global {
-  interface Window {
-    Telegram: {
-      WebApp: WebAppInstance;
-    };
-  }
-}
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TelegramUser } from '../types/telegram';
 
 export const useTelegram = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
