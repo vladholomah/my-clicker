@@ -1,8 +1,7 @@
 const { MongoClient } = require('mongodb');
-const TelegramBot = require('node-telegram-bot-api');
+const fetch = require('node-fetch');
 
 let db;
-let bot;
 
 const connectToDatabase = async () => {
   if (!db) {
@@ -19,25 +18,37 @@ const connectToDatabase = async () => {
   return db;
 };
 
-const initBot = () => {
-  if (!bot) {
-    bot = new TelegramBot(process.env.BOT_TOKEN);
+const sendTelegramMessage = async (chatId, text, keyboard = null) => {
+  const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`;
+  const body = {
+    chat_id: chatId,
+    text: text,
+    parse_mode: 'HTML'
+  };
+  if (keyboard) {
+    body.reply_markup = JSON.stringify(keyboard);
   }
-  return bot;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return response.json();
 };
 
 module.exports = async (req, res) => {
   console.log('Отримано запит до бота');
+  console.log('Метод запиту:', req.method);
+  console.log('Заголовки запиту:', JSON.stringify(req.headers));
+  console.log('Тіло запиту:', JSON.stringify(req.body));
 
   try {
     const db = await connectToDatabase();
     console.log('База даних підключена');
     const users = db.collection('users');
-    const bot = initBot();
 
     if (req.method === 'POST') {
       const { body } = req;
-      console.log('Отримано POST запит:', JSON.stringify(body));
       if (body.message && body.message.text) {
         const { chat: { id: chatId }, text, from: { id: userId } } = body.message;
 
@@ -59,12 +70,10 @@ module.exports = async (req, res) => {
               resize_keyboard: true
             };
 
-            await bot.sendMessage(chatId, 'Вітаємо в Holmah Coin боті! Оберіть опцію:', {
-              reply_markup: JSON.stringify(keyboard)
-            });
+            await sendTelegramMessage(chatId, 'Вітаємо в Holmah Coin боті! Оберіть опцію:', keyboard);
           } catch (error) {
             console.error('Помилка при реєстрації користувача:', error);
-            await bot.sendMessage(chatId, 'Виникла помилка при реєстрації. Спробуйте пізніше.');
+            await sendTelegramMessage(chatId, 'Виникла помилка при реєстрації. Спробуйте пізніше.');
           }
         }
       }
@@ -73,6 +82,6 @@ module.exports = async (req, res) => {
     res.status(200).json({ ok: true });
   } catch (error) {
     console.error('Загальна помилка:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(200).json({ ok: true }); // Завжди відповідаємо 200 OK для Telegram
   }
 };
