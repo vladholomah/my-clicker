@@ -1,0 +1,299 @@
+body {
+  overflow-x: hidden;
+}
+
+.earn-container {
+  color: #000000;
+  background-color: #000000;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  height: calc(100vh - -10px); /* Висота вікна мінус висота нижнього меню */
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 54px; /* Збільшений відступ для нижнього меню */
+}
+
+.earn-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.earn-container h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  width: 87%;
+  margin-left: 25px;
+  color: #ffffff;
+}
+
+.task-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.task-button {
+  flex: 1;
+  padding: 20px;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start; /* Вирівнюємо вміст по лівому краю */
+  color: white;
+  height: 170px;
+  background-color: #161616;
+  text-align: left; /* Вирівнюємо текст по лівому краю */
+}
+
+.task-icon {
+  width: 60px;
+  height: 60px;
+  align-self: flex-start;
+}
+
+.task-button-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.task-title-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.task-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.arrow-icon12 {
+  width: 30px;
+  height: 30px;
+}
+
+.task-section {
+  background-color: #000000;
+  border-radius: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.earn-container h2 {
+  font-size: 15px;
+  margin-bottom: 15px;
+    width: 87%;
+    margin-left: 25px;
+  color: #ffffff;
+}
+
+.tasks-list1 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-item1 {
+  display: flex;
+  align-items: center;
+  background-color: #161616;
+  border-radius: 25px;
+  padding: 12px;
+  cursor: pointer;
+    width: 87%;
+    margin-left: 25px;
+  box-sizing: border-box;
+}
+
+.task-icon1 {
+  width: 45px;
+  height: 45px;
+  margin-right: 10px;
+}
+
+.task-info1 {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-reward1 {
+  display: flex;
+  align-items: center;
+}
+
+.coin-icon1 {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+.coin-amount1 {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.task-info1 h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.arrow-icon1 {
+  width: 15px;
+  height: 15px;
+}
+
+.confirmations-overlay1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.confirmations-modal1 {
+  background-color: #161616;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.close-button1 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+.multitap-image1 {
+  width: 60px;
+  height: 60px;
+  margin: 20px 0;
+}
+
+.multitap-info1 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.task-info {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.confirms-button1 {
+  background-color: #f9ae2f;
+  color: black;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.confirms-button1:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.daily-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.daily-reward {
+  background-color: #2b2b2b;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.daily-reward.claimed {
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
+}
+
+.daily-reward.current {
+  border: 2px solid #f9ae2f;
+}
+
+.day {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.reward {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #f9ae2f;
+}
+
+.daily-reward.claimed {
+  background-color: #4CAF50; /* Зелений колір для отриманої винагороди */
+}
+
+.daily-reward.current {
+  border: 2px solid #f9ae2f;
+}
+
+.daily-reward.current.claimed {
+  background-color: #4CAF50;
+  border: 2px solid #f9ae2f;
+}
+
+.confirms-button1.claimed {
+  background-color: #4f504f;
+  color: white;
+}
+
+@media screen and (max-width: 768px) {
+  .earn-container {
+    width: 112%;
+  }
+
+  .task-buttons {
+    width: 87%;
+    margin-left: 25px;
+  }
+}

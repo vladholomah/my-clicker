@@ -1,0 +1,232 @@
+.multitap-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  background-color: #161616;
+  color: #ffffff;
+  border: none;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+   animation: fadeInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.multitap-button:disabled {
+  background-color: #282b30;
+  cursor: not-allowed;
+}
+
+.multitap-cost {
+  display: flex;
+  align-items: center;
+}
+
+.multitap-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.multitap-button-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.38);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.confirmation-modal {
+  background-color: #161616;
+  padding: 50px;
+  border-radius: 30px 30px 0 0;
+  width: 100%;
+  max-height: 50vh;
+  overflow-y: auto;
+  text-align: center;
+  position: relative;
+  color: #ffffff;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.multitap-modal {
+  box-shadow: 0 -3px 0 rgb(218, 55, 57);
+}
+
+.energy-boost-modal {
+  box-shadow: 0 -3px 0 rgb(253, 178, 42);
+}
+
+.recharging-speed-modal {
+  box-shadow: 0 -3px 0 rgb(60, 241, 178);
+}
+
+.energy-boost-confirm {
+  background-color: #fdb02b; /* Зелений колір для Energy Boost */
+  color: #ffffff;
+  margin-left: -10px;
+  font-weight: bold;
+}
+
+.recharging-speed-confirm {
+  background-color: #3bf1b7; /* Синій колір для Recharging Speed */
+  color: #ffffff;
+    margin-left: -10px;
+  font-weight: bold;
+}
+
+.multitap-confirm {
+  background-color: #da3837; /* Жовтий колір для Multitap */
+  color: #ffffff;
+    margin-left: -10px;
+  font-weight: bold;
+}
+
+.confirm-button:hover {
+  transform: scale(1.05);
+}
+
+.energy-boost-confirm:hover {
+  background-color: #fdc224; /* Темніший зелений при наведенні */
+}
+
+.recharging-speed-confirm:hover {
+  background-color: #3feb90; /* Темніший синій при наведенні */
+}
+
+.multitap-confirm:hover {
+  background-color: #FFA500; /* Темніший жовтий при наведенні */
+}
+
+.confirm-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.3s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.multitap-image {
+  width: 90px;
+  height: 90px;
+  margin: 10px auto;
+  display: block;
+}
+
+.confirm-button {
+  border: none;
+  padding: 20px 100px;
+  border-radius: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.confirm-button:hover {
+  background-color: #b35e02;
+  transform: scale(1.05);
+}
+
+.confirm-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.multitap-info {
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.price-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.price-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  margin-top: 2px;
+}
+
+.balance-batton {
+  width: 12px;
+  height: 12px;
+  margin-right: 2px;
+  margin-top: -2px;
+}
+
+.arrow-icon {
+  width: 10px;
+  height: 10px;
+  margin-left: 10px;
+}
+
+.multitap-content {
+  display: flex;
+  align-items: center;
+}
+
+.multitap-text {
+  display: flex;
+  font-size: 15px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.multitap-title {
+  font-weight: bold;
+}
+
+.multitap-levels {
+  font-size: 11px;
+  color: #706e6e;
+  margin-top: 4px; /* Додаємо відступ зверху */
+}

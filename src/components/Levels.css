@@ -1,0 +1,116 @@
+.levels-container {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.levels-title {
+  font-size: 24px;
+  margin: 0 0 20px 0;
+  padding: 0;
+  animation: titlePulse 2s infinite alternate;
+}
+
+@keyframes titlePulse {
+  from { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+  to { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+}
+
+.levels-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.level-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+}
+
+.level-info {
+  display: flex;
+  color: white;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.level-info:hover {
+  transform: scale(1.05);
+}
+
+.level-info img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.level-info h3 {
+  font-size: 20px;
+  margin: 0 0 5px 0;
+}
+
+.level-info p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.level-carousel button {
+  color: white;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-carousel button:focus {
+  outline: none;
+}
+
+.level-carousel button:hover {
+  transform: scale(1.1);
+  color: #fcdb75;
+}
+
+.level-carousel button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.level-carousel button:active::after {
+  animation: ripple 0.6s linear;
+}
+
+@keyframes ripple {
+  0% { width: 0; height: 0; opacity: 0.5; }
+  100% { width: 100px; height: 100px; opacity: 0; }
+}
