@@ -11,17 +11,12 @@
     },
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
-  "routes": [
-    { "src": "/api/bot", "dest": "/api/bot.js" },
-    { "src": "/api/getFriends", "dest": "/api/getFriends.js" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/bot", "destination": "/api/bot.js" },
+    { "source": "/api/getFriends", "destination": "/api/getFriends.js" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "BOT_TOKEN": "@bot_token"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
