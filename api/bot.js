@@ -28,16 +28,24 @@ const sendTelegramMessage = async (chatId, text, keyboard = null) => {
   if (keyboard) {
     body.reply_markup = JSON.stringify(keyboard);
   }
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return response.json();
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const result = await response.json();
+    console.log('Telegram API response:', JSON.stringify(result));
+    return result;
+  } catch (error) {
+    console.error('Error sending Telegram message:', error);
+    throw error;
+  }
 };
 
 module.exports = async (req, res) => {
-  console.log('Отримано запит до бота');
+  console.log('Функція api/bot викликана');
+  console.log('Час:', new Date().toISOString());
   console.log('Метод запиту:', req.method);
   console.log('Заголовки запиту:', JSON.stringify(req.headers));
   console.log('Тіло запиту:', JSON.stringify(req.body));
@@ -51,6 +59,7 @@ module.exports = async (req, res) => {
       const { body } = req;
       if (body.message && body.message.text) {
         const { chat: { id: chatId }, text, from: { id: userId } } = body.message;
+        console.log(`Отримано повідомлення: ${text} від користувача ${userId}`);
 
         if (text.startsWith('/start')) {
           console.log(`Обробка команди /start для користувача ${userId}`);
@@ -71,17 +80,28 @@ module.exports = async (req, res) => {
             };
 
             await sendTelegramMessage(chatId, 'Вітаємо в Holmah Coin боті! Оберіть опцію:', keyboard);
+            console.log('Повідомлення привітання відправлено');
           } catch (error) {
             console.error('Помилка при реєстрації користувача:', error);
             await sendTelegramMessage(chatId, 'Виникла помилка при реєстрації. Спробуйте пізніше.');
           }
+        } else {
+          console.log(`Отримано невідому команду: ${text}`);
+          await sendTelegramMessage(chatId, 'Вибачте, я не розумію цю команду. Спробуйте /start');
         }
+      } else {
+        console.log('Отримано запит без текстового повідомлення');
       }
+    } else {
+      console.log(`Отримано запит з методом ${req.method}`);
     }
 
     res.status(200).json({ ok: true });
   } catch (error) {
     console.error('Загальна помилка:', error);
+    console.error('Стек помилки:', error.stack);
     res.status(200).json({ ok: true }); // Завжди відповідаємо 200 OK для Telegram
+  } finally {
+    console.log('Обробка запиту завершена');
   }
 };
