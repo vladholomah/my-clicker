@@ -1,3 +1,9 @@
+const { MongoClient } = require('mongodb');
+const TelegramBot = require('node-telegram-bot-api');
+
+let db;
+let bot;
+
 const connectToDatabase = async () => {
   if (!db) {
     try {
@@ -11,6 +17,13 @@ const connectToDatabase = async () => {
     }
   }
   return db;
+};
+
+const initBot = () => {
+  if (!bot) {
+    bot = new TelegramBot(process.env.BOT_TOKEN);
+  }
+  return bot;
 };
 
 module.exports = async (req, res) => {
