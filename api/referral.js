@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   try {
     await client.connect();
     console.log('Connected to MongoDB');
-    const db = client.db('your_database_name');
+    const db = client.db('holmah_coin_db'); // Змінено на правильну назву бази даних
     const users = db.collection('users');
 
     let referrer = await users.findOne({ telegramId: referrerId });

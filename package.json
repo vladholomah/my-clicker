@@ -2,6 +2,9 @@
   "name": "my-clicker",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "14.x"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -24,18 +27,16 @@
     "recharts": "^2.12.7",
     "typescript": "^4.9.5",
     "node-fetch": "^2.6.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "cors": "^2.8.5"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node api/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node api/server.js",
-    "server:dev": "nodemon api/server.js",
-    "bot": "node api/bot.js",
-    "dev": "concurrently \"npm start\" \"npm run server:dev\" \"npm run bot\"",
-    "vercel-build": "CI=false npm run build"
+    "dev": "concurrently \"react-scripts start\" \"nodemon api/server.js\"",
+    "heroku-postbuild": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -59,6 +60,5 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "concurrently": "^6.5.1",
     "nodemon": "^2.0.22"
-  },
-  "proxy": "http://localhost:5000"
+  }
 }

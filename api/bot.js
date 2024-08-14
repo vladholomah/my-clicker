@@ -43,6 +43,7 @@ const sendTelegramMessage = async (chatId, text, keyboard = null) => {
   }
 };
 
+// Експортуємо функцію для обробки вебхуків
 module.exports = async (req, res) => {
   console.log('Функція api/bot викликана');
   console.log('Час:', new Date().toISOString());

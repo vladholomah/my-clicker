@@ -1,0 +1,1 @@
+mongodb+srv://vladholomah:<jfqkLzrx0oeLIAkY>@holmahcoin.nqyz1.mongodb.net/?retryWrites=true&w=majority&appName=HolmahCoin

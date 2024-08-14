@@ -44,6 +44,14 @@ app.get('/api/getFriends', async (req, res) => {
   }
 });
 
+// Додайте обробник для вебхуків Telegram
+const botHandler = require('./bot');
+app.post('/bot', botHandler);
+
+// Додайте обробник для реферальної системи
+const referralHandler = require('./referral');
+app.post('/api/referral', referralHandler);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
