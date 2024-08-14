@@ -7,17 +7,13 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Налаштування CORS для дозволу запитів з вашого фронтенду на Vercel
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://your-vercel-app-url.vercel.app', // Замініть на URL вашого фронтенду на Vercel або використовуйте змінну середовища
+  origin: process.env.FRONTEND_URL || 'https://your-vercel-app-url.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
-
-// Налаштування для статичних файлів React додатку (якщо потрібно)
-app.use(express.static(path.join(__dirname, 'build')));
 
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -54,15 +50,12 @@ app.get('/api/getFriends', async (req, res) => {
   }
 });
 
-// Додайте обробник для вебхуків Telegram
 const botHandler = require('./bot');
 app.post('/bot', botHandler);
 
-// Додайте обробник для реферальної системи
 const referralHandler = require('./referral');
 app.post('/api/referral', referralHandler);
 
-// Обробка всіх інших запитів до React додатку (якщо потрібно)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
@@ -71,7 +64,6 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-// Обробка закриття з'єднання з базою даних при завершенні роботи сервера
 process.on('SIGINT', async () => {
   await client.close();
   console.log('MongoDB connection closed');

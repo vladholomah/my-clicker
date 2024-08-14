@@ -5,9 +5,11 @@ export const useTelegram = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
 
   useEffect(() => {
-    const tg = window.Telegram.WebApp;
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const tg = window.Telegram?.WebApp;
+    if (tg?.initDataUnsafe?.user) {
       setUser(tg.initDataUnsafe.user);
+    } else {
+      console.warn('Telegram WebApp data is not available');
     }
   }, []);
 
