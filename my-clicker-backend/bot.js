@@ -43,66 +43,63 @@ const sendTelegramMessage = async (chatId, text, keyboard = null) => {
   }
 };
 
-// Експортуємо функцію для обробки вебхуків
 module.exports = async (req, res) => {
-  console.log('Функція api/bot викликана');
-  console.log('Час:', new Date().toISOString());
-  console.log('Метод запиту:', req.method);
-  console.log('Заголовки запиту:', JSON.stringify(req.headers));
-  console.log('Тіло запиту:', JSON.stringify(req.body));
+  console.log('Webhook received:', JSON.stringify(req.body, null, 2));
+  console.log('Request method:', req.method);
+  console.log('Request headers:', JSON.stringify(req.headers));
 
   try {
     const db = await connectToDatabase();
-    console.log('База даних підключена');
+    console.log('Database connected');
     const users = db.collection('users');
 
     if (req.method === 'POST') {
       const { body } = req;
       if (body.message && body.message.text) {
         const { chat: { id: chatId }, text, from: { id: userId } } = body.message;
-        console.log(`Отримано повідомлення: ${text} від користувача ${userId}`);
+        console.log(`Received message: ${text} from user ${userId}`);
 
         if (text.startsWith('/start')) {
-          console.log(`Обробка команди /start для користувача ${userId}`);
+          console.log(`Processing /start command for user ${userId}`);
           try {
             const result = await users.updateOne(
               { telegramId: userId.toString() },
               { $setOnInsert: { telegramId: userId.toString(), coins: 0, referrals: [] } },
               { upsert: true }
             );
-            console.log('Результат оновлення користувача:', JSON.stringify(result));
+            console.log('User update result:', JSON.stringify(result));
 
             const keyboard = {
               keyboard: [
-                [{ text: 'Play Now', web_app: { url: 'https://my-clicker-tau.vercel.app/' } }],
-                [{ text: 'Запросити друга' }]
+                [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }],
+                [{ text: 'Invite a friend' }]
               ],
               resize_keyboard: true
             };
 
-            await sendTelegramMessage(chatId, 'Вітаємо в Holmah Coin боті! Оберіть опцію:', keyboard);
-            console.log('Повідомлення привітання відправлено');
+            await sendTelegramMessage(chatId, 'Welcome to Holmah Coin bot! Choose an option:', keyboard);
+            console.log('Welcome message sent');
           } catch (error) {
-            console.error('Помилка при реєстрації користувача:', error);
-            await sendTelegramMessage(chatId, 'Виникла помилка при реєстрації. Спробуйте пізніше.');
+            console.error('Error processing /start command:', error);
+            await sendTelegramMessage(chatId, 'An error occurred during registration. Please try again later.');
           }
         } else {
-          console.log(`Отримано невідому команду: ${text}`);
-          await sendTelegramMessage(chatId, 'Вибачте, я не розумію цю команду. Спробуйте /start');
+          console.log(`Received unknown command: ${text}`);
+          await sendTelegramMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
         }
       } else {
-        console.log('Отримано запит без текстового повідомлення');
+        console.log('Received request without text message');
       }
     } else {
-      console.log(`Отримано запит з методом ${req.method}`);
+      console.log(`Received ${req.method} request`);
     }
 
     res.status(200).json({ ok: true });
   } catch (error) {
-    console.error('Загальна помилка:', error);
-    console.error('Стек помилки:', error.stack);
-    res.status(200).json({ ok: true }); // Завжди відповідаємо 200 OK для Telegram
+    console.error('General error:', error);
+    console.error('Error stack:', error.stack);
+    res.status(200).json({ ok: true }); // Always respond with 200 OK for Telegram
   } finally {
-    console.log('Обробка запиту завершена');
+    console.log('Request processing completed');
   }
 };
