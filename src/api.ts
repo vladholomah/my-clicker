@@ -1,4 +1,6 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+// src/api.ts
+
+const API_URL = 'http://localhost:3001/api';
 
 export const processReferral = async (referrerId: string, newUserId: string) => {
   const response = await fetch(`${API_URL}/referral`, {
