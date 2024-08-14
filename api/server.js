@@ -1,6 +1,7 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -9,8 +10,11 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Налаштування для статичних файлів React додатку
+app.use(express.static(path.join(__dirname, 'build')));
+
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function connectToDatabase() {
   try {
@@ -52,6 +56,18 @@ app.post('/bot', botHandler);
 const referralHandler = require('./referral');
 app.post('/api/referral', referralHandler);
 
+// Обробка всіх інших запитів до React додатку
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+});
+
+// Обробка закриття з'єднання з базою даних при завершенні роботи сервера
+process.on('SIGINT', async () => {
+  await client.close();
+  console.log('MongoDB connection closed');
+  process.exit(0);
 });
