@@ -24,7 +24,7 @@ const Friends: React.FC = () => {
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        const response = await axios.get(`${API_URL}/api/getFriends?userId=${userId}`);
+const response = await axios.get(`${API_URL}/api/getFriends?userId=${userId}`);
         setFriends(response.data.friends);
         setLoading(false);
       } catch (error) {
