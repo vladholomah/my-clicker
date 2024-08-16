@@ -17,31 +17,33 @@ const Friends: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, tg } = useTelegram();
 
-  useEffect(() => {
-    const fetchFriendsAndReferralCode = async () => {
-      try {
-        if (!user) {
-          console.log('User not found in Telegram WebApp, skipping data fetch');
-          setLoading(false);
-          return;
-        }
-        const userId = user.id.toString();
-        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
-        const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-        console.log('User data response:', response.data);
-        setFriends(response.data.friends);
-        setReferralCode(response.data.referralCode);
+useEffect(() => {
+  const fetchFriendsAndReferralCode = async () => {
+    try {
+      console.log('User object:', user);
+      if (!user) {
+        console.log('User not found in Telegram WebApp, skipping data fetch');
         setLoading(false);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Error loading user data');
-        setLoading(false);
+        return;
       }
-    };
+      const userId = user.id.toString();
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      console.log('API URL:', API_URL);
+      console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
+      const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+      console.log('User data response:', response.data);
+      setFriends(response.data.friends);
+      setReferralCode(response.data.referralCode);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setError('Error loading user data');
+      setLoading(false);
+    }
+  };
 
-    fetchFriendsAndReferralCode();
-  }, [user]);
+  fetchFriendsAndReferralCode();
+}, [user]);
 
   const handleInviteFriend = () => {
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'your_bot_username';
