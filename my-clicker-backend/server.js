@@ -7,13 +7,13 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://your-vercel-app-url.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS налаштування
+app.use(cors());
 
 app.use(express.json());
+
+// Налаштування для обслуговування статичних файлів React додатку
+app.use(express.static(path.join(__dirname, '..', 'build')));
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -102,8 +102,9 @@ app.post('/bot', (req, res) => {
 const referralHandler = require('./referral');
 app.post('/api/referral', referralHandler);
 
+// Обробка всіх інших запитів та повернення React додатку
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 app.listen(port, () => {
