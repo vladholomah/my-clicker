@@ -58,27 +58,33 @@ app.get('/api/getFriends', async (req, res) => {
 
 app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
+  console.log('Received getUserData request for userId:', userId);
 
   try {
     const db = client.db('holmah_coin_db');
     const users = db.collection('users');
 
     const user = await users.findOne({ telegramId: userId });
+    console.log('Found user:', user);
     if (!user) {
+      console.log('User not found');
       return res.status(404).json({ error: 'User not found' });
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
+    console.log('Found friends:', friends);
 
-    res.json({
+    const response = {
       friends: friends.map(friend => ({
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
         username: friend.username
       })),
-      referralCode: user.referralCode || userId // Використовуємо telegramId як резервний варіант
-    });
+      referralCode: user.referralCode || userId
+    };
+    console.log('Sending response:', response);
+    res.json(response);
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -87,7 +93,9 @@ app.get('/api/getUserData', async (req, res) => {
 
 const botHandler = require('./bot');
 app.post('/bot', (req, res) => {
-  console.log('Received bot request:', req.body);
+  console.log('Received request to /bot endpoint');
+  console.log('Request headers:', JSON.stringify(req.headers));
+  console.log('Request body:', JSON.stringify(req.body));
   botHandler(req, res);
 });
 

@@ -25,7 +25,9 @@ const Friends: React.FC = () => {
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+        console.log('User data response:', response.data);
         setFriends(response.data.friends);
         setReferralCode(response.data.referralCode);
         setLoading(false);
@@ -38,6 +40,10 @@ const Friends: React.FC = () => {
 
     if (user) {
       fetchFriendsAndReferralCode();
+    } else {
+      console.log('User not available in Telegram WebApp');
+      setError('User not found');
+      setLoading(false);
     }
   }, [user]);
 
