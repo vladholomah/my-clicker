@@ -15,13 +15,15 @@ const Friends: React.FC = () => {
   const [referralCode, setReferralCode] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useTelegram();
+  const { user, tg } = useTelegram();
 
   useEffect(() => {
     const fetchFriendsAndReferralCode = async () => {
       try {
         if (!user) {
-          throw new Error('User not found in Telegram WebApp');
+          console.log('User not found in Telegram WebApp, skipping data fetch');
+          setLoading(false);
+          return;
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -38,36 +40,28 @@ const Friends: React.FC = () => {
       }
     };
 
-    if (user) {
-      fetchFriendsAndReferralCode();
-    } else {
-      console.log('User not available in Telegram WebApp');
-      setError('User not found');
-      setLoading(false);
-    }
+    fetchFriendsAndReferralCode();
   }, [user]);
 
   const handleInviteFriend = () => {
-    if (!user) {
-      console.error('User not found in Telegram WebApp');
-      return;
-    }
-    const referralLink = `https://t.me/your_bot_username?start=${referralCode}`;
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
+    const botUsername = process.env.REACT_APP_BOT_USERNAME || 'your_bot_username';
+    const referralLink = `https://t.me/${botUsername}?start=${referralCode || 'invite'}`;
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
     } else {
       console.error('Telegram WebApp is not available');
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`, '_blank');
     }
   };
 
   if (loading) return <div className="friends-container">Loading...</div>;
-  if (error) return <div className="friends-container">{error}</div>;
 
   return (
     <div className="friends-container">
       <h2 className="friends-heading">Your Friends</h2>
-      <p className="friends-text">Your Referral Code: {referralCode}</p>
+      {referralCode && <p className="friends-text">Your Referral Code: {referralCode}</p>}
       <button className="friends-button" onClick={handleInviteFriend}>Invite a friend</button>
+      {error && <p className="friends-error">{error}</p>}
       {friends.length > 0 ? (
         <ul className="friends-list">
           {friends.map((friend) => (

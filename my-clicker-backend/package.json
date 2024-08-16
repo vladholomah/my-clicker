@@ -16,7 +16,8 @@
     "node-telegram-bot-api": "^0.54.0",
     "node-fetch": "^2.6.1",
     "dotenv": "^10.0.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"
