@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TelegramUser } from '../types/telegram';
 import { useTelegram } from '../hooks/useTelegram';
+import './Friends.css';
 
 interface Friend {
   telegramId: string;
@@ -12,30 +12,32 @@ interface Friend {
 
 const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [referralCode, setReferralCode] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useTelegram();
 
   useEffect(() => {
-    const fetchFriends = async () => {
+    const fetchFriendsAndReferralCode = async () => {
       try {
         if (!user) {
           throw new Error('User not found in Telegram WebApp');
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-const response = await axios.get(`${API_URL}/api/getFriends?userId=${userId}`);
+        const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
         setFriends(response.data.friends);
+        setReferralCode(response.data.referralCode);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching friends:', error);
-        setError('Error loading friends');
+        console.error('Error fetching user data:', error);
+        setError('Error loading user data');
         setLoading(false);
       }
     };
 
     if (user) {
-      fetchFriends();
+      fetchFriendsAndReferralCode();
     }
   }, [user]);
 
@@ -44,8 +46,7 @@ const response = await axios.get(`${API_URL}/api/getFriends?userId=${userId}`);
       console.error('User not found in Telegram WebApp');
       return;
     }
-    const userId = user.id.toString();
-    const referralLink = `https://t.me/your_bot_username?start=${userId}`;
+    const referralLink = `https://t.me/your_bot_username?start=${referralCode}`;
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
     } else {
@@ -53,24 +54,25 @@ const response = await axios.get(`${API_URL}/api/getFriends?userId=${userId}`);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="friends-container">Loading...</div>;
+  if (error) return <div className="friends-container">{error}</div>;
 
   return (
-    <div>
-      <h2>Your Friends</h2>
+    <div className="friends-container">
+      <h2 className="friends-heading">Your Friends</h2>
+      <p className="friends-text">Your Referral Code: {referralCode}</p>
+      <button className="friends-button" onClick={handleInviteFriend}>Invite a friend</button>
       {friends.length > 0 ? (
-        <ul>
+        <ul className="friends-list">
           {friends.map((friend) => (
-            <li key={friend.telegramId}>
+            <li key={friend.telegramId} className="friends-list-item">
               {friend.firstName} {friend.lastName} (@{friend.username})
             </li>
           ))}
         </ul>
       ) : (
-        <p>You have no invited friends yet.</p>
+        <p className="friends-text">You have no invited friends yet.</p>
       )}
-      <button onClick={handleInviteFriend}>Invite a friend</button>
     </div>
   );
 };
