@@ -1,31 +1,9 @@
 import { useEffect, useState } from 'react';
-
-interface TelegramUser {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-}
-
-interface TelegramWebApp {
-  ready: () => void;
-  initDataUnsafe: {
-    user?: TelegramUser;
-  };
-  openTelegramLink: (url: string) => void;
-}
-
-declare global {
-  interface Window {
-    Telegram: {
-      WebApp: TelegramWebApp;
-    };
-  }
-}
+import { TelegramUser, WebAppInstance } from '../types/telegram';
 
 export const useTelegram = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
-  const [tg, setTg] = useState<TelegramWebApp | null>(null);
+  const [tg, setTg] = useState<WebAppInstance | null>(null);
 
   useEffect(() => {
     const telegram = window.Telegram.WebApp;

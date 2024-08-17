@@ -10,14 +10,11 @@ export interface WebAppInitData {
 }
 
 export interface WebAppInstance {
+  ready: () => void;
   initDataUnsafe: WebAppInitData;
   openTelegramLink: (url: string) => void;
 }
 
-declare global {
-  interface Window {
-    Telegram: {
-      WebApp: WebAppInstance;
-    };
-  }
-}
+export type TelegramWebApp = {
+  WebApp: WebAppInstance;
+};
