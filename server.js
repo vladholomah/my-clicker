@@ -16,11 +16,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  next();
-});
-
 const uri = process.env.MONGODB_URI;
 if (!uri) {
   console.error('MONGODB_URI is not defined');
@@ -88,8 +83,7 @@ app.get('/api/getUserData', async (req, res) => {
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
-        username: friend.username,
-        coins: friend.coins || 0
+        username: friend.username
       })),
       referralCode: user.referralCode || userId
     };

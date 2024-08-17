@@ -30,18 +30,28 @@ module.exports = async (req, res) => {
     const user = await users.findOne({ telegramId: userId });
     if (!user) {
       console.log('User not found, creating new user');
-      await users.insertOne({ telegramId: userId, referrals: [], coins: 0 });
+      const newUser = {
+        telegramId: userId,
+        referrals: [],
+        coins: 0,
+        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+      };
+      await users.insertOne(newUser);
+      return res.json({ friends: [], referralCode: newUser.referralCode });
     }
 
-    const friends = await users.find({ telegramId: { $in: user ? user.referrals : [] } }).toArray();
+    const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
     console.log('Friends found:', friends.length);
 
     const friendsData = friends.map(friend => ({
       telegramId: friend.telegramId,
+      firstName: friend.firstName,
+      lastName: friend.lastName,
+      username: friend.username,
       coins: friend.coins || 0
     }));
 
-    res.status(200).json({ friends: friendsData });
+    res.status(200).json({ friends: friendsData, referralCode: user.referralCode });
   } catch (error) {
     console.error('Error in getFriends:', error);
     res.status(500).json({ error: 'Internal server error', details: error.message });
