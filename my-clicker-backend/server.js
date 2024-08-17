@@ -7,7 +7,6 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Розширені налаштування CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -15,9 +14,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-
-// Налаштування для обслуговування статичних файлів React додатку
-app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -25,26 +22,28 @@ if (!uri) {
   process.exit(1);
 }
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+let client;
 
 async function connectToDatabase() {
-  try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    process.exit(1);
+  if (!client) {
+    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    try {
+      await client.connect();
+      console.log('Connected to MongoDB');
+    } catch (error) {
+      console.error('Error connecting to MongoDB:', error);
+      process.exit(1);
+    }
   }
+  return client.db('holmah_coin_db');
 }
-
-connectToDatabase();
 
 app.get('/api/getFriends', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getFriends request for userId:', userId);
 
   try {
-    const db = client.db('holmah_coin_db');
+    const db = await connectToDatabase();
     const users = db.collection('users');
 
     const user = await users.findOne({ telegramId: userId });
@@ -68,18 +67,16 @@ app.get('/api/getUserData', async (req, res) => {
   console.log('Received getUserData request for userId:', userId);
 
   try {
-    const db = client.db('holmah_coin_db');
+    const db = await connectToDatabase();
     const users = db.collection('users');
 
     const user = await users.findOne({ telegramId: userId });
-    console.log('Found user:', user);
     if (!user) {
       console.log('User not found');
       return res.status(404).json({ error: 'User not found' });
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
-    console.log('Found friends:', friends);
 
     const response = {
       friends: friends.map(friend => ({
@@ -90,7 +87,6 @@ app.get('/api/getUserData', async (req, res) => {
       })),
       referralCode: user.referralCode || userId
     };
-    console.log('Sending response:', response);
     res.json(response);
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -99,28 +95,33 @@ app.get('/api/getUserData', async (req, res) => {
 });
 
 const botHandler = require('./bot');
-app.post('/bot', (req, res) => {
-  console.log('Received request to /bot endpoint');
-  console.log('Request headers:', JSON.stringify(req.headers));
-  console.log('Request body:', JSON.stringify(req.body));
-  botHandler(req, res);
-});
+app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
 
 const referralHandler = require('./referral');
-app.post('/api/referral', referralHandler);
+app.post('/api/referral', express.json(), referralHandler);
 
-// Обробка всіх інших запитів та повернення React додатку
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`CORS origin set to: ${process.env.FRONTEND_URL || '*'}`);
+  console.log(`Webhook URL: ${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`);
 });
 
+// Set webhook
+const TelegramBot = require('node-telegram-bot-api');
+const bot = new TelegramBot(process.env.BOT_TOKEN);
+
+bot.setWebHook(`${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`)
+  .then(() => console.log('Webhook set successfully'))
+  .catch((error) => console.error('Error setting webhook:', error));
+
 process.on('SIGINT', async () => {
-  await client.close();
-  console.log('MongoDB connection closed');
+  if (client) {
+    await client.close();
+    console.log('MongoDB connection closed');
+  }
   process.exit(0);
 });

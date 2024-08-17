@@ -70,15 +70,19 @@ app.get('/api/getUserData', async (req, res) => {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
-    const user = await users.findOne({ telegramId: userId });
-    console.log('Found user:', user);
+    let user = await users.findOne({ telegramId: userId });
     if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ error: 'User not found' });
+      console.log('User not found, creating new user');
+      user = {
+        telegramId: userId,
+        referrals: [],
+        coins: 0,
+        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
+      };
+      await users.insertOne(user);
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
-    console.log('Found friends:', friends);
 
     const response = {
       friends: friends.map(friend => ({
@@ -89,7 +93,6 @@ app.get('/api/getUserData', async (req, res) => {
       })),
       referralCode: user.referralCode || userId
     };
-    console.log('Sending response:', response);
     res.json(response);
   } catch (error) {
     console.error('Error fetching user data:', error);

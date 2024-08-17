@@ -50,7 +50,6 @@ const generateReferralCode = () => {
 module.exports = async (req, res) => {
   console.log('Bot handler called');
   console.log('Webhook received:', JSON.stringify(req.body, null, 2));
-  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
 
   try {
     const db = await connectToDatabase();
@@ -61,7 +60,7 @@ module.exports = async (req, res) => {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
       console.log(`Received message: ${text} from user ${userId}`);
 
-      if (text === '/start') {
+      if (text === '/start' || text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
           const referralCode = generateReferralCode();
