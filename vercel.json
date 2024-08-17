@@ -6,8 +6,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build",
-        "installCommand": "npm install --legacy-peer-deps",
-        "buildCommand": "npm run build"
+        "installCommand": "npm install --legacy-peer-deps"
       }
     }
   ],
@@ -17,7 +16,6 @@
     { "src": "^/manifest.json", "dest": "/manifest.json" },
     { "src": "^/asset-manifest.json", "dest": "/asset-manifest.json" },
     { "src": "^/service-worker.js", "dest": "/service-worker.js" },
-    { "handle": "filesystem" },
     { "src": "^/(.*)", "dest": "/index.html" }
   ]
 }
