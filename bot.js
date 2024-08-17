@@ -35,6 +35,7 @@ const sendTelegramMessage = async (chatId, text, keyboard = null) => {
       body: JSON.stringify(body)
     });
     const result = await response.json();
+    console.log('Telegram API response:', JSON.stringify(result));
     return result;
   } catch (error) {
     console.error('Error sending Telegram message:', error);
@@ -47,31 +48,49 @@ const generateReferralCode = () => {
 };
 
 module.exports = async (req, res) => {
+  console.log('Bot handler called');
+  console.log('Webhook received:', JSON.stringify(req.body, null, 2));
+
   try {
     const db = await connectToDatabase();
+    console.log('Database connected');
     const users = db.collection('users');
 
     if (req.body && req.body.message) {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
+      console.log(`Received message: ${text} from user ${userId}`);
 
-      if (text === '/start') {
+      if (text === '/start' || text.startsWith('/start')) {
+        console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = generateReferralCode();
-          const result = await users.updateOne(
-            { telegramId: userId.toString() },
-            {
-              $setOnInsert: {
-                telegramId: userId.toString(),
-                coins: 0,
-                referrals: [],
-                firstName: first_name,
-                lastName: last_name,
-                username: username,
-                referralCode: referralCode
-              }
-            },
-            { upsert: true }
-          );
+          const referralCode = text.split(' ')[1];
+          let user = await users.findOne({ telegramId: userId.toString() });
+
+          if (!user) {
+            const newReferralCode = generateReferralCode();
+            user = {
+              telegramId: userId.toString(),
+              coins: 0,
+              referrals: [],
+              firstName: first_name,
+              lastName: last_name,
+              username: username,
+              referralCode: newReferralCode
+            };
+            await users.insertOne(user);
+            console.log('New user created:', user);
+          }
+
+          if (referralCode && referralCode !== user.referralCode) {
+            const referrer = await users.findOne({ referralCode: referralCode });
+            if (referrer) {
+              await users.updateOne(
+                { telegramId: referrer.telegramId },
+                { $addToSet: { referrals: userId.toString() } }
+              );
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+            }
+          }
 
           const keyboard = {
             keyboard: [
@@ -81,7 +100,8 @@ module.exports = async (req, res) => {
             resize_keyboard: true
           };
 
-          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${referralCode}. Choose an option:`, keyboard);
+          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Choose an option:`, keyboard);
+          console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
           await sendTelegramMessage(chatId, 'An error occurred during registration. Please try again later.');
@@ -95,13 +115,17 @@ module.exports = async (req, res) => {
           await sendTelegramMessage(chatId, 'Sorry, we couldn\'t find your referral code. Please try /start command again.');
         }
       } else {
+        console.log(`Received unknown command: ${text}`);
         await sendTelegramMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
       }
+    } else {
+      console.log('Received request without message');
     }
 
     res.status(200).json({ ok: true });
   } catch (error) {
     console.error('General error:', error);
-    res.status(200).json({ ok: true }); // Always respond with 200 OK for Telegram
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

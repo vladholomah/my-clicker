@@ -8,6 +8,7 @@ interface Friend {
   firstName: string;
   lastName?: string;
   username?: string;
+  coins: number;
 }
 
 const Friends: React.FC = () => {
@@ -17,41 +18,40 @@ const Friends: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, tg } = useTelegram();
 
-useEffect(() => {
-  const fetchFriendsAndReferralCode = async () => {
-    try {
-      console.log('User object:', user);
-      if (!user) {
-        console.log('User not found in Telegram WebApp, skipping data fetch');
+  useEffect(() => {
+    const fetchFriendsAndReferralCode = async () => {
+      try {
+        console.log('User object:', user);
+        if (!user) {
+          console.log('User not found in Telegram WebApp, skipping data fetch');
+          setLoading(false);
+          return;
+        }
+        const userId = user.id.toString();
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+        console.log('API URL:', API_URL);
+        console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
+        const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+        console.log('User data response:', response.data);
+        setFriends(response.data.friends);
+        setReferralCode(response.data.referralCode);
         setLoading(false);
-        return;
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError('Error loading user data');
+        setLoading(false);
       }
-      const userId = user.id.toString();
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-      console.log('API URL:', API_URL);
-      console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
-      const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-      console.log('User data response:', response.data);
-      setFriends(response.data.friends);
-      setReferralCode(response.data.referralCode);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setError('Error loading user data');
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchFriendsAndReferralCode();
-}, [user]);
+    fetchFriendsAndReferralCode();
+  }, [user]);
 
   const handleInviteFriend = () => {
-    const botUsername = process.env.REACT_APP_BOT_USERNAME || 'your_bot_username';
-    const referralLink = `https://t.me/${botUsername}?start=${referralCode || 'invite'}`;
+    const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
+    const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
     if (tg && tg.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
     } else {
-      console.error('Telegram WebApp is not available');
       window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`, '_blank');
     }
   };
@@ -68,7 +68,7 @@ useEffect(() => {
         <ul className="friends-list">
           {friends.map((friend) => (
             <li key={friend.telegramId} className="friends-list-item">
-              {friend.firstName} {friend.lastName} (@{friend.username})
+              {friend.firstName} {friend.lastName} (@{friend.username}) - Coins: {friend.coins}
             </li>
           ))}
         </ul>

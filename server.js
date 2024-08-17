@@ -14,7 +14,12 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -70,16 +75,10 @@ app.get('/api/getUserData', async (req, res) => {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
-    let user = await users.findOne({ telegramId: userId });
+    const user = await users.findOne({ telegramId: userId });
     if (!user) {
-      console.log('User not found, creating new user');
-      user = {
-        telegramId: userId,
-        referrals: [],
-        coins: 0,
-        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
-      };
-      await users.insertOne(user);
+      console.log('User not found');
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
@@ -89,7 +88,8 @@ app.get('/api/getUserData', async (req, res) => {
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
-        username: friend.username
+        username: friend.username,
+        coins: friend.coins || 0
       })),
       referralCode: user.referralCode || userId
     };
@@ -101,19 +101,28 @@ app.get('/api/getUserData', async (req, res) => {
 });
 
 const botHandler = require('./bot');
-app.post('/bot', botHandler);
+app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
 
 const referralHandler = require('./referral');
-app.post('/api/referral', referralHandler);
+app.post('/api/referral', express.json(), referralHandler);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`CORS origin set to: ${process.env.FRONTEND_URL || '*'}`);
+  console.log(`Webhook URL: ${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`);
 });
+
+// Set webhook
+const TelegramBot = require('node-telegram-bot-api');
+const bot = new TelegramBot(process.env.BOT_TOKEN);
+
+bot.setWebHook(`${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`)
+  .then(() => console.log('Webhook set successfully'))
+  .catch((error) => console.error('Error setting webhook:', error));
 
 process.on('SIGINT', async () => {
   if (client) {

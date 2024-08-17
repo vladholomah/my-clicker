@@ -10,19 +10,23 @@ module.exports = async (req, res) => {
   try {
     await client.connect();
     console.log('Connected to MongoDB');
-    const db = client.db('holmah_coin_db'); // Змінено на правильну назву бази даних
+    const db = client.db('holmah_coin_db');
     const users = db.collection('users');
 
     let referrer = await users.findOne({ telegramId: referrerId });
+    console.log('Referrer before update:', referrer);
+    console.log('New user:', newUserId);
+
     if (!referrer) {
       referrer = { telegramId: referrerId, referrals: [] };
     }
-    referrer.referrals.push(newUserId);
-    await users.updateOne(
+
+    const updateResult = await users.updateOne(
       { telegramId: referrerId },
-      { $set: referrer },
+      { $addToSet: { referrals: newUserId } },
       { upsert: true }
     );
+    console.log('Update result:', updateResult);
 
     let newUser = await users.findOne({ telegramId: newUserId });
     if (!newUser) {
