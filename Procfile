@@ -1,1 +1,1 @@
-web: npm start
+web: cd my-clicker-backend && npm start
