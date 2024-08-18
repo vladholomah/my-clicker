@@ -12,8 +12,7 @@ interface Friend {
 }
 
 interface WebAppInstance {
-  shareUrl?: (params: { url: string; text: string }) => void;
-  showAlert?: (message: string) => void;
+  openLink?: (url: string) => void;
 }
 
 const Friends: React.FC = () => {
@@ -56,16 +55,15 @@ const Friends: React.FC = () => {
     const webApp = tg as WebAppInstance;
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
-    const shareText = 'Join me in Holmah Coin! Use my referral link:';
+    const shareText = encodeURIComponent('Join me in Holmah Coin! Use my referral link:');
 
-    if (webApp.shareUrl) {
-      webApp.shareUrl({
-        url: referralLink,
-        text: shareText
-      });
+    const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${shareText}`;
+
+    if (webApp.openLink) {
+      webApp.openLink(telegramShareUrl);
     } else {
-      console.error('shareUrl method is not available');
-      webApp.showAlert?.('Sharing is not available in this version of Telegram. Please update your app.');
+      // Fallback option if openLink is not available
+      window.open(telegramShareUrl, '_blank');
     }
   };
 
