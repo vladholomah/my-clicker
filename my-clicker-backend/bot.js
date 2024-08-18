@@ -89,25 +89,16 @@ module.exports = async (req, res) => {
 
           const keyboard = {
             keyboard: [
-              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }],
-              [{ text: 'Invite a friend' }]
+              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }]
             ],
             resize_keyboard: true
           };
 
-          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Choose an option:`, { reply_markup: keyboard });
+          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Use the button below to start playing:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
           await bot.sendMessage(chatId, 'An error occurred during registration. Please try again later.');
-        }
-      } else if (text === 'Invite a friend') {
-        const user = await users.findOne({ telegramId: userId.toString() });
-        if (user && user.referralCode) {
-          const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
-          await bot.sendMessage(chatId, `Share this link with your friends: ${referralLink}`);
-        } else {
-          await bot.sendMessage(chatId, 'Sorry, we couldn\'t find your referral code. Please try /start command again.');
         }
       } else {
         console.log(`Received unknown command: ${text}`);

@@ -11,15 +11,19 @@ interface Friend {
   coins: number;
 }
 
-// Розширений інтерфейс для WebApp
-interface ExtendedWebAppInstance {
-  showPopup?: (params: {
-    title?: string;
-    message: string;
-    buttons: Array<{ type: string; text: string }>;
-  }, callback?: (buttonId: string) => void) => void;
+interface WebAppInstance {
+  showPopup?: (params: PopupParams, callback?: (buttonId: string) => void) => void;
   showAlert?: (message: string) => void;
-  shareUrl?: (url: string) => void;
+  openTelegramLink?: (url: string) => void;
+}
+
+interface PopupParams {
+  title?: string;
+  message: string;
+  buttons: Array<{
+    type: 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
+    text: string;
+  }>;
 }
 
 const Friends: React.FC = () => {
@@ -28,7 +32,7 @@ const Friends: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, tg } = useTelegram();
-  const extendedTg = tg as ExtendedWebAppInstance;
+  const webApp = tg as WebAppInstance;
 
   useEffect(() => {
     const fetchFriendsAndReferralCode = async () => {
@@ -61,25 +65,11 @@ const Friends: React.FC = () => {
   const handleInviteFriend = () => {
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
-    if (extendedTg.showPopup) {
-      extendedTg.showPopup({
-        title: 'Invite Friends',
-        message: 'Share this link with your friends:',
-        buttons: [
-          { type: 'default', text: 'Copy Link' },
-          { type: 'default', text: 'Share' }
-        ]
-      }, (buttonId) => {
-        if (buttonId === 'Copy Link') {
-          navigator.clipboard.writeText(referralLink).then(() => {
-            extendedTg.showAlert?.('Link copied to clipboard!');
-          });
-        } else if (buttonId === 'Share') {
-          extendedTg.shareUrl?.(referralLink);
-        }
-      });
+
+    if (webApp.openTelegramLink) {
+      webApp.openTelegramLink(`tg://msg_url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Holmah Coin!')}`);
     } else {
-      // Fallback для браузерів або коли tg.showPopup недоступний
+      // Fallback для браузерів або коли openTelegramLink недоступний
       window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`, '_blank');
     }
   };
