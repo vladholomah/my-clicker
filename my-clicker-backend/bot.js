@@ -1,7 +1,8 @@
 const { MongoClient } = require('mongodb');
-const fetch = require('node-fetch');
+const TelegramBot = require('node-telegram-bot-api');
 
 let db;
+let bot;
 
 const connectToDatabase = async () => {
   if (!db) {
@@ -18,29 +19,11 @@ const connectToDatabase = async () => {
   return db;
 };
 
-const sendTelegramMessage = async (chatId, text, keyboard = null) => {
-  const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`;
-  const body = {
-    chat_id: chatId,
-    text: text,
-    parse_mode: 'HTML'
-  };
-  if (keyboard) {
-    body.reply_markup = JSON.stringify(keyboard);
+const initBot = () => {
+  if (!bot) {
+    bot = new TelegramBot(process.env.BOT_TOKEN);
   }
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const result = await response.json();
-    console.log('Telegram API response:', JSON.stringify(result));
-    return result;
-  } catch (error) {
-    console.error('Error sending Telegram message:', error);
-    throw error;
-  }
+  return bot;
 };
 
 const generateReferralCode = () => {
@@ -55,6 +38,7 @@ module.exports = async (req, res) => {
     const db = await connectToDatabase();
     console.log('Database connected');
     const users = db.collection('users');
+    const bot = initBot();
 
     if (req.body && req.body.message) {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
@@ -99,23 +83,23 @@ module.exports = async (req, res) => {
             resize_keyboard: true
           };
 
-          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Choose an option:`, keyboard);
+          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Choose an option:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
-          await sendTelegramMessage(chatId, 'An error occurred during registration. Please try again later.');
+          await bot.sendMessage(chatId, 'An error occurred during registration. Please try again later.');
         }
       } else if (text === 'Invite a friend') {
         const user = await users.findOne({ telegramId: userId.toString() });
         if (user && user.referralCode) {
           const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
-          await sendTelegramMessage(chatId, `Share this link with your friends: ${referralLink}`);
+          await bot.sendMessage(chatId, `Share this link with your friends: ${referralLink}`);
         } else {
-          await sendTelegramMessage(chatId, 'Sorry, we couldn\'t find your referral code. Please try /start command again.');
+          await bot.sendMessage(chatId, 'Sorry, we couldn\'t find your referral code. Please try /start command again.');
         }
       } else {
         console.log(`Received unknown command: ${text}`);
-        await sendTelegramMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
+        await bot.sendMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
       }
     } else {
       console.log('Received request without message');

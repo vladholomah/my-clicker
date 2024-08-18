@@ -2,6 +2,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const path = require('path');
+const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
@@ -117,24 +118,26 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`CORS origin set to: ${process.env.FRONTEND_URL || '*'}`);
   console.log(`Webhook URL: ${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`);
+
+  // Set webhook after server starts
+  const bot = new TelegramBot(process.env.BOT_TOKEN);
+  const webhookURL = `${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`;
+  bot.setWebHook(webhookURL)
+    .then(() => console.log('Webhook set successfully'))
+    .catch((error) => console.error('Error setting webhook:', error));
 });
-
-// Set webhook
-const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot(process.env.BOT_TOKEN);
-
-bot.setWebHook(`${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`)
-  .then(() => console.log('Webhook set successfully'))
-  .catch((error) => console.error('Error setting webhook:', error));
 
 process.on('SIGINT', async () => {
   if (client) {
     await client.close();
     console.log('MongoDB connection closed');
   }
-  process.exit(0);
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });
