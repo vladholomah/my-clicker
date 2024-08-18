@@ -29,16 +29,12 @@ module.exports = async (req, res) => {
 
     const user = await users.findOne({ telegramId: userId });
     if (!user) {
-      console.log('User not found, creating new user');
-      const newUser = {
-        telegramId: userId,
-        referrals: [],
-        coins: 0,
-        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase()
-      };
-      await users.insertOne(newUser);
-      return res.json({ friends: [], referralCode: newUser.referralCode });
+      console.log('User not found');
+      return res.status(404).json({ error: 'User not found' });
     }
+
+    console.log('User found:', user);
+    console.log('User referrals:', user.referrals);
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
     console.log('Friends found:', friends.length);

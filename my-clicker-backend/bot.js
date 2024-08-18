@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
               );
               console.log(`Update result for referrer:`, updateResult);
 
-              // Оновлюємо користувача, щоб показати, що він був запрошений
+              // Оновлюємо поточного користувача
               await users.updateOne(
                 { telegramId: userId.toString() },
                 { $set: { invitedBy: referrer.telegramId } }
