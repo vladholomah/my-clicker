@@ -73,10 +73,10 @@ const Friends: React.FC = () => {
 
     if (webApp.openTelegramLink) {
       console.log('Using openTelegramLink');
-      webApp.openTelegramLink(`tg://msg_url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
+      webApp.openTelegramLink(referralLink);
     } else if (webApp.openLink) {
       console.log('Using openLink');
-      webApp.openLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
+      webApp.openLink(referralLink);
     } else if (webApp.showPopup) {
       console.log('Using showPopup');
       webApp.showPopup({
