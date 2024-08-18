@@ -101,10 +101,10 @@ app.get('/api/getUserData', async (req, res) => {
 
 const botHandler = require('./bot');
 app.post(`/bot${process.env.BOT_TOKEN}`, (req, res, next) => {
-  console.log('Received webhook request');
-  console.log('Request body:', JSON.stringify(req.body, null, 2));
+  console.log('Webhook request received');
+  console.log('Request body:', JSON.stringify(req.body));
   next();
-}, express.json(), botHandler);
+}, botHandler);
 
 const referralHandler = require('./referral');
 app.post('/api/referral', express.json(), referralHandler);
