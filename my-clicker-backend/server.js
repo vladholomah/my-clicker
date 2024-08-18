@@ -100,20 +100,14 @@ app.get('/api/getUserData', async (req, res) => {
 });
 
 const botHandler = require('./bot');
-app.post(`/bot${process.env.BOT_TOKEN}`, (req, res, next) => {
+app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), (req, res) => {
   console.log('Webhook request received');
   console.log('Request body:', JSON.stringify(req.body));
-  next();
-}, botHandler);
+  botHandler(req, res);
+});
 
 const referralHandler = require('./referral');
 app.post('/api/referral', express.json(), referralHandler);
-
-app.post('/test-webhook', (req, res) => {
-  console.log('Test webhook received');
-  console.log('Request body:', JSON.stringify(req.body, null, 2));
-  res.status(200).json({ message: 'Test webhook received' });
-});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
