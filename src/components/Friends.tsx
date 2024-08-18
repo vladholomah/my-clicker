@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
+import { WebAppInstance } from '../types/telegram';
 import './Friends.css';
 
 interface Friend {
@@ -9,10 +10,6 @@ interface Friend {
   lastName?: string;
   username?: string;
   coins: number;
-}
-
-interface WebAppInstance {
-  openLink?: (url: string) => void;
 }
 
 const Friends: React.FC = () => {
@@ -52,18 +49,20 @@ const Friends: React.FC = () => {
       return;
     }
 
-    const webApp = tg as WebAppInstance;
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
-    const shareText = encodeURIComponent('Join me in Holmah Coin! Use my referral link:');
+    const shareText = `Join me in Holmah Coin! Use my referral link: ${referralLink}`;
 
-    const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${shareText}`;
-
-    if (webApp.openLink) {
-      webApp.openLink(telegramShareUrl);
+    if ('openTelegramLink' in tg) {
+      (tg as any).openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
-      // Fallback option if openLink is not available
-      window.open(telegramShareUrl, '_blank');
+      // Fallback если openTelegramLink недоступен
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert('Referral link copied to clipboard. You can now share it with your friends.');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy referral link. Please manually copy this link: ' + referralLink);
+      });
     }
   };
 
