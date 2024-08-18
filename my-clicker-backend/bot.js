@@ -47,10 +47,12 @@ module.exports = async (req, res) => {
       if (text === '/start' || text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = text.split(' ')[1] || generateReferralCode();
+          const referralCode = text.split(' ')[1];
+          console.log(`Referral code from command: ${referralCode}`);
           let user = await users.findOne({ telegramId: userId.toString() });
 
           if (!user) {
+            const newReferralCode = generateReferralCode();
             user = {
               telegramId: userId.toString(),
               coins: 0,
@@ -58,7 +60,7 @@ module.exports = async (req, res) => {
               firstName: first_name,
               lastName: last_name,
               username: username,
-              referralCode: referralCode
+              referralCode: newReferralCode
             };
             await users.insertOne(user);
             console.log('New user created:', user);
@@ -67,11 +69,21 @@ module.exports = async (req, res) => {
           if (referralCode && referralCode !== user.referralCode) {
             const referrer = await users.findOne({ referralCode: referralCode });
             if (referrer) {
-              await users.updateOne(
+              console.log(`Found referrer: ${referrer.telegramId}`);
+              const updateResult = await users.updateOne(
                 { telegramId: referrer.telegramId },
                 { $addToSet: { referrals: userId.toString() } }
               );
+              console.log(`Update result for referrer:`, updateResult);
+
+              // Оновлюємо користувача, щоб показати, що він був запрошений
+              await users.updateOne(
+                { telegramId: userId.toString() },
+                { $set: { invitedBy: referrer.telegramId } }
+              );
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+            } else {
+              console.log(`No referrer found for code: ${referralCode}`);
             }
           }
 

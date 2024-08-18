@@ -50,9 +50,9 @@ const Friends: React.FC = () => {
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
     if (tg && tg.openTelegramLink) {
-      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`);
+      tg.openTelegramLink(referralLink);
     } else {
-      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`, '_blank');
+      window.open(referralLink, '_blank');
     }
   };
 
@@ -68,7 +68,8 @@ const Friends: React.FC = () => {
         <ul className="friends-list">
           {friends.map((friend) => (
             <li key={friend.telegramId} className="friends-list-item">
-              {friend.firstName} {friend.lastName} (@{friend.username}) - Coins: {friend.coins}
+              {friend.firstName} {friend.lastName}
+              {friend.username && `(@${friend.username})`} - Coins: {friend.coins}
             </li>
           ))}
         </ul>
