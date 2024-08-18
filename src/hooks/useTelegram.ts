@@ -6,11 +6,20 @@ export const useTelegram = () => {
   const [tg, setTg] = useState<WebAppInstance | null>(null);
 
   useEffect(() => {
-    const telegram = window.Telegram.WebApp;
-    setTg(telegram);
+    if (window.Telegram && window.Telegram.WebApp) {
+      const telegram = window.Telegram.WebApp;
+      setTg(telegram);
 
-    telegram.ready();
-    setUser(telegram.initDataUnsafe.user || null);
+      telegram.ready();
+
+      if (telegram.initDataUnsafe && telegram.initDataUnsafe.user) {
+        setUser(telegram.initDataUnsafe.user);
+      } else {
+        console.warn('User data not available in Telegram WebApp');
+      }
+    } else {
+      console.error('Telegram WebApp is not available');
+    }
   }, []);
 
   return { user, tg };

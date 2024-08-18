@@ -63,23 +63,33 @@ module.exports = async (req, res) => {
       if (text === '/start' || text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = generateReferralCode();
-          const result = await users.updateOne(
-            { telegramId: userId.toString() },
-            {
-              $setOnInsert: {
-                telegramId: userId.toString(),
-                coins: 0,
-                referrals: [],
-                firstName: first_name,
-                lastName: last_name,
-                username: username,
-                referralCode: referralCode
-              }
-            },
-            { upsert: true }
-          );
-          console.log('User update result:', JSON.stringify(result));
+          const referralCode = text.split(' ')[1] || generateReferralCode();
+          let user = await users.findOne({ telegramId: userId.toString() });
+
+          if (!user) {
+            user = {
+              telegramId: userId.toString(),
+              coins: 0,
+              referrals: [],
+              firstName: first_name,
+              lastName: last_name,
+              username: username,
+              referralCode: referralCode
+            };
+            await users.insertOne(user);
+            console.log('New user created:', user);
+          }
+
+          if (referralCode && referralCode !== user.referralCode) {
+            const referrer = await users.findOne({ referralCode: referralCode });
+            if (referrer) {
+              await users.updateOne(
+                { telegramId: referrer.telegramId },
+                { $addToSet: { referrals: userId.toString() } }
+              );
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+            }
+          }
 
           const keyboard = {
             keyboard: [
@@ -89,7 +99,7 @@ module.exports = async (req, res) => {
             resize_keyboard: true
           };
 
-          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${referralCode}. Choose an option:`, keyboard);
+          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Choose an option:`, keyboard);
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);

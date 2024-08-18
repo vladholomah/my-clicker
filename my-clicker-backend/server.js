@@ -16,6 +16,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
 
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 const uri = process.env.MONGODB_URI;
 if (!uri) {
   console.error('MONGODB_URI is not defined');
@@ -95,10 +100,20 @@ app.get('/api/getUserData', async (req, res) => {
 });
 
 const botHandler = require('./bot');
-app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
+app.post(`/bot${process.env.BOT_TOKEN}`, (req, res, next) => {
+  console.log('Received webhook request');
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
+  next();
+}, express.json(), botHandler);
 
 const referralHandler = require('./referral');
 app.post('/api/referral', express.json(), referralHandler);
+
+app.post('/test-webhook', (req, res) => {
+  console.log('Test webhook received');
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
+  res.status(200).json({ message: 'Test webhook received' });
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
