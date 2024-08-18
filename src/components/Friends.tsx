@@ -15,6 +15,7 @@ interface WebAppInstance {
   showPopup?: (params: PopupParams, callback?: (buttonId: string) => void) => void;
   showAlert?: (message: string) => void;
   openTelegramLink?: (url: string) => void;
+  openLink?: (url: string) => void;
 }
 
 interface PopupParams {
@@ -65,12 +66,38 @@ const Friends: React.FC = () => {
   const handleInviteFriend = () => {
     const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
+    const shareText = 'Join me in Holmah Coin!';
+
+    console.log('Invite friend button clicked');
+    console.log('Referral link:', referralLink);
 
     if (webApp.openTelegramLink) {
-      webApp.openTelegramLink(`tg://msg_url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me in Holmah Coin!')}`);
+      console.log('Using openTelegramLink');
+      webApp.openTelegramLink(`tg://msg_url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
+    } else if (webApp.openLink) {
+      console.log('Using openLink');
+      webApp.openLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
+    } else if (webApp.showPopup) {
+      console.log('Using showPopup');
+      webApp.showPopup({
+        title: 'Invite Friends',
+        message: 'Share this link with your friends:',
+        buttons: [
+          { type: 'default', text: 'Copy Link' },
+          { type: 'default', text: 'Share' }
+        ]
+      }, (buttonId) => {
+        if (buttonId === 'Copy Link') {
+          navigator.clipboard.writeText(referralLink).then(() => {
+            webApp.showAlert?.('Link copied to clipboard!');
+          });
+        } else if (buttonId === 'Share') {
+          window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
+        }
+      });
     } else {
-      // Fallback для браузерів або коли openTelegramLink недоступний
-      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}`, '_blank');
+      console.log('Fallback: opening in new window');
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
     }
   };
 
