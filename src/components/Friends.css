@@ -68,6 +68,25 @@
   margin-bottom: 0;
 }
 
+.friend-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-name {
+  font-weight: bold;
+}
+
+.friend-username {
+  color: #666;
+  font-size: 12px;
+}
+
+.friend-coins {
+  font-weight: bold;
+  color: #4CAF50;
+}
+
 @media (max-width: 480px) {
   .friends-container {
     padding: 15px;
