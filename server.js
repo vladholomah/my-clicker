@@ -88,7 +88,18 @@ app.get('/api/getFriends', async (req, res) => {
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
     console.log('Friends found:', friends.length);
 
-    res.json({ friends });
+    const friendsData = friends.map(friend => ({
+      telegramId: friend.telegramId,
+      firstName: friend.firstName,
+      lastName: friend.lastName,
+      username: friend.username,
+      coins: friend.coins || 0,
+      level: friend.level || 'Beginner',
+      totalCoins: friend.totalCoins || '0',
+      avatar: friend.avatar || null
+    }));
+
+    res.json({ friends: friendsData });
   } catch (error) {
     console.error('Error fetching friends:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -116,9 +127,14 @@ app.get('/api/getUserData', async (req, res) => {
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
-        username: friend.username
+        username: friend.username,
+        coins: friend.coins || 0,
+        level: friend.level || 'Beginner',
+        totalCoins: friend.totalCoins || '0',
+        avatar: friend.avatar || null
       })),
-      referralCode: user.referralCode || userId
+      referralCode: user.referralCode || userId,
+      referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
     };
     res.json(response);
   } catch (error) {

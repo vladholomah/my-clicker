@@ -11,7 +11,7 @@ interface Friend {
   coins: number;
   level: string;
   totalCoins: string;
-  avatar?: string; // Додано властивість avatar
+  avatar?: string;
 }
 
 interface WebAppInstance {
@@ -33,6 +33,7 @@ interface PopupParams {
 const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [referralCode, setReferralCode] = useState<string>('');
+  const [referralLink, setReferralLink] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, tg } = useTelegram() as { user: any, tg: WebAppInstance | null };
@@ -49,6 +50,7 @@ const Friends: React.FC = () => {
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
         setFriends(response.data.friends);
         setReferralCode(response.data.referralCode);
+        setReferralLink(response.data.referralLink);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -61,14 +63,39 @@ const Friends: React.FC = () => {
   }, [user]);
 
   const handleInviteFriend = () => {
-    const botUsername = process.env.REACT_APP_BOT_USERNAME;
-    const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
     const shareText = 'Join me in Holmah Coin!';
 
     if (tg && tg.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
       window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
+    }
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const userId = user.id.toString();
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+      setFriends(response.data.friends);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      setError('Error refreshing data');
+      setLoading(false);
+    }
+  };
+
+  const handleShowQRCode = () => {
+    if (tg && tg.showPopup) {
+      tg.showPopup({
+        title: 'QR Code',
+        message: 'Scan this QR code to join:',
+        buttons: [{ type: 'close', text: 'Close' }]
+      });
+    } else {
+      alert('QR Code functionality is not available');
     }
   };
 
@@ -106,7 +133,7 @@ const Friends: React.FC = () => {
 
       <div className="friends-list-header">
         <h2>List of your friends ({friends.length})</h2>
-        <button className="refresh-button">
+        <button className="refresh-button" onClick={handleRefresh}>
           <img src="/images/refresh-icon.png" alt="Refresh" />
         </button>
       </div>
@@ -137,7 +164,7 @@ const Friends: React.FC = () => {
           Invite a friend
           <img src="/images/refresh-icon.png" alt="Refresh" className="refresh-icon" />
         </button>
-        <button className="qr-code-button">
+        <button className="qr-code-button" onClick={handleShowQRCode}>
           <img src="/images/qr-code-icon.png" alt="QR Code" />
         </button>
       </div>
