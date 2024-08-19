@@ -1,8 +1,22 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+import express from 'express';
+import { MongoClient } from 'mongodb';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
+import botHandler from './bot.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Log environment variables for debugging
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('BOT_TOKEN:', process.env.BOT_TOKEN ? 'Set' : 'Not set');
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -14,7 +28,26 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'build')));
+
+// Middleware для обробки %PUBLIC_URL%
+app.use((req, res, next) => {
+  if (req.url.includes('%PUBLIC_URL%')) {
+    req.url = req.url.replace(/%PUBLIC_URL%/g, '');
+  }
+  next();
+});
+
+// Serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+} else {
+  app.use(express.static(path.join(__dirname, 'public')));
+}
+
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -94,34 +127,42 @@ app.get('/api/getUserData', async (req, res) => {
   }
 });
 
-const botHandler = require('./bot');
 app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
 
-const referralHandler = require('./referral');
-app.post('/api/referral', express.json(), referralHandler);
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+app.post('/api/referral', express.json(), async (req, res) => {
+  // ... Implement referral logic here ...
 });
 
-app.listen(port, () => {
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
+});
+
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`CORS origin set to: ${process.env.FRONTEND_URL || '*'}`);
   console.log(`Webhook URL: ${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`);
+
+  // Set webhook after server starts
+  const bot = new TelegramBot(process.env.BOT_TOKEN);
+  const webhookURL = `${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`;
+  bot.setWebHook(webhookURL)
+    .then(() => console.log('Webhook set successfully'))
+    .catch((error) => console.error('Error setting webhook:', error));
 });
-
-// Set webhook
-const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot(process.env.BOT_TOKEN);
-
-bot.setWebHook(`${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`)
-  .then(() => console.log('Webhook set successfully'))
-  .catch((error) => console.error('Error setting webhook:', error));
 
 process.on('SIGINT', async () => {
   if (client) {
     await client.close();
     console.log('MongoDB connection closed');
   }
-  process.exit(0);
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });

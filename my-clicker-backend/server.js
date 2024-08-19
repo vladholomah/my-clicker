@@ -1,9 +1,22 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
-const cors = require('cors');
-const path = require('path');
-const TelegramBot = require('node-telegram-bot-api');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+import express from 'express';
+import { MongoClient } from 'mongodb';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import TelegramBot from 'node-telegram-bot-api';
+import dotenv from 'dotenv';
+import botHandler from './bot.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Log environment variables for debugging
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('BOT_TOKEN:', process.env.BOT_TOKEN ? 'Set' : 'Not set');
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,7 +30,7 @@ app.use(cors({
 app.use(express.json());
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -102,20 +115,16 @@ app.get('/api/getUserData', async (req, res) => {
   }
 });
 
-const botHandler = require('./bot');
-app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), (req, res) => {
-  console.log('Webhook request received');
-  console.log('Request body:', JSON.stringify(req.body));
-  botHandler(req, res);
-});
+app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
 
-const referralHandler = require('./referral');
-app.post('/api/referral', express.json(), referralHandler);
+app.post('/api/referral', express.json(), async (req, res) => {
+  // ... Implement referral logic here ...
+});
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 const server = app.listen(port, () => {

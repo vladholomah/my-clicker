@@ -9,12 +9,15 @@ interface Friend {
   lastName?: string;
   username?: string;
   coins: number;
+  level: string;
+  totalCoins: string;
+  avatar?: string; // Додано властивість avatar
 }
 
 interface WebAppInstance {
+  openTelegramLink?: (url: string) => void;
   showPopup?: (params: PopupParams, callback?: (buttonId: string) => void) => void;
   showAlert?: (message: string) => void;
-  openTelegramLink?: (url: string) => void;
   openLink?: (url: string) => void;
 }
 
@@ -32,24 +35,18 @@ const Friends: React.FC = () => {
   const [referralCode, setReferralCode] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, tg } = useTelegram();
-  const webApp = tg as WebAppInstance;
+  const { user, tg } = useTelegram() as { user: any, tg: WebAppInstance | null };
 
   useEffect(() => {
     const fetchFriendsAndReferralCode = async () => {
       try {
-        console.log('User object:', user);
         if (!user) {
-          console.log('User not found in Telegram WebApp, skipping data fetch');
           setLoading(false);
           return;
         }
         const userId = user.id.toString();
-        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-        console.log('API URL:', API_URL);
-        console.log('Fetching user data from:', `${API_URL}/api/getUserData?userId=${userId}`);
+        const API_URL = process.env.REACT_APP_API_URL;
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-        console.log('User data response:', response.data);
         setFriends(response.data.friends);
         setReferralCode(response.data.referralCode);
         setLoading(false);
@@ -64,39 +61,13 @@ const Friends: React.FC = () => {
   }, [user]);
 
   const handleInviteFriend = () => {
-    const botUsername = process.env.REACT_APP_BOT_USERNAME || 'holmah_coin_bot';
+    const botUsername = process.env.REACT_APP_BOT_USERNAME;
     const referralLink = `https://t.me/${botUsername}?start=${referralCode}`;
     const shareText = 'Join me in Holmah Coin!';
 
-    console.log('Invite friend button clicked');
-    console.log('Referral link:', referralLink);
-
-    if (webApp.openTelegramLink) {
-      console.log('Using openTelegramLink');
-      webApp.openTelegramLink(referralLink);
-    } else if (webApp.openLink) {
-      console.log('Using openLink');
-      webApp.openLink(referralLink);
-    } else if (webApp.showPopup) {
-      console.log('Using showPopup');
-      webApp.showPopup({
-        title: 'Invite Friends',
-        message: 'Share this link with your friends:',
-        buttons: [
-          { type: 'default', text: 'Copy Link' },
-          { type: 'default', text: 'Share' }
-        ]
-      }, (buttonId) => {
-        if (buttonId === 'Copy Link') {
-          navigator.clipboard.writeText(referralLink).then(() => {
-            webApp.showAlert?.('Link copied to clipboard!');
-          });
-        } else if (buttonId === 'Share') {
-          window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
-        }
-      });
+    if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
-      console.log('Fallback: opening in new window');
       window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
     }
   };
@@ -105,22 +76,71 @@ const Friends: React.FC = () => {
 
   return (
     <div className="friends-container">
-      <h2 className="friends-heading">Your Friends</h2>
-      {referralCode && <p className="friends-text">Your Referral Code: {referralCode}</p>}
-      <button className="friends-button" onClick={handleInviteFriend}>Invite a friend</button>
+      <h1 className="friends-heading">Invite friends!</h1>
+      <p className="friends-subheading">You and your friend will receive bonuses</p>
+
+      <div className="invite-options">
+        <div className="invite-option">
+          <img src="/images/gift-box.png" alt="Gift box" className="gift-icon" />
+          <div className="invite-option-text">
+            <span className="invite-option-title">Invite a friend</span>
+            <span className="invite-option-bonus">
+              <img src="/images/coin.png" alt="Coin" className="coin-icon" />
+              +5,000 for you and your friend
+            </span>
+          </div>
+        </div>
+        <div className="invite-option premium">
+          <img src="/images/premium-gift-box.png" alt="Premium gift box" className="gift-icon" />
+          <div className="invite-option-text">
+            <span className="invite-option-title">Invite a friend with Telegram Premium</span>
+            <span className="invite-option-bonus">
+              <img src="/images/coin.png" alt="Coin" className="coin-icon" />
+              +25,000 for you and your friend
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button className="more-bonuses-button">More bonuses</button>
+
+      <div className="friends-list-header">
+        <h2>List of your friends ({friends.length})</h2>
+        <button className="refresh-button">
+          <img src="/images/refresh-icon.png" alt="Refresh" />
+        </button>
+      </div>
+
       {error && <p className="friends-error">{error}</p>}
       {friends.length > 0 ? (
         <ul className="friends-list">
           {friends.map((friend) => (
             <li key={friend.telegramId} className="friends-list-item">
-              {friend.firstName} {friend.lastName}
-              {friend.username && `(@${friend.username})`} - Coins: {friend.coins}
+              <img src={friend.avatar || '/images/default-avatar.png'} alt={friend.firstName} className="friend-avatar" />
+              <div className="friend-info">
+                <span className="friend-name">{friend.firstName} {friend.lastName}</span>
+                <span className="friend-level">{friend.level} • <img src="/images/coin.png" alt="Coin" className="coin-icon-small" /> {friend.totalCoins}</span>
+              </div>
+              <span className="friend-coins">
+                <img src="/images/coin.png" alt="Coin" className="coin-icon" />
+                +{friend.coins.toLocaleString()}
+              </span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="friends-text">You have no invited friends yet.</p>
+        <p className="no-friends-message">You have no invited friends yet.</p>
       )}
+
+      <div className="bottom-buttons">
+        <button className="invite-friend-button" onClick={handleInviteFriend}>
+          Invite a friend
+          <img src="/images/refresh-icon.png" alt="Refresh" className="refresh-icon" />
+        </button>
+        <button className="qr-code-button">
+          <img src="/images/qr-code-icon.png" alt="QR Code" />
+        </button>
+      </div>
     </div>
   );
 };

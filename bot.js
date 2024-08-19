@@ -1,7 +1,9 @@
-const { MongoClient } = require('mongodb');
-const fetch = require('node-fetch');
+import { MongoClient } from 'mongodb';
+import TelegramBot from 'node-telegram-bot-api';
+import axios from 'axios';
 
 let db;
+let bot;
 
 const connectToDatabase = async () => {
   if (!db) {
@@ -18,36 +20,18 @@ const connectToDatabase = async () => {
   return db;
 };
 
-const sendTelegramMessage = async (chatId, text, keyboard = null) => {
-  const url = `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`;
-  const body = {
-    chat_id: chatId,
-    text: text,
-    parse_mode: 'HTML'
-  };
-  if (keyboard) {
-    body.reply_markup = JSON.stringify(keyboard);
+const initBot = () => {
+  if (!bot) {
+    bot = new TelegramBot(process.env.BOT_TOKEN);
   }
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const result = await response.json();
-    console.log('Telegram API response:', JSON.stringify(result));
-    return result;
-  } catch (error) {
-    console.error('Error sending Telegram message:', error);
-    throw error;
-  }
+  return bot;
 };
 
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-module.exports = async (req, res) => {
+const botHandler = async (req, res) => {
   console.log('Bot handler called');
   console.log('Webhook received:', JSON.stringify(req.body, null, 2));
 
@@ -55,6 +39,7 @@ module.exports = async (req, res) => {
     const db = await connectToDatabase();
     console.log('Database connected');
     const users = db.collection('users');
+    const bot = initBot();
 
     if (req.body && req.body.message) {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
@@ -63,49 +48,62 @@ module.exports = async (req, res) => {
       if (text === '/start' || text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = generateReferralCode();
-          const result = await users.updateOne(
-            { telegramId: userId.toString() },
-            {
-              $setOnInsert: {
-                telegramId: userId.toString(),
-                coins: 0,
-                referrals: [],
-                firstName: first_name,
-                lastName: last_name,
-                username: username,
-                referralCode: referralCode
-              }
-            },
-            { upsert: true }
-          );
-          console.log('User update result:', JSON.stringify(result));
+          const referralCode = text.split(' ')[1];
+          console.log(`Referral code from command: ${referralCode}`);
+          let user = await users.findOne({ telegramId: userId.toString() });
+
+          if (!user) {
+            const newReferralCode = generateReferralCode();
+            user = {
+              telegramId: userId.toString(),
+              coins: 0,
+              referrals: [],
+              firstName: first_name,
+              lastName: last_name,
+              username: username,
+              referralCode: newReferralCode
+            };
+            await users.insertOne(user);
+            console.log('New user created:', user);
+          }
+
+          if (referralCode && referralCode !== user.referralCode) {
+            const referrer = await users.findOne({ referralCode: referralCode });
+            if (referrer) {
+              console.log(`Found referrer: ${referrer.telegramId}`);
+              const updateResult = await users.updateOne(
+                { telegramId: referrer.telegramId },
+                { $addToSet: { referrals: userId.toString() } }
+              );
+              console.log(`Update result for referrer:`, updateResult);
+
+              // Оновлюємо поточного користувача
+              await users.updateOne(
+                { telegramId: userId.toString() },
+                { $set: { invitedBy: referrer.telegramId } }
+              );
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+            } else {
+              console.log(`No referrer found for code: ${referralCode}`);
+            }
+          }
 
           const keyboard = {
             keyboard: [
-              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }],
-              [{ text: 'Invite a friend' }]
+              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }]
             ],
             resize_keyboard: true
           };
 
-          await sendTelegramMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${referralCode}. Choose an option:`, keyboard);
+          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Use the button below to start playing:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
-          await sendTelegramMessage(chatId, 'An error occurred during registration. Please try again later.');
-        }
-      } else if (text === 'Invite a friend') {
-        const user = await users.findOne({ telegramId: userId.toString() });
-        if (user && user.referralCode) {
-          const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
-          await sendTelegramMessage(chatId, `Share this link with your friends: ${referralLink}`);
-        } else {
-          await sendTelegramMessage(chatId, 'Sorry, we couldn\'t find your referral code. Please try /start command again.');
+          await bot.sendMessage(chatId, 'An error occurred during registration. Please try again later.');
         }
       } else {
         console.log(`Received unknown command: ${text}`);
-        await sendTelegramMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
+        await bot.sendMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
       }
     } else {
       console.log('Received request without message');
@@ -120,3 +118,5 @@ module.exports = async (req, res) => {
     console.log('Request processing completed');
   }
 };
+
+export default botHandler;

@@ -1,5 +1,6 @@
-const { MongoClient } = require('mongodb');
-const TelegramBot = require('node-telegram-bot-api');
+import { MongoClient } from 'mongodb';
+import TelegramBot from 'node-telegram-bot-api';
+import axios from 'axios';
 
 let db;
 let bot;
@@ -30,7 +31,7 @@ const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-module.exports = async (req, res) => {
+const botHandler = async (req, res) => {
   console.log('Bot handler called');
   console.log('Webhook received:', JSON.stringify(req.body, null, 2));
 
@@ -117,3 +118,5 @@ module.exports = async (req, res) => {
     console.log('Request processing completed');
   }
 };
+
+export default botHandler;
