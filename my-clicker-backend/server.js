@@ -29,8 +29,20 @@ app.use(cors({
 
 app.use(express.json());
 
+// Middleware для обробки %PUBLIC_URL%
+app.use((req, res, next) => {
+  if (req.url.includes('%PUBLIC_URL%')) {
+    req.url = req.url.replace(/%PUBLIC_URL%/g, '');
+  }
+  next();
+});
+
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'build')));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build')));
+} else {
+  app.use(express.static(path.join(__dirname, 'public')));
+}
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -76,7 +88,18 @@ app.get('/api/getFriends', async (req, res) => {
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
     console.log('Friends found:', friends.length);
 
-    res.json({ friends });
+    const friendsData = friends.map(friend => ({
+      telegramId: friend.telegramId,
+      firstName: friend.firstName,
+      lastName: friend.lastName,
+      username: friend.username,
+      coins: friend.coins || 0,
+      level: friend.level || 'Beginner',
+      totalCoins: friend.totalCoins || '0',
+      avatar: friend.avatar || null
+    }));
+
+    res.json({ friends: friendsData });
   } catch (error) {
     console.error('Error fetching friends:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -104,9 +127,14 @@ app.get('/api/getUserData', async (req, res) => {
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
-        username: friend.username
+        username: friend.username,
+        coins: friend.coins || 0,
+        level: friend.level || 'Beginner',
+        totalCoins: friend.totalCoins || '0',
+        avatar: friend.avatar || null
       })),
-      referralCode: user.referralCode || userId
+      referralCode: user.referralCode || userId,
+      referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
     };
     res.json(response);
   } catch (error) {
@@ -124,7 +152,11 @@ app.post('/api/referral', express.json(), async (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  if (process.env.NODE_ENV === 'production') {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
 });
 
 const server = app.listen(port, () => {

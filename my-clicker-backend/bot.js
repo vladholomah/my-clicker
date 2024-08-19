@@ -48,12 +48,10 @@ const botHandler = async (req, res) => {
       if (text === '/start' || text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = text.split(' ')[1];
-          console.log(`Referral code from command: ${referralCode}`);
+          const referralCode = text.split(' ')[1] || generateReferralCode();
           let user = await users.findOne({ telegramId: userId.toString() });
 
           if (!user) {
-            const newReferralCode = generateReferralCode();
             user = {
               telegramId: userId.toString(),
               coins: 0,
@@ -61,41 +59,34 @@ const botHandler = async (req, res) => {
               firstName: first_name,
               lastName: last_name,
               username: username,
-              referralCode: newReferralCode
+              referralCode: referralCode
             };
             await users.insertOne(user);
             console.log('New user created:', user);
           }
 
-          if (referralCode && referralCode !== user.referralCode) {
+          if (text.startsWith('/start') && referralCode !== user.referralCode) {
             const referrer = await users.findOne({ referralCode: referralCode });
-            if (referrer) {
-              console.log(`Found referrer: ${referrer.telegramId}`);
-              const updateResult = await users.updateOne(
+            if (referrer && referrer.telegramId !== userId.toString()) {
+              await users.updateOne(
                 { telegramId: referrer.telegramId },
                 { $addToSet: { referrals: userId.toString() } }
               );
-              console.log(`Update result for referrer:`, updateResult);
-
-              // Оновлюємо поточного користувача
-              await users.updateOne(
-                { telegramId: userId.toString() },
-                { $set: { invitedBy: referrer.telegramId } }
-              );
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
-            } else {
-              console.log(`No referrer found for code: ${referralCode}`);
+              // Тут можна додати логіку для нарахування бонусів
             }
           }
 
+          const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
           const keyboard = {
             keyboard: [
-              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }]
+              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }],
+              [{ text: 'Invite Friends', callback_data: 'invite_friends' }]
             ],
             resize_keyboard: true
           };
 
-          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot! Your referral code is: ${user.referralCode}. Use the button below to start playing:`, { reply_markup: keyboard });
+          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot!\nYour referral link is: ${referralLink}\nUse the buttons below to start playing or invite friends:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);

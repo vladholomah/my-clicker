@@ -44,10 +44,14 @@ module.exports = async (req, res) => {
       firstName: friend.firstName,
       lastName: friend.lastName,
       username: friend.username,
-      coins: friend.coins || 0
+      coins: friend.coins || 0,
+      level: friend.level || 'Beginner',
+      totalCoins: friend.totalCoins || '0',
+      avatar: friend.avatar || null
     }));
 
-    res.status(200).json({ friends: friendsData, referralCode: user.referralCode });
+    const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
+    res.status(200).json({ friends: friendsData, referralCode: user.referralCode, referralLink });
   } catch (error) {
     console.error('Error in getFriends:', error);
     res.status(500).json({ error: 'Internal server error', details: error.message });
