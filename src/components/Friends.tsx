@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
 import './Friends.css';
 
@@ -60,7 +60,7 @@ const Friends: React.FC = () => {
         if (axios.isAxiosError(error)) {
           setDebugMessage(`Error: ${error.message}. Status: ${error.response?.status}`);
         } else {
-          setDebugMessage(`Error: ${(error as Error).message}`);
+          setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
         setLoading(false);
       }
