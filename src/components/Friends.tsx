@@ -22,24 +22,25 @@ const Friends: React.FC = () => {
   useEffect(() => {
     const fetchFriendsAndReferralCode = async () => {
       try {
-        if (!user) {
+        setDebugMessage(`Initial user state: ${JSON.stringify(user)}`);
+        if (!user || !user.id) {
           setLoading(false);
-          setDebugMessage('User not found');
+          setDebugMessage('User not found or user.id is undefined');
           return;
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL;
-        setDebugMessage(`Trying to fetch data from: ${API_URL}`);
+        setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-        setFriends(response.data.friends);
-        setReferralLink(response.data.referralLink);
-        setDebugMessage(`Data fetched successfully. Friends count: ${response.data.friends.length}`);
+        setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
+        setFriends(response.data.friends || []);
+        setReferralLink(response.data.referralLink || '');
         setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
         if (axios.isAxiosError(error)) {
-          setDebugMessage(`Error: ${error.message}. Status: ${error.response?.status}`);
+          setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
         } else {
           setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
@@ -62,7 +63,7 @@ const Friends: React.FC = () => {
   if (loading) return <div className="friends-container">Loading...</div>;
 
   return (
-    <div className="friends-container" style={{height: '100vh', overflowY: 'auto'}}>
+    <div className="friends-container" style={{height: '100vh', overflowY: 'auto', padding: '20px'}}>
       <h1>Invite friends!</h1>
       <button onClick={handleInviteFriend}>Invite a friend</button>
 
@@ -80,8 +81,11 @@ const Friends: React.FC = () => {
         <p>You have no invited friends yet.</p>
       )}
 
-      <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px'}}>
-        Debug: {debugMessage}
+      <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
+        <strong>Debug Info:</strong><br/>
+        User: {user ? JSON.stringify(user) : 'No user data'}<br/>
+        API URL: {process.env.REACT_APP_API_URL}<br/>
+        Debug Message: {debugMessage}
       </div>
     </div>
   );
