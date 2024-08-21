@@ -15,6 +15,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
 console.log('BOT_TOKEN:', process.env.BOT_TOKEN ? 'Set' : 'Not set');
 console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('BOT_USERNAME:', process.env.BOT_USERNAME);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -59,6 +60,9 @@ async function connectToDatabase() {
     try {
       await client.connect();
       console.log('Connected to MongoDB');
+      const db = client.db('holmah_coin_db');
+      const collections = await db.listCollections().toArray();
+      console.log('Available collections:', collections.map(c => c.name));
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);
       process.exit(1);
@@ -91,7 +95,7 @@ app.get('/api/getUserData', async (req, res) => {
         username: friend.username,
         coins: friend.coins || 0,
         level: friend.level || 'Beginner',
-        totalCoins: friend.totalCoins || '0',
+        totalCoins: friend.totalCoins || friend.coins.toString(),
         avatar: friend.avatar || null
       })),
       referralCode: user.referralCode,

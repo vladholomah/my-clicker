@@ -46,7 +46,9 @@ const Friends: React.FC = () => {
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL;
+        console.log('API_URL:', API_URL); // Debugging line
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+        console.log('API Response:', response.data); // Debugging line
         setFriends(response.data.friends);
         setReferralLink(response.data.referralLink);
         setLoading(false);
@@ -61,17 +63,23 @@ const Friends: React.FC = () => {
   }, [user]);
 
   const handleInviteFriend = () => {
-    const shareText = 'Join me in Holmah Coin!';
+    const shareText = `Join me in Holmah Coin and get a bonus! Use my referral link: ${referralLink}`;
 
     if (tg && tg.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
-      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert('Referral link copied to clipboard! Share it with your friends.');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy referral link. Please copy it manually: ' + referralLink);
+      });
     }
   };
 
   const handleRefresh = async () => {
     setLoading(true);
+    setError(null);
     try {
       const userId = user.id.toString();
       const API_URL = process.env.REACT_APP_API_URL;
@@ -80,7 +88,7 @@ const Friends: React.FC = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error refreshing data:', error);
-      setError('Error refreshing data');
+      setError('Error refreshing data. Please try again.');
       setLoading(false);
     }
   };
@@ -160,7 +168,7 @@ const Friends: React.FC = () => {
       <div className="bottom-buttons">
         <button className="invite-friend-button" onClick={handleInviteFriend}>
           Invite a friend
-          <img src="/images/refresh-icon.png" alt="Refresh" className="refresh-icon" />
+          <img src="/images/share-icon.png" alt="Share" className="share-icon" />
         </button>
         <button className="qr-code-button" onClick={handleShowQRCode}>
           <img src="/images/qr-code-icon.png" alt="QR Code" />

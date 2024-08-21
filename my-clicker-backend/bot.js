@@ -58,11 +58,11 @@ const botHandler = async (req, res) => {
             user = {
               telegramId: userId.toString(),
               coins: 0,
-              referrals: [],
               firstName: first_name,
               lastName: last_name,
               username: username,
-              referralCode: referralCode
+              referralCode: referralCode,
+              referrals: []
             };
             await users.insertOne(user);
             console.log('New user created:', user);
