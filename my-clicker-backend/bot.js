@@ -45,7 +45,7 @@ const botHandler = async (req, res) => {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
       console.log(`Received message: ${text} from user ${userId}`);
 
-      if (text === '/start' || text.startsWith('/start')) {
+      if (text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
           const referralCode = text.split(' ')[1] || generateReferralCode();
@@ -59,13 +59,13 @@ const botHandler = async (req, res) => {
               firstName: first_name,
               lastName: last_name,
               username: username,
-              referralCode: referralCode
+              referralCode: generateReferralCode()
             };
             await users.insertOne(user);
             console.log('New user created:', user);
           }
 
-          if (text.startsWith('/start') && referralCode !== user.referralCode) {
+          if (text.startsWith('/start') && referralCode && referralCode !== user.referralCode) {
             const referrer = await users.findOne({ referralCode: referralCode });
             if (referrer && referrer.telegramId !== userId.toString()) {
               await users.updateOne(
@@ -73,7 +73,15 @@ const botHandler = async (req, res) => {
                 { $addToSet: { referrals: userId.toString() } }
               );
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
-              // Тут можна додати логіку для нарахування бонусів
+              // Додавання бонусів
+              await users.updateOne(
+                { telegramId: referrer.telegramId },
+                { $inc: { coins: 5000 } }
+              );
+              await users.updateOne(
+                { telegramId: userId.toString() },
+                { $inc: { coins: 5000 } }
+              );
             }
           }
 
