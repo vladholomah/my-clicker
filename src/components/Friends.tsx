@@ -32,7 +32,6 @@ interface PopupParams {
 
 const Friends: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [referralCode, setReferralCode] = useState<string>('');
   const [referralLink, setReferralLink] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +48,6 @@ const Friends: React.FC = () => {
         const API_URL = process.env.REACT_APP_API_URL;
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
         setFriends(response.data.friends);
-        setReferralCode(response.data.referralCode);
         setReferralLink(response.data.referralLink);
         setLoading(false);
       } catch (error) {

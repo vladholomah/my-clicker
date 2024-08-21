@@ -48,10 +48,13 @@ const botHandler = async (req, res) => {
       if (text.startsWith('/start')) {
         console.log(`Processing /start command for user ${userId}`);
         try {
-          const referralCode = text.split(' ')[1] || generateReferralCode();
+          const args = text.split(' ');
+          const referrerCode = args.length > 1 ? args[1] : null;
+
           let user = await users.findOne({ telegramId: userId.toString() });
 
           if (!user) {
+            const referralCode = generateReferralCode();
             user = {
               telegramId: userId.toString(),
               coins: 0,
@@ -59,14 +62,14 @@ const botHandler = async (req, res) => {
               firstName: first_name,
               lastName: last_name,
               username: username,
-              referralCode: generateReferralCode()
+              referralCode: referralCode
             };
             await users.insertOne(user);
             console.log('New user created:', user);
           }
 
-          if (text.startsWith('/start') && referralCode && referralCode !== user.referralCode) {
-            const referrer = await users.findOne({ referralCode: referralCode });
+          if (referrerCode && referrerCode !== user.referralCode) {
+            const referrer = await users.findOne({ referralCode: referrerCode });
             if (referrer && referrer.telegramId !== userId.toString()) {
               await users.updateOne(
                 { telegramId: referrer.telegramId },
@@ -74,14 +77,17 @@ const botHandler = async (req, res) => {
               );
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
               // Додавання бонусів
+              const bonusAmount = 5000;
               await users.updateOne(
                 { telegramId: referrer.telegramId },
-                { $inc: { coins: 5000 } }
+                { $inc: { coins: bonusAmount } }
               );
               await users.updateOne(
                 { telegramId: userId.toString() },
-                { $inc: { coins: 5000 } }
+                { $inc: { coins: bonusAmount } }
               );
+              await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
+              await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             }
           }
 
