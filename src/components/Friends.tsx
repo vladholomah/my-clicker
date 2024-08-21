@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
 import './Friends.css';
 
@@ -35,6 +35,7 @@ const Friends: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugMessage, setDebugMessage] = useState<string>('');
   const { user, tg } = useTelegram() as { user: any, tg: WebAppInstance | null };
 
   useEffect(() => {
@@ -42,19 +43,25 @@ const Friends: React.FC = () => {
       try {
         if (!user) {
           setLoading(false);
+          setDebugMessage('User not found');
           return;
         }
         const userId = user.id.toString();
         const API_URL = process.env.REACT_APP_API_URL;
-        console.log('API_URL:', API_URL); // Debugging line
+        setDebugMessage(`Trying to fetch data from: ${API_URL}`);
         const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-        console.log('API Response:', response.data); // Debugging line
         setFriends(response.data.friends);
         setReferralLink(response.data.referralLink);
+        setDebugMessage(`Data fetched successfully. Friends count: ${response.data.friends.length}`);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
+        if (axios.isAxiosError(error)) {
+          setDebugMessage(`Error: ${error.message}. Status: ${error.response?.status}`);
+        } else {
+          setDebugMessage(`Error: ${(error as Error).message}`);
+        }
         setLoading(false);
       }
     };
@@ -173,6 +180,10 @@ const Friends: React.FC = () => {
         <button className="qr-code-button" onClick={handleShowQRCode}>
           <img src="/images/qr-code-icon.png" alt="QR Code" />
         </button>
+      </div>
+
+      <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px'}}>
+        Debug: {debugMessage}
       </div>
     </div>
   );
