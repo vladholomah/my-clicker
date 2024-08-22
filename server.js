@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import botHandler from './bot.js';
+import axios from 'axios';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +59,21 @@ async function connectToDatabase() {
   return client.db('holmah_coin_db');
 }
 
+async function getUserProfilePhoto(userId) {
+  try {
+    const bot = new TelegramBot(process.env.BOT_TOKEN);
+    const userProfilePhotos = await bot.getUserProfilePhotos(userId, { limit: 1 });
+    if (userProfilePhotos.photos.length > 0) {
+      const fileId = userProfilePhotos.photos[0][0].file_id;
+      const file = await bot.getFile(fileId);
+      return `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
+    }
+  } catch (error) {
+    console.error('Error fetching user profile photo:', error);
+  }
+  return null;
+}
+
 app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getUserData request for userId:', userId);
@@ -69,6 +85,7 @@ app.get('/api/getUserData', async (req, res) => {
     let user = await users.findOne({ telegramId: userId });
     if (!user) {
       console.log('User not found, creating a new one');
+      const avatar = await getUserProfilePhoto(userId);
       user = {
         telegramId: userId,
         firstName: 'Test',
@@ -76,23 +93,33 @@ app.get('/api/getUserData', async (req, res) => {
         username: 'testuser',
         coins: 0,
         referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-        referrals: []
+        referrals: [],
+        avatar: avatar
       };
       await users.insertOne(user);
+    } else if (!user.avatar) {
+      user.avatar = await getUserProfilePhoto(userId);
+      await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
 
     const response = {
-      friends: friends.map(friend => ({
-        telegramId: friend.telegramId,
-        firstName: friend.firstName,
-        lastName: friend.lastName,
-        username: friend.username,
-        coins: friend.coins || 0,
-        level: friend.level || 'Beginner',
-        totalCoins: friend.totalCoins || friend.coins.toString(),
-        avatar: friend.avatar || null
+      friends: await Promise.all(friends.map(async friend => {
+        if (!friend.avatar) {
+          friend.avatar = await getUserProfilePhoto(friend.telegramId);
+          await users.updateOne({ telegramId: friend.telegramId }, { $set: { avatar: friend.avatar } });
+        }
+        return {
+          telegramId: friend.telegramId,
+          firstName: friend.firstName,
+          lastName: friend.lastName,
+          username: friend.username,
+          coins: friend.coins || 0,
+          level: friend.level || 'Beginner',
+          totalCoins: friend.totalCoins || friend.coins.toString(),
+          avatar: friend.avatar
+        };
       })),
       referralCode: user.referralCode,
       referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
