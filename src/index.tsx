@@ -19,6 +19,7 @@ const TelegramWebAppWrapper: React.FC = () => {
       document.documentElement.style.setProperty('--tg-theme-button-text-color', WebApp.themeParams.button_text_color);
 
       console.log('WebApp theme params:', WebApp.themeParams);
+      console.log('WebApp user:', WebApp.initDataUnsafe.user);
     } else {
       console.log('Running outside of Telegram WebApp');
       // Встановіть деякі значення за замовчуванням для браузерної версії

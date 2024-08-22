@@ -1,24 +1,31 @@
 import { useEffect, useState } from 'react';
 import { TelegramUser, WebAppInstance } from '../types/telegram';
+import WebApp from '@twa-dev/sdk';
 
 export const useTelegram = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [tg, setTg] = useState<WebAppInstance | null>(null);
 
   useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const telegram = window.Telegram.WebApp;
-      setTg(telegram);
+    if (WebApp.initDataUnsafe.query_id) {
+      setTg(WebApp);
 
-      telegram.ready();
-
-      if (telegram.initDataUnsafe && telegram.initDataUnsafe.user) {
-        setUser(telegram.initDataUnsafe.user);
+      if (WebApp.initDataUnsafe.user) {
+        setUser(WebApp.initDataUnsafe.user);
       } else {
         console.warn('User data not available in Telegram WebApp');
       }
+
+      console.log('WebApp initialized:', WebApp.initDataUnsafe);
     } else {
-      console.error('Telegram WebApp is not available');
+      console.warn('Running outside of Telegram WebApp');
+      // Можливо, тут варто встановити якісь тестові дані для розробки
+      setUser({
+        id: 12345,
+        first_name: 'Test',
+        last_name: 'User',
+        username: 'testuser'
+      });
     }
   }, []);
 

@@ -9,6 +9,9 @@ interface Friend {
   lastName?: string;
   username?: string;
   coins: number;
+  level: string;
+  totalCoins: string;
+  avatar?: string;
 }
 
 const Friends: React.FC = () => {
@@ -56,7 +59,12 @@ const Friends: React.FC = () => {
     if (tg?.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
-      alert('Unable to open Telegram link. Your referral link is: ' + referralLink);
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert('Referral link copied to clipboard! Share it with your friends.');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy referral link. Please copy it manually: ' + referralLink);
+      });
     }
   };
 
