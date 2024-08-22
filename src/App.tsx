@@ -10,7 +10,6 @@ import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
 import Earn from './components/Earn';
 import Friends from './components/Friends';
-import { useTelegram } from './hooks/useTelegram';
 import './App.css';
 
 function AppContent() {
@@ -36,7 +35,6 @@ function AppContent() {
   const [lastRewardLevel, setLastRewardLevel] = useState(() => {
     return localStorage.getItem('lastRewardLevel') || '';
   });
-  const { user, tg } = useTelegram();
 
   const handleMenuItemClick = (item: string) => {
     setCurrentView(item);
