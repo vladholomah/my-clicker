@@ -10,6 +10,7 @@ import { BoostProvider } from './BoostContext';
 import { EnergyProvider, useEnergy } from './EnergyContext';
 import Earn from './components/Earn';
 import Friends from './components/Friends';
+import { useTelegram } from './hooks/useTelegram';
 import './App.css';
 
 function AppContent() {
@@ -35,16 +36,26 @@ function AppContent() {
   const [lastRewardLevel, setLastRewardLevel] = useState(() => {
     return localStorage.getItem('lastRewardLevel') || '';
   });
+  const { user, tg } = useTelegram();
+
+  useEffect(() => {
+    console.log('AppContent mounted');
+    console.log('User:', user);
+    console.log('Telegram WebApp:', tg);
+  }, [user, tg]);
 
   const handleMenuItemClick = (item: string) => {
+    console.log('Menu item clicked:', item);
     setCurrentView(item);
   };
 
   const handleBinanceClick = () => {
+    console.log('Binance clicked');
     setCurrentView('exchange');
   };
 
   const handleExchangeSelect = (exchangeName: string) => {
+    console.log('Exchange selected:', exchangeName);
     const newExchange = {
       name: exchangeName,
       logo: exchangeName === 'Holmah'
@@ -56,10 +67,12 @@ function AppContent() {
   };
 
   const handleSettingsClick = () => {
+    console.log('Settings clicked');
     setCurrentView('settings');
   };
 
   const handleMultitapUpgrade = (level: number, cost: number) => {
+    console.log('Multitap upgrade:', level, cost);
     if (score >= cost) {
       setScore(prevScore => {
         const newScore = prevScore - cost;
@@ -72,6 +85,7 @@ function AppContent() {
   };
 
   const handleEnergyBoostUpgrade = (newMaxEnergy: number, cost: number) => {
+    console.log('Energy boost upgrade:', newMaxEnergy, cost);
     if (score >= cost) {
       setScore(prevScore => {
         const newScore = prevScore - cost;
@@ -85,6 +99,7 @@ function AppContent() {
   };
 
   const handleEnergyRecoveryUpgrade = (newRate: number, cost: number) => {
+    console.log('Energy recovery upgrade:', newRate, cost);
     if (score >= cost) {
       setScore(prevScore => {
         const newScore = prevScore - cost;
@@ -98,6 +113,7 @@ function AppContent() {
   };
 
   const handleScoreChange = (increment: number) => {
+    console.log('Score change:', increment);
     setScore(prevScore => {
       const newScore = prevScore + increment;
       localStorage.setItem('userScore', newScore.toString());
@@ -115,6 +131,7 @@ function AppContent() {
   };
 
   const handleRewardsClick = () => {
+    console.log('Rewards clicked');
     const currentLevel = getLevelInfo(score);
     if (currentLevel.name !== lastRewardLevel && !rewardsReceived) {
       setScore(prevScore => {
@@ -159,6 +176,7 @@ function AppContent() {
   }, []);
 
   const renderView = () => {
+    console.log('Rendering view:', currentView);
     switch(currentView) {
       case 'levels':
         return <Levels />;

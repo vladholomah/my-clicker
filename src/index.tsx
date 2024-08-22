@@ -20,6 +20,7 @@ const TelegramWebAppWrapper: React.FC = () => {
 
       console.log('WebApp theme params:', WebApp.themeParams);
       console.log('WebApp user:', WebApp.initDataUnsafe.user);
+      console.log('WebApp start_param:', WebApp.initDataUnsafe.start_param);
     } else {
       console.log('Running outside of Telegram WebApp');
       // Встановіть деякі значення за замовчуванням для браузерної версії

@@ -19,13 +19,22 @@ export const useTelegram = () => {
       console.log('WebApp initialized:', WebApp.initDataUnsafe);
     } else {
       console.warn('Running outside of Telegram WebApp');
-      // Можливо, тут варто встановити якісь тестові дані для розробки
+      // Тестові дані для розробки
       setUser({
         id: 12345,
         first_name: 'Test',
         last_name: 'User',
         username: 'testuser'
       });
+
+      // Створюємо заглушку для tg об'єкта
+      setTg({
+        openTelegramLink: (url: string) => {
+          console.log('Opening Telegram link:', url);
+          window.open(url, '_blank');
+        },
+        // Додайте інші необхідні методи тут
+      } as WebAppInstance);
     }
   }, []);
 

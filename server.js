@@ -101,6 +101,7 @@ app.get('/api/getUserData', async (req, res) => {
       referralCode: user.referralCode,
       referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
     };
+    console.log('Sending response:', response);
     res.json(response);
   } catch (error) {
     console.error('Error fetching user data:', error);
