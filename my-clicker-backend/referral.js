@@ -5,6 +5,12 @@ module.exports = async (req, res) => {
   console.log('Request body:', JSON.stringify(req.body));
 
   const { referrerId, newUserId } = req.body;
+
+  if (!referrerId || !newUserId) {
+    console.error('Missing referrerId or newUserId');
+    return res.status(400).json({ success: false, error: 'Missing required parameters' });
+  }
+
   const client = new MongoClient(process.env.MONGODB_URI);
 
   try {
@@ -18,19 +24,33 @@ module.exports = async (req, res) => {
     console.log('New user:', newUserId);
 
     if (!referrer) {
-      referrer = { telegramId: referrerId, referrals: [] };
+      referrer = { telegramId: referrerId, referrals: [], coins: 0 };
     }
 
     const updateResult = await users.updateOne(
       { telegramId: referrerId },
-      { $addToSet: { referrals: newUserId } },
+      {
+        $addToSet: { referrals: newUserId },
+        $inc: { coins: 5000 } // Bonus for referrer
+      },
       { upsert: true }
     );
-    console.log('Update result:', updateResult);
+    console.log('Update result for referrer:', updateResult);
 
     let newUser = await users.findOne({ telegramId: newUserId });
     if (!newUser) {
-      await users.insertOne({ telegramId: newUserId, referrals: [] });
+      const insertResult = await users.insertOne({
+        telegramId: newUserId,
+        referrals: [],
+        coins: 5000 // Bonus for new user
+      });
+      console.log('Insert result for new user:', insertResult);
+    } else {
+      const updateNewUserResult = await users.updateOne(
+        { telegramId: newUserId },
+        { $inc: { coins: 5000 } }
+      );
+      console.log('Update result for existing new user:', updateNewUserResult);
     }
 
     console.log('Referral processed successfully');

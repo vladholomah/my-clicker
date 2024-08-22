@@ -51,7 +51,10 @@ module.exports = async (req, res) => {
     }));
 
     const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
-    res.status(200).json({ friends: friendsData, referralCode: user.referralCode, referralLink });
+    console.log('Referral link generated:', referralLink);
+    const response = { friends: friendsData, referralCode: user.referralCode, referralLink };
+    console.log('Sending response:', response);
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error in getFriends:', error);
     res.status(500).json({ error: 'Internal server error', details: error.message });

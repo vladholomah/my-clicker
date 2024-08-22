@@ -1,41 +1,44 @@
 import { useEffect, useState } from 'react';
 import { TelegramUser, WebAppInstance } from '../types/telegram';
-import WebApp from '@twa-dev/sdk';
 
 export const useTelegram = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [tg, setTg] = useState<WebAppInstance | null>(null);
 
   useEffect(() => {
-    if (WebApp.initDataUnsafe.query_id) {
-      setTg(WebApp);
+    const initTelegram = () => {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const telegram = window.Telegram.WebApp;
+        setTg(telegram);
 
-      if (WebApp.initDataUnsafe.user) {
-        setUser(WebApp.initDataUnsafe.user);
+        telegram.ready();
+
+        if (telegram.initDataUnsafe && telegram.initDataUnsafe.user) {
+          setUser(telegram.initDataUnsafe.user);
+          console.log('Telegram user data:', telegram.initDataUnsafe.user);
+        } else {
+          console.warn('User data not available in Telegram WebApp');
+          // Якщо дані користувача недоступні, створюємо тестового користувача
+          setUser({
+            id: 12345,
+            first_name: 'Test',
+            last_name: 'User',
+            username: 'testuser'
+          });
+        }
       } else {
-        console.warn('User data not available in Telegram WebApp');
+        console.error('Telegram WebApp is not available');
+        // Створюємо тестового користувача для розробки поза Telegram
+        setUser({
+          id: 12345,
+          first_name: 'Test',
+          last_name: 'User',
+          username: 'testuser'
+        });
       }
+    };
 
-      console.log('WebApp initialized:', WebApp.initDataUnsafe);
-    } else {
-      console.warn('Running outside of Telegram WebApp');
-      // Тестові дані для розробки
-      setUser({
-        id: 12345,
-        first_name: 'Test',
-        last_name: 'User',
-        username: 'testuser'
-      });
-
-      // Створюємо заглушку для tg об'єкта
-      setTg({
-        openTelegramLink: (url: string) => {
-          console.log('Opening Telegram link:', url);
-          window.open(url, '_blank');
-        },
-        // Додайте інші необхідні методи тут
-      } as WebAppInstance);
-    }
+    initTelegram();
   }, []);
 
   return { user, tg };

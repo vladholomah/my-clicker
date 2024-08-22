@@ -1,6 +1,5 @@
 import { MongoClient } from 'mongodb';
 import TelegramBot from 'node-telegram-bot-api';
-import axios from 'axios';
 
 let db;
 let bot;

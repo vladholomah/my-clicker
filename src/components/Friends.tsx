@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
-import { getUserData } from '../api';
 import './Friends.css';
 
 interface Friend {
@@ -23,7 +23,7 @@ const Friends: React.FC = () => {
   const { user, tg } = useTelegram();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchFriendsAndReferralCode = async () => {
       try {
         setDebugMessage(`Initial user state: ${JSON.stringify(user)}`);
         if (!user || !user.id) {
@@ -32,21 +32,26 @@ const Friends: React.FC = () => {
           return;
         }
         const userId = user.id.toString();
-        setDebugMessage(`Trying to fetch data for user: ${userId}`);
-        const data = await getUserData(userId);
-        setDebugMessage(`API Response: ${JSON.stringify(data)}`);
-        setFriends(data.friends || []);
-        setReferralLink(data.referralLink || '');
+        const API_URL = process.env.REACT_APP_API_URL;
+        setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+        const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+        setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
+        setFriends(response.data.friends || []);
+        setReferralLink(response.data.referralLink || '');
         setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
-        setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        if (axios.isAxiosError(error)) {
+          setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
+        } else {
+          setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchFriendsAndReferralCode();
   }, [user]);
 
   const handleInviteFriend = () => {

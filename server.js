@@ -29,19 +29,6 @@ app.use(cors({
 app.use(express.json());
 
 app.use((req, res, next) => {
-  if (req.url.includes('%PUBLIC_URL%')) {
-    req.url = req.url.replace(/%PUBLIC_URL%/g, '');
-  }
-  next();
-});
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'build')));
-} else {
-  app.use(express.static(path.join(__dirname, 'public')));
-}
-
-app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
@@ -110,14 +97,6 @@ app.get('/api/getUserData', async (req, res) => {
 });
 
 app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
-
-app.get('*', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  } else {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  }
-});
 
 const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
