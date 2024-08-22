@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
 import './Friends.css';
@@ -22,37 +22,42 @@ const Friends: React.FC = () => {
   const [debugMessage, setDebugMessage] = useState<string>('');
   const { user, tg } = useTelegram();
 
-  useEffect(() => {
-    const fetchFriendsAndReferralCode = async () => {
-      try {
-        setDebugMessage(`Initial user state: ${JSON.stringify(user)}`);
-        if (!user || !user.id) {
-          setLoading(false);
-          setDebugMessage('User not found or user.id is undefined');
-          return;
-        }
-        const userId = user.id.toString();
-        const API_URL = process.env.REACT_APP_API_URL;
-        setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
-        const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
-        setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
-        setFriends(response.data.friends || []);
-        setReferralLink(response.data.referralLink || '');
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Error loading user data');
-        if (axios.isAxiosError(error)) {
-          setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
-        } else {
-          setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-        setLoading(false);
-      }
-    };
+  const fetchFriendsAndReferralCode = useCallback(async () => {
+    if (!user || !user.id) {
+      setDebugMessage('User not found or user.id is undefined');
+      setLoading(false);
+      return;
+    }
 
-    fetchFriendsAndReferralCode();
+    try {
+      setDebugMessage(`Initial user state: ${JSON.stringify(user)}`);
+      const userId = user.id.toString();
+      const API_URL = process.env.REACT_APP_API_URL;
+      setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+      const response = await axios.get(`${API_URL}/api/getUserData?userId=${userId}`);
+      setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
+      setFriends(response.data.friends || []);
+      setReferralLink(response.data.referralLink || '');
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setError('Error loading user data');
+      if (axios.isAxiosError(error)) {
+        setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
+      } else {
+        setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchFriendsAndReferralCode().catch(error => {
+      console.error('Unhandled error in fetchFriendsAndReferralCode:', error);
+      setError('An unexpected error occurred');
+      setLoading(false);
+    });
+  }, [fetchFriendsAndReferralCode]);
 
   const handleInviteFriend = () => {
     if (!referralLink) {
@@ -85,8 +90,16 @@ const Friends: React.FC = () => {
       {friends.length > 0 ? (
         <ul className="friends-list">
           {friends.map((friend) => (
-            <li key={friend.telegramId}>
-              {friend.firstName} {friend.lastName} - Coins: {friend.coins}
+            <li key={friend.telegramId} className="friends-list-item">
+              <img src={friend.avatar || '/images/default-avatar.png'} alt={friend.firstName} className="friend-avatar" />
+              <div className="friend-info">
+                <span className="friend-name">{friend.firstName} {friend.lastName}</span>
+                <span className="friend-level">{friend.level} • <img src="/images/coin.png" alt="Coin" className="coin-icon-small" /> {friend.totalCoins}</span>
+              </div>
+              <span className="friend-coins">
+                <img src="/images/coin.png" alt="Coin" className="coin-icon" />
+                +{friend.coins.toLocaleString()}
+              </span>
             </li>
           ))}
         </ul>

@@ -66,10 +66,19 @@ app.get('/api/getUserData', async (req, res) => {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
-    const user = await users.findOne({ telegramId: userId });
+    let user = await users.findOne({ telegramId: userId });
     if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ error: 'User not found' });
+      console.log('User not found, creating a new one');
+      user = {
+        telegramId: userId,
+        firstName: 'Test',
+        lastName: 'User',
+        username: 'testuser',
+        coins: 0,
+        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        referrals: []
+      };
+      await users.insertOne(user);
     }
 
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
