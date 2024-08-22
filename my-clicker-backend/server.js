@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import botHandler from './bot.js';
-import axios from 'axios';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -102,6 +101,7 @@ app.get('/api/getUserData', async (req, res) => {
       await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
     }
 
+    // Отримуємо тільки рефералів цього користувача
     const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
 
     const response = {
