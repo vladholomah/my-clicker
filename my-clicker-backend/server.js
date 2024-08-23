@@ -88,13 +88,19 @@ async function getOrCreateUser(users, userId) {
       user.referralCode = newReferralCode;
       console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
     }
-    // Convert totalCoins to number if it's a string
     if (typeof user.totalCoins === 'string') {
       await users.updateOne(
         { telegramId: userId },
         { $set: { totalCoins: parseInt(user.totalCoins) || 0 } }
       );
       user.totalCoins = parseInt(user.totalCoins) || 0;
+    }
+    if (!user.referrals) {
+      await users.updateOne(
+        { telegramId: userId },
+        { $set: { referrals: [] } }
+      );
+      user.referrals = [];
     }
   } else {
     console.log('User not found, creating a new one');
@@ -120,8 +126,12 @@ async function getOrCreateUser(users, userId) {
   return user;
 }
 
-async function getFriends(users, referrals) {
-  return await users.find({ telegramId: { $in: referrals || [] } }).toArray();
+async function getFriends(users, userId) {
+  const user = await users.findOne({ telegramId: userId });
+  if (!user || !user.referrals) {
+    return [];
+  }
+  return await users.find({ telegramId: { $in: user.referrals } }).toArray();
 }
 
 app.get('/api/getUserData', async (req, res) => {
@@ -133,7 +143,7 @@ app.get('/api/getUserData', async (req, res) => {
     const users = db.collection('users');
 
     const user = await getOrCreateUser(users, userId);
-    const friends = await getFriends(users, user.referrals);
+    const friends = await getFriends(users, userId);
 
     const response = {
       user: {
@@ -146,7 +156,7 @@ app.get('/api/getUserData', async (req, res) => {
         level: user.level || 'Beginner',
         avatar: user.avatar
       },
-      friends: await Promise.all(friends.map(async friend => ({
+      friends: friends.map(friend => ({
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
@@ -154,8 +164,8 @@ app.get('/api/getUserData', async (req, res) => {
         coins: parseInt(friend.coins) || 0,
         totalCoins: parseInt(friend.totalCoins) || 0,
         level: friend.level || 'Beginner',
-        avatar: friend.avatar || await getUserProfilePhoto(friend.telegramId)
-      }))),
+        avatar: friend.avatar
+      })),
       referralCode: user.referralCode,
       referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
     };
@@ -193,18 +203,17 @@ process.on('SIGINT', async () => {
   });
 });
 
-// Function to update all totalCoins to number type
-async function updateTotalCoinsToNumber() {
+async function updateUsersWithMissingReferrals() {
   const db = await connectToDatabase();
   const users = db.collection('users');
 
   const result = await users.updateMany(
-    { totalCoins: { $type: "string" } },
-    [{ $set: { totalCoins: { $toInt: "$totalCoins" } } }]
+    { referrals: { $exists: false } },
+    { $set: { referrals: [] } }
   );
 
-  console.log(`Updated ${result.modifiedCount} documents`);
+  console.log(`Updated ${result.modifiedCount} users with missing referrals field`);
 }
 
-// Run this function once to update existing records
-// updateTotalCoinsToNumber().then(() => console.log('Finished updating totalCoins to number type'));
+// Запустіть цю функцію один раз
+// updateUsersWithMissingReferrals().then(() => console.log('Finished updating users with missing referrals'));
