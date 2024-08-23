@@ -135,8 +135,7 @@ async function getOrCreateUser(users, userId) {
 }
 
 async function getFriends(users, userId) {
-  const referrals = await users.find({ referredBy: userId }).toArray();
-  return referrals;
+  return await users.find({ referredBy: userId }).toArray();
 }
 
 app.get('/api/getUserData', async (req, res) => {
@@ -208,7 +207,7 @@ process.on('SIGINT', async () => {
   });
 });
 
-async function fixReferrals() {
+async function fixReferralData() {
   const db = await connectToDatabase();
   const users = db.collection('users');
 
@@ -225,8 +224,8 @@ async function fixReferrals() {
     }
   }
 
-  console.log('Referrals fixed');
+  console.log('Referral data fixed');
 }
 
-// Запустіть цю функцію один раз
-// fixReferrals().then(() => console.log('Finished fixing referrals'));
+// Щоб запустити функцію fixReferralData(), розкоментуйте наступний рядок:
+// fixReferralData().then(() => console.log('Finished fixing referral data'));

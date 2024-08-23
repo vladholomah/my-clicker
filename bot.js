@@ -31,20 +31,29 @@ const generateReferralCode = () => {
 };
 
 const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
-  await users.updateOne(
+  console.log(`Adding referral bonus: referrerId=${referrerId}, newUserId=${newUserId}, bonusAmount=${bonusAmount}`);
+
+  // Оновлюємо реферера
+  const referrerUpdateResult = await users.updateOne(
     { telegramId: referrerId },
     {
       $addToSet: { referrals: newUserId },
       $inc: { coins: bonusAmount, totalCoins: bonusAmount }
     }
   );
-  await users.updateOne(
+  console.log('Referrer update result:', referrerUpdateResult);
+
+  // Оновлюємо нового користувача
+  const newUserUpdateResult = await users.updateOne(
     { telegramId: newUserId },
     {
       $inc: { coins: bonusAmount, totalCoins: bonusAmount },
       $set: { referredBy: referrerId }
     }
   );
+  console.log('New user update result:', newUserUpdateResult);
+
+  return { referrerUpdateResult, newUserUpdateResult };
 };
 
 const botHandler = async (req, res) => {
@@ -68,6 +77,7 @@ const botHandler = async (req, res) => {
           const referrerCode = args.length > 1 ? args[1] : null;
 
           let user = await users.findOne({ telegramId: userId.toString() });
+          console.log('Existing user:', user);
 
           if (!user) {
             const referralCode = generateReferralCode();
@@ -84,16 +94,16 @@ const botHandler = async (req, res) => {
               level: 'Beginner',
               avatar: null
             };
-            await users.insertOne(user);
-            console.log('New user created:', user);
+            const insertResult = await users.insertOne(user);
+            console.log('New user created:', user, 'Insert result:', insertResult);
           } else if (!user.referralCode || user.referralCode === "ABC123") {
             const newReferralCode = generateReferralCode();
-            await users.updateOne(
+            const updateResult = await users.updateOne(
               { telegramId: userId.toString() },
               { $set: { referralCode: newReferralCode } }
             );
             user.referralCode = newReferralCode;
-            console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
+            console.log(`Updated referral code for user ${userId} to ${newReferralCode}`, 'Update result:', updateResult);
           }
 
           if (referrerCode && !user.referredBy) {
@@ -102,11 +112,21 @@ const botHandler = async (req, res) => {
             console.log('Referrer found:', referrer);
             if (referrer && referrer.telegramId !== userId.toString()) {
               const bonusAmount = 5000;
-              await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
-              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+              const addBonusResult = await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`, 'Add bonus result:', addBonusResult);
+
+              // Оновлюємо локальний об'єкт користувача
+              user.referredBy = referrer.telegramId;
+              user.coins += bonusAmount;
+              user.totalCoins += bonusAmount;
+
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
+            } else {
+              console.log('Invalid referrer or user trying to refer themselves');
             }
+          } else {
+            console.log('User already has a referrer or no referral code provided');
           }
 
           const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
