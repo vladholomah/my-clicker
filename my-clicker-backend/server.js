@@ -102,6 +102,13 @@ async function getOrCreateUser(users, userId) {
       );
       user.referrals = [];
     }
+    if (!user.referredBy) {
+      await users.updateOne(
+        { telegramId: userId },
+        { $set: { referredBy: null } }
+      );
+      user.referredBy = null;
+    }
   } else {
     console.log('User not found, creating a new one');
     const avatar = await getUserProfilePhoto(userId);
@@ -114,6 +121,7 @@ async function getOrCreateUser(users, userId) {
       totalCoins: 0,
       referralCode: generateReferralCode(),
       referrals: [],
+      referredBy: null,
       avatar: avatar,
       level: 'Beginner'
     };
@@ -127,11 +135,8 @@ async function getOrCreateUser(users, userId) {
 }
 
 async function getFriends(users, userId) {
-  const user = await users.findOne({ telegramId: userId });
-  if (!user || !user.referrals) {
-    return [];
-  }
-  return await users.find({ telegramId: { $in: user.referrals } }).toArray();
+  const referrals = await users.find({ referredBy: userId }).toArray();
+  return referrals;
 }
 
 app.get('/api/getUserData', async (req, res) => {
@@ -203,17 +208,25 @@ process.on('SIGINT', async () => {
   });
 });
 
-async function updateUsersWithMissingReferrals() {
+async function fixReferrals() {
   const db = await connectToDatabase();
   const users = db.collection('users');
 
-  const result = await users.updateMany(
-    { referrals: { $exists: false } },
-    { $set: { referrals: [] } }
-  );
+  const allUsers = await users.find().toArray();
 
-  console.log(`Updated ${result.modifiedCount} users with missing referrals field`);
+  for (const user of allUsers) {
+    if (user.referrals && user.referrals.length > 0) {
+      for (const referralId of user.referrals) {
+        await users.updateOne(
+          { telegramId: referralId },
+          { $set: { referredBy: user.telegramId } }
+        );
+      }
+    }
+  }
+
+  console.log('Referrals fixed');
 }
 
 // Запустіть цю функцію один раз
-// updateUsersWithMissingReferrals().then(() => console.log('Finished updating users with missing referrals'));
+// fixReferrals().then(() => console.log('Finished fixing referrals'));

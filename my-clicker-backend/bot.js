@@ -40,7 +40,10 @@ const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
   );
   await users.updateOne(
     { telegramId: newUserId },
-    { $inc: { coins: bonusAmount, totalCoins: bonusAmount } }
+    {
+      $inc: { coins: bonusAmount, totalCoins: bonusAmount },
+      $set: { referredBy: referrerId }
+    }
   );
 };
 
@@ -77,6 +80,7 @@ const botHandler = async (req, res) => {
               username: username,
               referralCode: referralCode,
               referrals: [],
+              referredBy: null,
               level: 'Beginner',
               avatar: null
             };
@@ -92,7 +96,7 @@ const botHandler = async (req, res) => {
             console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
           }
 
-          if (referrerCode) {
+          if (referrerCode && !user.referredBy) {
             console.log(`Processing referral for code: ${referrerCode}`);
             const referrer = await users.findOne({ referralCode: referrerCode });
             console.log('Referrer found:', referrer);
