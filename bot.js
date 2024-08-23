@@ -93,6 +93,7 @@ const botHandler = async (req, res) => {
           }
 
           if (referrerCode) {
+            console.log(`Referrer code received: ${referrerCode}`);
             const referrer = await users.findOne({ referralCode: referrerCode });
             if (referrer && referrer.telegramId !== userId.toString()) {
               const bonusAmount = 5000;
@@ -100,6 +101,8 @@ const botHandler = async (req, res) => {
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
+            } else {
+              console.log(`Invalid referrer code or user tried to refer themselves`);
             }
           }
 
@@ -131,8 +134,6 @@ const botHandler = async (req, res) => {
     console.error('General error:', error);
     console.error('Error stack:', error.stack);
     res.status(200).json({ ok: true }); // Always respond with 200 OK for Telegram
-  } finally {
-    console.log('Request processing completed');
   }
 };
 
