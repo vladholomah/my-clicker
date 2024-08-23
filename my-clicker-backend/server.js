@@ -228,4 +228,4 @@ async function fixReferralData() {
 }
 
 // Щоб запустити функцію fixReferralData(), розкоментуйте наступний рядок:
-fixReferralData().then(() => console.log('Finished fixing referral data'));
+// fixReferralData().then(() => console.log('Finished fixing referral data'));
