@@ -42,7 +42,7 @@ let client;
 
 async function connectToDatabase() {
   if (!client) {
-    client = new MongoClient(uri);
+    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     try {
       await client.connect();
       console.log('Connected to MongoDB');
@@ -83,9 +83,11 @@ async function getOrCreateUser(users, userId) {
       lastName: 'User',
       username: 'unknown',
       coins: 0,
+      totalCoins: 0,
       referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
       referrals: [],
-      avatar: avatar
+      avatar: avatar,
+      level: 'Beginner'
     };
     await users.insertOne(user);
   } else if (!user.avatar) {
@@ -111,14 +113,24 @@ app.get('/api/getUserData', async (req, res) => {
     const friends = await getFriends(users, user.referrals);
 
     const response = {
+      user: {
+        telegramId: user.telegramId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        coins: parseInt(user.coins) || 0,
+        totalCoins: parseInt(user.totalCoins) || 0,
+        level: user.level || 'Beginner',
+        avatar: user.avatar
+      },
       friends: await Promise.all(friends.map(async friend => ({
         telegramId: friend.telegramId,
         firstName: friend.firstName,
         lastName: friend.lastName,
         username: friend.username,
         coins: parseInt(friend.coins) || 0,
+        totalCoins: parseInt(friend.totalCoins) || 0,
         level: friend.level || 'Beginner',
-        totalCoins: parseInt(friend.totalCoins) || parseInt(friend.coins) || 0,
         avatar: friend.avatar || await getUserProfilePhoto(friend.telegramId)
       }))),
       referralCode: user.referralCode,

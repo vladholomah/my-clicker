@@ -46,13 +46,20 @@ module.exports = async (req, res) => {
       username: friend.username,
       coins: friend.coins || 0,
       level: friend.level || 'Beginner',
-      totalCoins: friend.totalCoins || '0',
+      totalCoins: friend.totalCoins || friend.coins || 0,
       avatar: friend.avatar || null
     }));
 
     const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
     console.log('Referral link generated:', referralLink);
-    const response = { friends: friendsData, referralCode: user.referralCode, referralLink };
+    const response = {
+      friends: friendsData,
+      referralCode: user.referralCode,
+      referralLink,
+      userCoins: user.coins || 0,
+      userTotalCoins: user.totalCoins || user.coins || 0,
+      userLevel: user.level || 'Beginner'
+    };
     console.log('Sending response:', response);
     res.status(200).json(response);
   } catch (error) {

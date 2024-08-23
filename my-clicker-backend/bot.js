@@ -35,12 +35,12 @@ const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
     { telegramId: referrerId },
     {
       $addToSet: { referrals: newUserId },
-      $inc: { coins: bonusAmount }
+      $inc: { coins: bonusAmount, totalCoins: bonusAmount }
     }
   );
   await users.updateOne(
     { telegramId: newUserId },
-    { $inc: { coins: bonusAmount } }
+    { $inc: { coins: bonusAmount, totalCoins: bonusAmount } }
   );
 };
 
@@ -71,11 +71,14 @@ const botHandler = async (req, res) => {
             user = {
               telegramId: userId.toString(),
               coins: 0,
+              totalCoins: 0,
               firstName: first_name,
               lastName: last_name,
               username: username,
               referralCode: referralCode,
-              referrals: []
+              referrals: [],
+              level: 'Beginner',
+              avatar: null
             };
             await users.insertOne(user);
             console.log('New user created:', user);
