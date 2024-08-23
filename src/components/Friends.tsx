@@ -10,7 +10,7 @@ interface Friend {
   username?: string;
   coins: number;
   level: string;
-  totalCoins: string;
+  totalCoins: number;
   avatar?: string;
 }
 

@@ -88,6 +88,14 @@ async function getOrCreateUser(users, userId) {
       user.referralCode = newReferralCode;
       console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
     }
+    // Convert totalCoins to number if it's a string
+    if (typeof user.totalCoins === 'string') {
+      await users.updateOne(
+        { telegramId: userId },
+        { $set: { totalCoins: parseInt(user.totalCoins) || 0 } }
+      );
+      user.totalCoins = parseInt(user.totalCoins) || 0;
+    }
   } else {
     console.log('User not found, creating a new one');
     const avatar = await getUserProfilePhoto(userId);
@@ -184,3 +192,19 @@ process.on('SIGINT', async () => {
     process.exit(0);
   });
 });
+
+// Function to update all totalCoins to number type
+async function updateTotalCoinsToNumber() {
+  const db = await connectToDatabase();
+  const users = db.collection('users');
+
+  const result = await users.updateMany(
+    { totalCoins: { $type: "string" } },
+    [{ $set: { totalCoins: { $toInt: "$totalCoins" } } }]
+  );
+
+  console.log(`Updated ${result.modifiedCount} documents`);
+}
+
+// Run this function once to update existing records
+// updateTotalCoinsToNumber().then(() => console.log('Finished updating totalCoins to number type'));
