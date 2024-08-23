@@ -12,10 +12,9 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-console.log('BOT_TOKEN:', process.env.BOT_TOKEN ? 'Set' : 'Not set');
-console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
-console.log('BOT_USERNAME:', process.env.BOT_USERNAME);
+const logEnvVar = (name) => console.log(`${name}:`, process.env[name] ? (name === 'BOT_TOKEN' ? 'Set' : process.env[name]) : 'Not set');
+
+['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME'].forEach(logEnvVar);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -43,7 +42,7 @@ let client;
 
 async function connectToDatabase() {
   if (!client) {
-    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    client = new MongoClient(uri);
     try {
       await client.connect();
       console.log('Connected to MongoDB');
@@ -62,7 +61,7 @@ async function getUserProfilePhoto(userId) {
   try {
     const bot = new TelegramBot(process.env.BOT_TOKEN);
     const userProfilePhotos = await bot.getUserProfilePhotos(userId, { limit: 1 });
-    if (userProfilePhotos.photos.length > 0) {
+    if (userProfilePhotos.photos && userProfilePhotos.photos.length > 0) {
       const fileId = userProfilePhotos.photos[0][0].file_id;
       const file = await bot.getFile(fileId);
       return `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
@@ -73,6 +72,33 @@ async function getUserProfilePhoto(userId) {
   return null;
 }
 
+async function getOrCreateUser(users, userId) {
+  let user = await users.findOne({ telegramId: userId });
+  if (!user) {
+    console.log('User not found, creating a new one');
+    const avatar = await getUserProfilePhoto(userId);
+    user = {
+      telegramId: userId,
+      firstName: 'Test',
+      lastName: 'User',
+      username: 'testuser',
+      coins: 0,
+      referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+      referrals: [],
+      avatar: avatar
+    };
+    await users.insertOne(user);
+  } else if (!user.avatar) {
+    user.avatar = await getUserProfilePhoto(userId);
+    await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
+  }
+  return user;
+}
+
+async function getFriends(users, referrals) {
+  return await users.find({ telegramId: { $in: referrals || [] } }).toArray();
+}
+
 app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getUserData request for userId:', userId);
@@ -81,50 +107,25 @@ app.get('/api/getUserData', async (req, res) => {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
-    let user = await users.findOne({ telegramId: userId });
-    if (!user) {
-      console.log('User not found, creating a new one');
-      const avatar = await getUserProfilePhoto(userId);
-      user = {
-        telegramId: userId,
-        firstName: 'Test',
-        lastName: 'User',
-        username: 'testuser',
-        coins: 0,
-        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-        referrals: [],
-        avatar: avatar
-      };
-      await users.insertOne(user);
-    } else if (!user.avatar) {
-      user.avatar = await getUserProfilePhoto(userId);
-      await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
-    }
-
-    // Отримуємо тільки рефералів цього користувача
-    const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
+    const user = await getOrCreateUser(users, userId);
+    const friends = await getFriends(users, user.referrals);
 
     const response = {
-      friends: await Promise.all(friends.map(async friend => {
-        if (!friend.avatar) {
-          friend.avatar = await getUserProfilePhoto(friend.telegramId);
-          await users.updateOne({ telegramId: friend.telegramId }, { $set: { avatar: friend.avatar } });
-        }
-        return {
-          telegramId: friend.telegramId,
-          firstName: friend.firstName,
-          lastName: friend.lastName,
-          username: friend.username,
-          coins: friend.coins || 0,
-          level: friend.level || 'Beginner',
-          totalCoins: friend.totalCoins || friend.coins.toString(),
-          avatar: friend.avatar
-        };
-      })),
+      friends: await Promise.all(friends.map(async friend => ({
+        telegramId: friend.telegramId,
+        firstName: friend.firstName,
+        lastName: friend.lastName,
+        username: friend.username,
+        coins: parseInt(friend.coins) || 0,
+        level: friend.level || 'Beginner',
+        totalCoins: parseInt(friend.totalCoins) || parseInt(friend.coins) || 0,
+        avatar: friend.avatar || await getUserProfilePhoto(friend.telegramId)
+      }))),
       referralCode: user.referralCode,
       referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
     };
-    console.log('Sending response:', response);
+
+    console.log('Sending response:', JSON.stringify(response, null, 2));
     res.json(response);
   } catch (error) {
     console.error('Error fetching user data:', error);
