@@ -82,16 +82,24 @@ const botHandler = async (req, res) => {
             };
             await users.insertOne(user);
             console.log('New user created:', user);
+          } else if (!user.referralCode || user.referralCode === "ABC123") {
+            const newReferralCode = generateReferralCode();
+            await users.updateOne(
+              { telegramId: userId.toString() },
+              { $set: { referralCode: newReferralCode } }
+            );
+            user.referralCode = newReferralCode;
+            console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
+          }
 
-            if (referrerCode) {
-              const referrer = await users.findOne({ referralCode: referrerCode });
-              if (referrer && referrer.telegramId !== userId.toString()) {
-                const bonusAmount = 5000;
-                await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
-                console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
-                await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
-                await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
-              }
+          if (referrerCode) {
+            const referrer = await users.findOne({ referralCode: referrerCode });
+            if (referrer && referrer.telegramId !== userId.toString()) {
+              const bonusAmount = 5000;
+              await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+              await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
+              await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             }
           }
 

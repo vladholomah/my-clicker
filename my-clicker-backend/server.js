@@ -57,6 +57,10 @@ async function connectToDatabase() {
   return client.db('holmah_coin_db');
 }
 
+function generateReferralCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
 async function getUserProfilePhoto(userId) {
   try {
     const bot = new TelegramBot(process.env.BOT_TOKEN);
@@ -74,7 +78,17 @@ async function getUserProfilePhoto(userId) {
 
 async function getOrCreateUser(users, userId) {
   let user = await users.findOne({ telegramId: userId });
-  if (!user) {
+  if (user) {
+    if (!user.referralCode || user.referralCode === "ABC123") {
+      const newReferralCode = generateReferralCode();
+      await users.updateOne(
+        { telegramId: userId },
+        { $set: { referralCode: newReferralCode } }
+      );
+      user.referralCode = newReferralCode;
+      console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
+    }
+  } else {
     console.log('User not found, creating a new one');
     const avatar = await getUserProfilePhoto(userId);
     user = {
@@ -84,13 +98,14 @@ async function getOrCreateUser(users, userId) {
       username: 'unknown',
       coins: 0,
       totalCoins: 0,
-      referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+      referralCode: generateReferralCode(),
       referrals: [],
       avatar: avatar,
       level: 'Beginner'
     };
     await users.insertOne(user);
-  } else if (!user.avatar) {
+  }
+  if (!user.avatar) {
     user.avatar = await getUserProfilePhoto(userId);
     await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
   }
