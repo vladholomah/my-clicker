@@ -79,9 +79,9 @@ async function getOrCreateUser(users, userId) {
     const avatar = await getUserProfilePhoto(userId);
     user = {
       telegramId: userId,
-      firstName: 'Test',
+      firstName: 'Unknown',
       lastName: 'User',
-      username: 'testuser',
+      username: 'unknown',
       coins: 0,
       referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
       referrals: [],
