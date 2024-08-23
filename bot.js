@@ -63,8 +63,10 @@ const botHandler = async (req, res) => {
         try {
           const args = text.split(' ');
           const referrerCode = args.length > 1 ? args[1] : null;
+          console.log(`Referrer code: ${referrerCode}`);
 
           let user = await users.findOne({ telegramId: userId.toString() });
+          console.log('User from database:', user);
 
           if (!user) {
             const referralCode = generateReferralCode();
@@ -80,25 +82,26 @@ const botHandler = async (req, res) => {
               level: 'Beginner',
               avatar: null
             };
-            await users.insertOne(user);
-            console.log('New user created:', user);
+            const insertResult = await users.insertOne(user);
+            console.log('New user created:', user, 'Insert result:', insertResult);
           } else if (!user.referralCode || user.referralCode === "ABC123") {
             const newReferralCode = generateReferralCode();
-            await users.updateOne(
+            const updateResult = await users.updateOne(
               { telegramId: userId.toString() },
               { $set: { referralCode: newReferralCode } }
             );
             user.referralCode = newReferralCode;
-            console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
+            console.log(`Updated referral code for user ${userId} to ${newReferralCode}. Update result:`, updateResult);
           }
 
           if (referrerCode) {
-            console.log(`Referrer code received: ${referrerCode}`);
+            console.log(`Processing referral for code: ${referrerCode}`);
             const referrer = await users.findOne({ referralCode: referrerCode });
+            console.log('Referrer found:', referrer);
             if (referrer && referrer.telegramId !== userId.toString()) {
               const bonusAmount = 5000;
-              await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
-              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+              const bonusResult = await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
+              console.log(`Referral bonus added. Result:`, bonusResult);
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             } else {
