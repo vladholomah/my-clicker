@@ -54,6 +54,30 @@ const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
   return { referrerUpdate, newUserUpdate };
 };
 
+// Додаємо функцію getOrCreateUser в bot.js
+const getOrCreateUser = async (users, userId, firstName, lastName, username) => {
+  let user = await users.findOne({ telegramId: userId });
+  if (!user) {
+    console.log('User not found, creating a new one');
+    const referralCode = generateReferralCode();
+    user = {
+      telegramId: userId,
+      firstName: firstName || 'Unknown',
+      lastName: lastName || 'User',
+      username: username || 'unknown',
+      coins: 0,
+      totalCoins: 0,
+      referralCode: referralCode,
+      referrals: [],
+      referredBy: null,
+      avatar: null,
+      level: 'Beginner'
+    };
+    await users.insertOne(user);
+  }
+  return user;
+};
+
 const botHandler = async (req, res) => {
   console.log('Bot handler called');
   console.log('Webhook received:', JSON.stringify(req.body, null, 2));
