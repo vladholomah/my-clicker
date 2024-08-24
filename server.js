@@ -76,60 +76,25 @@ async function getUserProfilePhoto(userId) {
   return null;
 }
 
-async function getOrCreateUser(users, userId) {
+async function getOrCreateUser(users, userId, firstName, lastName, username) {
   let user = await users.findOne({ telegramId: userId });
-  if (user) {
-    if (!user.referralCode || user.referralCode === "ABC123") {
-      const newReferralCode = generateReferralCode();
-      await users.updateOne(
-        { telegramId: userId },
-        { $set: { referralCode: newReferralCode } }
-      );
-      user.referralCode = newReferralCode;
-      console.log(`Updated referral code for user ${userId} to ${newReferralCode}`);
-    }
-    if (typeof user.totalCoins === 'string') {
-      await users.updateOne(
-        { telegramId: userId },
-        { $set: { totalCoins: parseInt(user.totalCoins) || 0 } }
-      );
-      user.totalCoins = parseInt(user.totalCoins) || 0;
-    }
-    if (!user.referrals) {
-      await users.updateOne(
-        { telegramId: userId },
-        { $set: { referrals: [] } }
-      );
-      user.referrals = [];
-    }
-    if (user.referredBy === undefined) {
-      await users.updateOne(
-        { telegramId: userId },
-        { $set: { referredBy: null } }
-      );
-      user.referredBy = null;
-    }
-  } else {
+  if (!user) {
     console.log('User not found, creating a new one');
-    const avatar = await getUserProfilePhoto(userId);
+    const referralCode = generateReferralCode();
     user = {
       telegramId: userId,
-      firstName: 'Unknown',
-      lastName: 'User',
-      username: 'unknown',
+      firstName: firstName || 'Unknown',
+      lastName: lastName || 'User',
+      username: username || 'unknown',
       coins: 0,
       totalCoins: 0,
-      referralCode: generateReferralCode(),
+      referralCode: referralCode,
       referrals: [],
       referredBy: null,
-      avatar: avatar,
+      avatar: null,
       level: 'Beginner'
     };
     await users.insertOne(user);
-  }
-  if (!user.avatar) {
-    user.avatar = await getUserProfilePhoto(userId);
-    await users.updateOne({ telegramId: userId }, { $set: { avatar: user.avatar } });
   }
   return user;
 }
@@ -207,37 +172,26 @@ process.on('SIGINT', async () => {
   });
 });
 
-async function manualFixReferrals() {
+async function removeTestUser() {
   const db = await connectToDatabase();
   const users = db.collection('users');
 
-  console.log('Starting manual referral fix');
-
-  // Знайдемо тестового користувача
   const testUser = await users.findOne({ telegramId: "12345" });
-  console.log('Test user found:', testUser);
-
   if (testUser) {
-    // Оновимо referredBy для користувачів, які були прив'язані до тестового
-    const updateReferredByResult = await users.updateMany(
+    console.log('Test user found, removing...');
+    const deleteResult = await users.deleteOne({ telegramId: "12345" });
+    console.log('Test user delete result:', deleteResult);
+
+    // Update referredBy for users who were referred by the test user
+    const updateResult = await users.updateMany(
       { referredBy: "12345" },
       { $set: { referredBy: null } }
     );
-    console.log('Users with referredBy updated:', updateReferredByResult);
-
-    // Видалимо тестового користувача
-    const deleteResult = await users.deleteOne({ telegramId: "12345" });
-    console.log('Test user delete result:', deleteResult);
+    console.log('Updated referredBy for users:', updateResult);
   } else {
     console.log('Test user not found');
   }
-
-  // Виведемо всіх користувачів після оновлення
-  const allUsers = await users.find().toArray();
-  console.log('All users after update:', JSON.stringify(allUsers, null, 2));
-
-  console.log('Manual referral fix completed');
 }
 
-// Розкоментуйте наступний рядок для виконання функції manualFixReferrals
-manualFixReferrals().then(() => console.log('Manual referral fix completed'));
+// Call this function once when the server starts
+removeTestUser().then(() => console.log('Finished removing test user'));

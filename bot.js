@@ -33,27 +33,25 @@ const generateReferralCode = () => {
 const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
   console.log(`Adding referral bonus: referrerId=${referrerId}, newUserId=${newUserId}, bonusAmount=${bonusAmount}`);
 
-  // Оновлюємо реферера
-  const referrerUpdateResult = await users.updateOne(
+  const referrerUpdate = await users.updateOne(
     { telegramId: referrerId },
     {
       $addToSet: { referrals: newUserId },
       $inc: { coins: bonusAmount, totalCoins: bonusAmount }
     }
   );
-  console.log('Referrer update result:', referrerUpdateResult);
+  console.log('Referrer update result:', referrerUpdate);
 
-  // Оновлюємо нового користувача
-  const newUserUpdateResult = await users.updateOne(
+  const newUserUpdate = await users.updateOne(
     { telegramId: newUserId },
     {
       $inc: { coins: bonusAmount, totalCoins: bonusAmount },
       $set: { referredBy: referrerId }
     }
   );
-  console.log('New user update result:', newUserUpdateResult);
+  console.log('New user update result:', newUserUpdate);
 
-  return { referrerUpdateResult, newUserUpdateResult };
+  return { referrerUpdate, newUserUpdate };
 };
 
 const botHandler = async (req, res) => {
@@ -75,36 +73,10 @@ const botHandler = async (req, res) => {
         try {
           const args = text.split(' ');
           const referrerCode = args.length > 1 ? args[1] : null;
+          console.log(`Referrer code: ${referrerCode}`);
 
-          let user = await users.findOne({ telegramId: userId.toString() });
-          console.log('Existing user:', user);
-
-          if (!user) {
-            const referralCode = generateReferralCode();
-            user = {
-              telegramId: userId.toString(),
-              coins: 0,
-              totalCoins: 0,
-              firstName: first_name,
-              lastName: last_name,
-              username: username,
-              referralCode: referralCode,
-              referrals: [],
-              referredBy: null,
-              level: 'Beginner',
-              avatar: null
-            };
-            const insertResult = await users.insertOne(user);
-            console.log('New user created:', user, 'Insert result:', insertResult);
-          } else if (!user.referralCode || user.referralCode === "ABC123") {
-            const newReferralCode = generateReferralCode();
-            const updateResult = await users.updateOne(
-              { telegramId: userId.toString() },
-              { $set: { referralCode: newReferralCode } }
-            );
-            user.referralCode = newReferralCode;
-            console.log(`Updated referral code for user ${userId} to ${newReferralCode}`, 'Update result:', updateResult);
-          }
+          let user = await getOrCreateUser(users, userId.toString(), first_name, last_name, username);
+          console.log('User:', user);
 
           if (referrerCode && !user.referredBy) {
             console.log(`Processing referral for code: ${referrerCode}`);
@@ -112,9 +84,8 @@ const botHandler = async (req, res) => {
             console.log('Referrer found:', referrer);
             if (referrer && referrer.telegramId !== userId.toString()) {
               const bonusAmount = 5000;
-              const addBonusResult = await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
-              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`, 'Add bonus result:', addBonusResult);
-
+              await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
+              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             } else {
