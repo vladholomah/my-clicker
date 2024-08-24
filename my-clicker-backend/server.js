@@ -102,7 +102,7 @@ async function getOrCreateUser(users, userId) {
       );
       user.referrals = [];
     }
-    if (!user.referredBy) {
+    if (user.referredBy === undefined) {
       await users.updateOne(
         { telegramId: userId },
         { $set: { referredBy: null } }
@@ -213,19 +213,24 @@ async function manualFixReferrals() {
 
   console.log('Starting manual referral fix');
 
-  // Видалимо всі referrals у тестового користувача
-  const testUserResult = await users.updateOne(
-    { telegramId: "12345" },
-    { $set: { referrals: [] } }
-  );
-  console.log('Test user update result:', testUserResult);
+  // Знайдемо тестового користувача
+  const testUser = await users.findOne({ telegramId: "12345" });
+  console.log('Test user found:', testUser);
 
-  // Оновимо referredBy для користувачів, які були неправильно прив'язані
-  const wrongReferralsResult = await users.updateMany(
-    { referredBy: "12345" },
-    { $set: { referredBy: null } }
-  );
-  console.log('Wrong referrals update result:', wrongReferralsResult);
+  if (testUser) {
+    // Оновимо referredBy для користувачів, які були прив'язані до тестового
+    const updateReferredByResult = await users.updateMany(
+      { referredBy: "12345" },
+      { $set: { referredBy: null } }
+    );
+    console.log('Users with referredBy updated:', updateReferredByResult);
+
+    // Видалимо тестового користувача
+    const deleteResult = await users.deleteOne({ telegramId: "12345" });
+    console.log('Test user delete result:', deleteResult);
+  } else {
+    console.log('Test user not found');
+  }
 
   // Виведемо всіх користувачів після оновлення
   const allUsers = await users.find().toArray();
@@ -235,4 +240,4 @@ async function manualFixReferrals() {
 }
 
 // Розкоментуйте наступний рядок для виконання функції manualFixReferrals
-// manualFixReferrals().then(() => console.log('Manual referral fix completed'));
+manualFixReferrals().then(() => console.log('Manual referral fix completed'));
