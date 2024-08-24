@@ -207,56 +207,32 @@ process.on('SIGINT', async () => {
   });
 });
 
-async function fixReferralData() {
-  const db = await connectToDatabase();
-  const users = db.collection('users');
-
-  const allUsers = await users.find().toArray();
-
-  for (const user of allUsers) {
-    if (user.referrals && user.referrals.length > 0) {
-      for (const referralId of user.referrals) {
-        await users.updateOne(
-          { telegramId: referralId },
-          { $set: { referredBy: user.telegramId } }
-        );
-      }
-    }
-  }
-
-  // Очистимо referrals для всіх користувачів
-  await users.updateMany({}, { $set: { referrals: [] } });
-
-  // Тепер заново заповнимо referrals на основі referredBy
-  const usersWithReferrers = await users.find({ referredBy: { $ne: null } }).toArray();
-  for (const user of usersWithReferrers) {
-    await users.updateOne(
-      { telegramId: user.referredBy },
-      { $addToSet: { referrals: user.telegramId } }
-    );
-  }
-
-  console.log('Referral data fixed');
-}
-
 async function manualFixReferrals() {
   const db = await connectToDatabase();
   const users = db.collection('users');
 
+  console.log('Starting manual referral fix');
+
   // Видалимо всі referrals у тестового користувача
-  await users.updateOne(
+  const testUserResult = await users.updateOne(
     { telegramId: "12345" },
     { $set: { referrals: [] } }
   );
+  console.log('Test user update result:', testUserResult);
 
   // Оновимо referredBy для користувачів, які були неправильно прив'язані
-  await users.updateMany(
+  const wrongReferralsResult = await users.updateMany(
     { referredBy: "12345" },
     { $set: { referredBy: null } }
   );
+  console.log('Wrong referrals update result:', wrongReferralsResult);
+
+  // Виведемо всіх користувачів після оновлення
+  const allUsers = await users.find().toArray();
+  console.log('All users after update:', JSON.stringify(allUsers, null, 2));
 
   console.log('Manual referral fix completed');
 }
 
-// Викличте цю функцію один раз
+// Розкоментуйте наступний рядок для виконання функції manualFixReferrals
 // manualFixReferrals().then(() => console.log('Manual referral fix completed'));
