@@ -224,8 +224,39 @@ async function fixReferralData() {
     }
   }
 
+  // Очистимо referrals для всіх користувачів
+  await users.updateMany({}, { $set: { referrals: [] } });
+
+  // Тепер заново заповнимо referrals на основі referredBy
+  const usersWithReferrers = await users.find({ referredBy: { $ne: null } }).toArray();
+  for (const user of usersWithReferrers) {
+    await users.updateOne(
+      { telegramId: user.referredBy },
+      { $addToSet: { referrals: user.telegramId } }
+    );
+  }
+
   console.log('Referral data fixed');
 }
 
-// Щоб запустити функцію fixReferralData(), розкоментуйте наступний рядок:
-// fixReferralData().then(() => console.log('Finished fixing referral data'));
+async function manualFixReferrals() {
+  const db = await connectToDatabase();
+  const users = db.collection('users');
+
+  // Видалимо всі referrals у тестового користувача
+  await users.updateOne(
+    { telegramId: "12345" },
+    { $set: { referrals: [] } }
+  );
+
+  // Оновимо referredBy для користувачів, які були неправильно прив'язані
+  await users.updateMany(
+    { referredBy: "12345" },
+    { $set: { referredBy: null } }
+  );
+
+  console.log('Manual referral fix completed');
+}
+
+// Викличте цю функцію один раз
+manualFixReferrals().then(() => console.log('Manual referral fix completed'));

@@ -115,11 +115,6 @@ const botHandler = async (req, res) => {
               const addBonusResult = await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`, 'Add bonus result:', addBonusResult);
 
-              // Оновлюємо локальний об'єкт користувача
-              user.referredBy = referrer.telegramId;
-              user.coins += bonusAmount;
-              user.totalCoins += bonusAmount;
-
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             } else {
