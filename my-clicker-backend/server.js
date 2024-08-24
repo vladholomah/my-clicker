@@ -259,4 +259,4 @@ async function manualFixReferrals() {
 }
 
 // Викличте цю функцію один раз
-manualFixReferrals().then(() => console.log('Manual referral fix completed'));
+// manualFixReferrals().then(() => console.log('Manual referral fix completed'));
