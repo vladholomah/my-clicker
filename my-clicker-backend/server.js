@@ -240,4 +240,4 @@ async function manualFixReferrals() {
 }
 
 // Розкоментуйте наступний рядок для виконання функції manualFixReferrals
-manualFixReferrals().then(() => console.log('Manual referral fix completed'));
+// manualFixReferrals().then(() => console.log('Manual referral fix completed'));
