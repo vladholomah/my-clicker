@@ -182,7 +182,7 @@ async function removeTestUser() {
     const deleteResult = await users.deleteOne({ telegramId: "12345" });
     console.log('Test user delete result:', deleteResult);
 
-    // Update referredBy for users who were referred by the test user
+    // Оновлюємо referredBy для користувачів, які були пов'язані з тестовим користувачем
     const updateResult = await users.updateMany(
       { referredBy: "12345" },
       { $set: { referredBy: null } }
@@ -193,5 +193,5 @@ async function removeTestUser() {
   }
 }
 
-// Call this function once when the server starts
+// Викликайте цю функцію при запуску сервера
 removeTestUser().then(() => console.log('Finished removing test user'));

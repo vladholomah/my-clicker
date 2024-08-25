@@ -54,7 +54,6 @@ const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
   return { referrerUpdate, newUserUpdate };
 };
 
-// Додаємо функцію getOrCreateUser в bot.js
 const getOrCreateUser = async (users, userId, firstName, lastName, username) => {
   let user = await users.findOne({ telegramId: userId });
   if (!user) {
@@ -110,6 +109,13 @@ const botHandler = async (req, res) => {
               const bonusAmount = 5000;
               await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+
+              // Оновлюємо referredBy для нового користувача
+              await users.updateOne(
+                { telegramId: userId.toString() },
+                { $set: { referredBy: referrer.telegramId } }
+              );
+
               await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             } else {
