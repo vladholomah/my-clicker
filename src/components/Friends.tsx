@@ -52,6 +52,7 @@ const Friends: React.FC = () => {
       const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
       setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
       setUserData(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching user data:', error);
       setError('Error loading user data');
@@ -60,7 +61,6 @@ const Friends: React.FC = () => {
       } else {
         setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
-    } finally {
       setLoading(false);
     }
   }, [user]);
@@ -71,6 +71,16 @@ const Friends: React.FC = () => {
       setError('An unexpected error occurred');
       setLoading(false);
     });
+
+    // Add periodic update every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchUserData().catch(error => {
+        console.error('Error in periodic update:', error);
+      });
+    }, 30000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
   }, [fetchUserData]);
 
   const handleInviteFriend = () => {
@@ -79,8 +89,32 @@ const Friends: React.FC = () => {
       return;
     }
     const shareText = `Join me in Holmah Coin and get a bonus! Use my referral link: ${userData.referralLink}`;
-    if (tg?.openTelegramLink) {
-      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(userData.referralLink)}&text=${encodeURIComponent(shareText)}`);
+    if (tg?.showPopup) {
+      tg.showPopup({
+        title: 'Invite Friends',
+        message: 'Share this link with your friends:',
+        buttons: [
+          {
+            type: 'default',
+            text: 'Copy Link',
+            onClick: () => {
+              navigator.clipboard.writeText(userData.referralLink);
+              tg.showAlert('Link copied to clipboard!');
+            }
+          },
+          {
+            type: 'default',
+            text: 'Share',
+            onClick: () => {
+              if (tg.WebApp?.openTelegramLink) {
+                tg.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(userData.referralLink)}&text=${encodeURIComponent(shareText)}`);
+              } else {
+                tg.showAlert('Sharing is not available in this version of Telegram.');
+              }
+            }
+          }
+        ]
+      });
     } else {
       navigator.clipboard.writeText(shareText).then(() => {
         alert('Referral link copied to clipboard! Share it with your friends.');
@@ -120,6 +154,9 @@ const Friends: React.FC = () => {
       ) : (
         <p>You have no invited friends yet.</p>
       )}
+
+      {/* Add button for manual data refresh */}
+      <button onClick={fetchUserData}>Refresh Friends List</button>
 
       <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
         <strong>Debug Info:</strong><br/>

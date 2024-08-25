@@ -27,17 +27,17 @@ module.exports = async (req, res) => {
     const db = client.db('holmah_coin_db');
     const users = db.collection('users');
 
-    const user = await users.findOne({ telegramId: userId });
-    if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ error: 'User not found' });
-    }
+const user = await users.findOne({ telegramId: userId });
+if (!user) {
+  console.log('User not found');
+  return res.status(404).json({ error: 'User not found' });
+}
 
-    console.log('User found:', user);
+console.log('User found:', user);
 
-    // Змінено: пошук друзів за полем referrals користувача
-    const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
-    console.log('Friends found:', friends.length);
+// Змінено: пошук друзів за полем referrals користувача
+const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
+console.log('Friends found:', friends.length);
 
     const friendsData = friends.map(friend => ({
       telegramId: friend.telegramId,
