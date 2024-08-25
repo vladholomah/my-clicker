@@ -34,9 +34,9 @@ module.exports = async (req, res) => {
     }
 
     console.log('User found:', user);
-    console.log('User referrals:', user.referrals);
 
-    const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
+    // Змінено: пошук друзів за полем referredBy
+    const friends = await users.find({ referredBy: userId }).toArray();
     console.log('Friends found:', friends.length);
 
     const friendsData = friends.map(friend => ({

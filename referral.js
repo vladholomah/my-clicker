@@ -49,13 +49,17 @@ module.exports = async (req, res) => {
         referrals: [],
         coins: bonusAmount,
         totalCoins: bonusAmount,
-        level: 'Beginner'
+        level: 'Beginner',
+        referredBy: referrerId  // Додано: встановлення referredBy для нового користувача
       });
       console.log('Insert result for new user:', insertResult);
     } else {
       const updateNewUserResult = await users.updateOne(
         { telegramId: newUserId },
-        { $inc: { coins: bonusAmount, totalCoins: bonusAmount } }
+        {
+          $inc: { coins: bonusAmount, totalCoins: bonusAmount },
+          $set: { referredBy: referrerId }  // Додано: оновлення referredBy для існуючого користувача
+        }
       );
       console.log('Update result for existing new user:', updateNewUserResult);
     }
