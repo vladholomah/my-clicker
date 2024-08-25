@@ -69,14 +69,14 @@ const Friends: React.FC = () => {
     console.log('Friends component mounted');
     console.log('User:', user);
     console.log('Is in Telegram:', isInTelegram);
-    if (user) {
+    if (isInTelegram && user) {
       fetchUserData().catch(error => {
         console.error('Unhandled error in fetchUserData:', error);
         setError('An unexpected error occurred');
         setLoading(false);
       });
     } else {
-      console.log('No user data available');
+      console.log('Not in Telegram or no user data available');
       setLoading(false);
     }
   }, [fetchUserData, user, isInTelegram]);

@@ -11,6 +11,7 @@ const TelegramWebAppWrapper: React.FC = () => {
     console.log('WebApp object:', WebApp);
     console.log('WebApp.initData:', WebApp.initData);
     console.log('WebApp.initDataUnsafe:', WebApp.initDataUnsafe);
+    console.log('Is in Telegram:', WebApp.initDataUnsafe.query_id ? 'Yes' : 'No');
 
     if (WebApp.initDataUnsafe.query_id) {
       console.log('Running inside Telegram WebApp');
