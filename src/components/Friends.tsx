@@ -66,14 +66,12 @@ const Friends: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (user) {
-      fetchUserData().catch(error => {
-        console.error('Unhandled error in fetchUserData:', error);
-        setError('An unexpected error occurred');
-        setLoading(false);
-      });
-    }
-  }, [fetchUserData, user]);
+    fetchUserData().catch(error => {
+      console.error('Unhandled error in fetchUserData:', error);
+      setError('An unexpected error occurred');
+      setLoading(false);
+    });
+  }, [fetchUserData]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
@@ -95,37 +93,37 @@ const Friends: React.FC = () => {
 
   if (loading) return <div className="friends-container">Loading...</div>;
 
-  if (!user) return <div className="friends-container">Please open this app in Telegram.</div>;
-
   return (
-    <div className="friends-container" style={{height: '100vh', overflowY: 'auto', padding: '20px'}}>
-      <h1>Invite friends!</h1>
-      <button onClick={handleInviteFriend}>Invite a friend</button>
-      {userData?.referralLink && <p>Your referral link: {userData.referralLink}</p>}
+      <div className="friends-container" style={{height: '100vh', overflowY: 'auto', padding: '20px'}}>
+        <h1>Invite friends!</h1>
+        <button onClick={handleInviteFriend}>Invite a friend</button>
+        {userData?.referralLink && <p>Your referral link: {userData.referralLink}</p>}
 
-      <h2>Your friends ({userData?.friends.length || 0})</h2>
-      {error && <p className="friends-error">{error}</p>}
-      {userData?.friends.length ? (
-        <ul className="friends-list">
-          {userData.friends.map((friend) => (
-            <li key={friend.telegramId} className="friends-list-item">
-              <img src={friend.avatar || '/images/default-avatar.png'} alt={friend.firstName} className="friend-avatar" />
-              <div className="friend-info">
-                <span className="friend-name">{friend.firstName} {friend.lastName}</span>
-                <span className="friend-level">{friend.level} • <img src="/images/coin.png" alt="Coin" className="coin-icon-small" /> {friend.totalCoins}</span>
-              </div>
-              <span className="friend-coins">
-                <img src="/images/coin.png" alt="Coin" className="coin-icon" />
+        <h2>Your friends ({userData?.friends.length || 0})</h2>
+        {error && <p className="friends-error">{error}</p>}
+        {userData?.friends.length ? (
+            <ul className="friends-list">
+              {userData.friends.map((friend) => (
+                  <li key={friend.telegramId} className="friends-list-item">
+                    <img src={friend.avatar || '/images/default-avatar.png'} alt={friend.firstName}
+                         className="friend-avatar"/>
+                    <div className="friend-info">
+                      <span className="friend-name">{friend.firstName} {friend.lastName}</span>
+                      <span className="friend-level">{friend.level} • <img src="/images/coin.png" alt="Coin"
+                                                                           className="coin-icon-small"/> {friend.totalCoins}</span>
+                    </div>
+                    <span className="friend-coins">
+                <img src="/images/coin.png" alt="Coin" className="coin-icon"/>
                 +{friend.coins.toLocaleString()}
               </span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>You have no invited friends yet.</p>
-      )}
+                  </li>
+              ))}
+            </ul>
+        ) : (
+            <p>You have no invited friends yet.</p>
+        )}
 
-      <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
+       <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
         <strong>Debug Info:</strong><br/>
         User: {user ? JSON.stringify(user) : 'No user data'}<br/>
         API URL: {process.env.REACT_APP_API_URL}<br/>
