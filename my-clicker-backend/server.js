@@ -107,11 +107,21 @@ app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getUserData request for userId:', userId);
 
+  if (!userId) {
+    console.error('No userId provided');
+    return res.status(400).json({ error: 'userId is required' });
+  }
+
   try {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
-    const user = await getOrCreateUser(users, userId);
+    const user = await users.findOne({ telegramId: userId });
+    if (!user) {
+      console.log('User not found in database');
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const friends = await getFriends(users, userId);
 
     const response = {
