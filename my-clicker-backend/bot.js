@@ -120,9 +120,11 @@ const botHandler = async (req, res) => {
               await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
             } else {
               console.log('Invalid referrer or user trying to refer themselves');
+              await bot.sendMessage(chatId, 'Welcome to Holmah Coin bot!');
             }
           } else {
             console.log('User already has a referrer or no referral code provided');
+            await bot.sendMessage(chatId, 'Welcome to Holmah Coin bot!');
           }
 
           const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
@@ -134,11 +136,11 @@ const botHandler = async (req, res) => {
             resize_keyboard: true
           };
 
-          await bot.sendMessage(chatId, `Welcome to Holmah Coin bot!\nYour referral link is: ${referralLink}\nUse the buttons below to start playing or invite friends:`, { reply_markup: keyboard });
+          await bot.sendMessage(chatId, `Your referral link is: ${referralLink}\nUse the buttons below to start playing or invite friends:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
-          await bot.sendMessage(chatId, 'An error occurred during registration. Please try again later.');
+          await bot.sendMessage(chatId, 'An error occurred. Please try again later.');
         }
       } else {
         console.log(`Received unknown command: ${text}`);

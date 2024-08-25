@@ -18,23 +18,9 @@ export const useTelegram = () => {
           console.log('Telegram user data:', telegram.initDataUnsafe.user);
         } else {
           console.warn('User data not available in Telegram WebApp');
-          // Якщо дані користувача недоступні, створюємо тестового користувача
-          setUser({
-            id: 12345,
-            first_name: 'Test',
-            last_name: 'User',
-            username: 'testuser'
-          });
         }
       } else {
         console.error('Telegram WebApp is not available');
-        // Створюємо тестового користувача для розробки поза Telegram
-        setUser({
-          id: 12345,
-          first_name: 'Test',
-          last_name: 'User',
-          username: 'testuser'
-        });
       }
     };
 

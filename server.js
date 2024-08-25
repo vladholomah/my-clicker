@@ -14,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const logEnvVar = (name) => console.log(`${name}:`, process.env[name] ? (name === 'BOT_TOKEN' ? 'Set' : process.env[name]) : 'Not set');
 
-['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME'].forEach(logEnvVar);
+['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME', 'REACT_APP_API_URL'].forEach(logEnvVar);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -171,27 +171,3 @@ process.on('SIGINT', async () => {
     process.exit(0);
   });
 });
-
-async function removeTestUser() {
-  const db = await connectToDatabase();
-  const users = db.collection('users');
-
-  const testUser = await users.findOne({ telegramId: "12345" });
-  if (testUser) {
-    console.log('Test user found, removing...');
-    const deleteResult = await users.deleteOne({ telegramId: "12345" });
-    console.log('Test user delete result:', deleteResult);
-
-    // Оновлюємо referredBy для користувачів, які були пов'язані з тестовим користувачем
-    const updateResult = await users.updateMany(
-      { referredBy: "12345" },
-      { $set: { referredBy: null } }
-    );
-    console.log('Updated referredBy for users:', updateResult);
-  } else {
-    console.log('Test user not found');
-  }
-}
-
-// Викликайте цю функцію при запуску сервера
-removeTestUser().then(() => console.log('Finished removing test user'));
