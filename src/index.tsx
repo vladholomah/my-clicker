@@ -7,14 +7,7 @@ import WebApp from '@twa-dev/sdk';
 
 const TelegramWebAppWrapper: React.FC = () => {
   useEffect(() => {
-    console.log('TelegramWebAppWrapper mounted');
-    console.log('WebApp object:', WebApp);
-    console.log('WebApp.initData:', WebApp.initData);
-    console.log('WebApp.initDataUnsafe:', WebApp.initDataUnsafe);
-    console.log('Is in Telegram:', WebApp.initDataUnsafe.query_id ? 'Yes' : 'No');
-
     if (WebApp.initDataUnsafe.query_id) {
-      console.log('Running inside Telegram WebApp');
       WebApp.ready();
       WebApp.expand();
       WebApp.setHeaderColor('#000000');
@@ -50,9 +43,5 @@ root.render(
     <TelegramWebAppWrapper />
   </React.StrictMode>
 );
-
-// Додаткове логування глобальних об'єктів
-console.log('Window object:', window);
-console.log('Window.Telegram:', (window as any).Telegram);
 
 reportWebVitals();

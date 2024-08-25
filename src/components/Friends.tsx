@@ -35,7 +35,7 @@ const Friends: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debugMessage, setDebugMessage] = useState<string>('');
-  const { user, tg, isInTelegram } = useTelegram();
+  const { user, tg } = useTelegram();
 
   const fetchUserData = useCallback(async () => {
     if (!user || !user.id) {
@@ -66,20 +66,12 @@ const Friends: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log('Friends component mounted');
-    console.log('User:', user);
-    console.log('Is in Telegram:', isInTelegram);
-    if (isInTelegram && user) {
-      fetchUserData().catch(error => {
-        console.error('Unhandled error in fetchUserData:', error);
-        setError('An unexpected error occurred');
-        setLoading(false);
-      });
-    } else {
-      console.log('Not in Telegram or no user data available');
+    fetchUserData().catch(error => {
+      console.error('Unhandled error in fetchUserData:', error);
+      setError('An unexpected error occurred');
       setLoading(false);
-    }
-  }, [fetchUserData, user, isInTelegram]);
+    });
+  }, [fetchUserData]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
@@ -87,7 +79,7 @@ const Friends: React.FC = () => {
       return;
     }
     const shareText = `Join me in Holmah Coin and get a bonus! Use my referral link: ${userData.referralLink}`;
-    if (tg.openTelegramLink) {
+    if (tg?.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(userData.referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
       navigator.clipboard.writeText(shareText).then(() => {
@@ -100,10 +92,6 @@ const Friends: React.FC = () => {
   };
 
   if (loading) return <div className="friends-container">Loading...</div>;
-
-  if (!isInTelegram) return <div className="friends-container">Please open this app in Telegram.</div>;
-
-  if (!user) return <div className="friends-container">Unable to get user data. Please try again.</div>;
 
   return (
     <div className="friends-container" style={{height: '100vh', overflowY: 'auto', padding: '20px'}}>
@@ -136,12 +124,8 @@ const Friends: React.FC = () => {
       <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
         <strong>Debug Info:</strong><br/>
         User: {user ? JSON.stringify(user) : 'No user data'}<br/>
-        Is in Telegram: {isInTelegram ? 'Yes' : 'No'}<br/>
         API URL: {process.env.REACT_APP_API_URL}<br/>
-        Debug Message: {debugMessage}<br/>
-        Loading: {loading ? 'true' : 'false'}<br/>
-        Error: {error || 'No error'}<br/>
-        UserData: {JSON.stringify(userData)}
+        Debug Message: {debugMessage}
       </div>
     </div>
   );
