@@ -35,7 +35,7 @@ const Friends: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debugMessage, setDebugMessage] = useState<string>('');
-  const { user, tg } = useTelegram();
+  const { user, tg, isInTelegram } = useTelegram();
 
   const fetchUserData = useCallback(async () => {
     if (!user || !user.id) {
@@ -68,6 +68,7 @@ const Friends: React.FC = () => {
   useEffect(() => {
     console.log('Friends component mounted');
     console.log('User:', user);
+    console.log('Is in Telegram:', isInTelegram);
     if (user) {
       fetchUserData().catch(error => {
         console.error('Unhandled error in fetchUserData:', error);
@@ -78,7 +79,7 @@ const Friends: React.FC = () => {
       console.log('No user data available');
       setLoading(false);
     }
-  }, [fetchUserData, user]);
+  }, [fetchUserData, user, isInTelegram]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
@@ -86,7 +87,7 @@ const Friends: React.FC = () => {
       return;
     }
     const shareText = `Join me in Holmah Coin and get a bonus! Use my referral link: ${userData.referralLink}`;
-    if (tg?.openTelegramLink) {
+    if (tg.openTelegramLink) {
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(userData.referralLink)}&text=${encodeURIComponent(shareText)}`);
     } else {
       navigator.clipboard.writeText(shareText).then(() => {
@@ -100,7 +101,9 @@ const Friends: React.FC = () => {
 
   if (loading) return <div className="friends-container">Loading...</div>;
 
-  if (!user) return <div className="friends-container">Please open this app in Telegram.</div>;
+  if (!isInTelegram) return <div className="friends-container">Please open this app in Telegram.</div>;
+
+  if (!user) return <div className="friends-container">Unable to get user data. Please try again.</div>;
 
   return (
     <div className="friends-container" style={{height: '100vh', overflowY: 'auto', padding: '20px'}}>
@@ -133,6 +136,7 @@ const Friends: React.FC = () => {
       <div style={{padding: '10px', backgroundColor: '#f0f0f0', marginTop: '10px', wordBreak: 'break-all'}}>
         <strong>Debug Info:</strong><br/>
         User: {user ? JSON.stringify(user) : 'No user data'}<br/>
+        Is in Telegram: {isInTelegram ? 'Yes' : 'No'}<br/>
         API URL: {process.env.REACT_APP_API_URL}<br/>
         Debug Message: {debugMessage}<br/>
         Loading: {loading ? 'true' : 'false'}<br/>
