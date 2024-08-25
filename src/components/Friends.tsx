@@ -66,12 +66,17 @@ const Friends: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
+    console.log('Friends component mounted');
+    console.log('User:', user);
     if (user) {
       fetchUserData().catch(error => {
         console.error('Unhandled error in fetchUserData:', error);
         setError('An unexpected error occurred');
         setLoading(false);
       });
+    } else {
+      console.log('No user data available');
+      setLoading(false);
     }
   }, [fetchUserData, user]);
 
@@ -130,6 +135,8 @@ const Friends: React.FC = () => {
         User: {user ? JSON.stringify(user) : 'No user data'}<br/>
         API URL: {process.env.REACT_APP_API_URL}<br/>
         Debug Message: {debugMessage}<br/>
+        Loading: {loading ? 'true' : 'false'}<br/>
+        Error: {error || 'No error'}<br/>
         UserData: {JSON.stringify(userData)}
       </div>
     </div>
