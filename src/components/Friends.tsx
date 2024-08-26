@@ -130,5 +130,7 @@ const Friends: React.FC = () => {
     </div>
   );
 };
+dssvsdv\
+sdd
 
 export default Friends;
