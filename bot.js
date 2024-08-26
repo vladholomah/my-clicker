@@ -110,41 +110,40 @@ const botHandler = async (req, res) => {
               await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
               console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
 
-              // Оновлюємо referredBy для нового користувача
               await users.updateOne(
                 { telegramId: userId.toString() },
                 { $set: { referredBy: referrer.telegramId } }
               );
 
-              await bot.sendMessage(chatId, `Welcome! You received ${bonusAmount} coins as a referral bonus!`);
-              await bot.sendMessage(referrer.telegramId, `Your friend joined using your referral link. You received ${bonusAmount} coins as a bonus!`);
+              await bot.sendMessage(chatId, `Вітаємо! Ви отримали ${bonusAmount} монет як бонус за реферальне посилання!`);
+              await bot.sendMessage(referrer.telegramId, `Ваш друг приєднався за вашим реферальним посиланням. Ви отримали ${bonusAmount} монет як бонус!`);
             } else {
               console.log('Invalid referrer or user trying to refer themselves');
-              await bot.sendMessage(chatId, 'Welcome to Holmah Coin bot!');
+              await bot.sendMessage(chatId, 'Ласкаво просимо до бота Holmah Coin!');
             }
           } else {
             console.log('User already has a referrer or no referral code provided');
-            await bot.sendMessage(chatId, 'Welcome to Holmah Coin bot!');
+            await bot.sendMessage(chatId, 'Ласкаво просимо до бота Holmah Coin!');
           }
 
           const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
           const keyboard = {
             keyboard: [
-              [{ text: 'Play Now', web_app: { url: process.env.FRONTEND_URL } }],
-              [{ text: 'Invite Friends', callback_data: 'invite_friends' }]
+              [{ text: 'Грати зараз', web_app: { url: process.env.FRONTEND_URL } }],
+              [{ text: 'Запросити друзів', callback_data: 'invite_friends' }]
             ],
             resize_keyboard: true
           };
 
-          await bot.sendMessage(chatId, `Your referral link is: ${referralLink}\nUse the buttons below to start playing or invite friends:`, { reply_markup: keyboard });
+          await bot.sendMessage(chatId, `Ваше реферальне посилання: ${referralLink}\nВикористовуйте кнопки нижче, щоб почати гру або запросити друзів:`, { reply_markup: keyboard });
           console.log('Welcome message sent');
         } catch (error) {
           console.error('Error processing /start command:', error);
-          await bot.sendMessage(chatId, 'An error occurred. Please try again later.');
+          await bot.sendMessage(chatId, 'Сталася помилка. Будь ласка, спробуйте пізніше.');
         }
       } else {
         console.log(`Received unknown command: ${text}`);
-        await bot.sendMessage(chatId, 'Sorry, I don\'t understand this command. Try /start');
+        await bot.sendMessage(chatId, 'Вибачте, я не розумію цю команду. Спробуйте /start');
       }
     } else {
       console.log('Received request without message');
