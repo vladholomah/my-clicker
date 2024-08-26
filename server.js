@@ -107,12 +107,20 @@ app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getUserData request for userId:', userId);
 
+  if (!userId) {
+    console.error('getUserData: userId is undefined');
+    return res.status(400).json({ error: 'userId is required' });
+  }
+
   try {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
     const user = await getOrCreateUser(users, userId);
+    console.log('User found:', user);
+
     const friends = await getFriends(users, userId);
+    console.log('Friends found:', friends);
 
     const response = {
       user: {

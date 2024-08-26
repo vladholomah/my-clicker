@@ -73,6 +73,9 @@ const getOrCreateUser = async (users, userId, firstName, lastName, username) => 
       level: 'Beginner'
     };
     await users.insertOne(user);
+    console.log('New user created:', user);
+  } else {
+    console.log('Existing user found:', user);
   }
   return user;
 };
