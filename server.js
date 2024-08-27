@@ -14,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const logEnvVar = (name) => console.log(`${name}:`, process.env[name] ? (name === 'BOT_TOKEN' ? 'Set' : process.env[name]) : 'Not set');
 
-['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME', 'REACT_APP_API_URL'].forEach(logEnvVar);
+['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME'].forEach(logEnvVar);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -57,11 +57,30 @@ async function connectToDatabase() {
   return client.db('holmah_coin_db');
 }
 
+function generateReferralCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+async function getUserProfilePhoto(userId) {
+  try {
+    const bot = new TelegramBot(process.env.BOT_TOKEN);
+    const userProfilePhotos = await bot.getUserProfilePhotos(userId, { limit: 1 });
+    if (userProfilePhotos.photos && userProfilePhotos.photos.length > 0) {
+      const fileId = userProfilePhotos.photos[0][0].file_id;
+      const file = await bot.getFile(fileId);
+      return `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
+    }
+  } catch (error) {
+    console.error('Error fetching user profile photo:', error);
+  }
+  return null;
+}
+
 async function getOrCreateUser(users, userId, firstName, lastName, username) {
   let user = await users.findOne({ telegramId: userId });
   if (!user) {
     console.log('User not found, creating a new one');
-    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const referralCode = generateReferralCode();
     user = {
       telegramId: userId,
       firstName: firstName || 'Unknown',
@@ -88,20 +107,12 @@ app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
   console.log('Received getUserData request for userId:', userId);
 
-  if (!userId) {
-    console.error('getUserData: userId is undefined');
-    return res.status(400).json({ error: 'userId is required' });
-  }
-
   try {
     const db = await connectToDatabase();
     const users = db.collection('users');
 
     const user = await getOrCreateUser(users, userId);
-    console.log('User found:', user);
-
     const friends = await getFriends(users, userId);
-    console.log('Friends found:', friends);
 
     const response = {
       user: {
@@ -160,3 +171,27 @@ process.on('SIGINT', async () => {
     process.exit(0);
   });
 });
+
+async function removeTestUser() {
+  const db = await connectToDatabase();
+  const users = db.collection('users');
+
+  const testUser = await users.findOne({ telegramId: "12345" });
+  if (testUser) {
+    console.log('Test user found, removing...');
+    const deleteResult = await users.deleteOne({ telegramId: "12345" });
+    console.log('Test user delete result:', deleteResult);
+
+    // Оновлюємо referredBy для користувачів, які були пов'язані з тестовим користувачем
+    const updateResult = await users.updateMany(
+      { referredBy: "12345" },
+      { $set: { referredBy: null } }
+    );
+    console.log('Updated referredBy for users:', updateResult);
+  } else {
+    console.log('Test user not found');
+  }
+}
+
+// Викликайте цю функцію при запуску сервера
+removeTestUser().then(() => console.log('Finished removing test user'));
