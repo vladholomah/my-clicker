@@ -38,6 +38,7 @@ const Friends: React.FC = () => {
   const { user, tg } = useTelegram();
 
   const fetchUserData = useCallback(async () => {
+    console.log('fetchUserData called, user:', user);
     if (!user) {
       setDebugMessage('User object is undefined');
       setLoading(false);
@@ -71,17 +72,11 @@ const Friends: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log('useTelegram hook data:', { user, tg });
-    const timer = setTimeout(() => {
-      fetchUserData().catch(error => {
-        console.error('Unhandled error in fetchUserData:', error);
-        setError('An unexpected error occurred');
-        setLoading(false);
-      });
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [fetchUserData, user, tg]);
+    console.log('Friends component mounted, user:', user);
+    if (user) {
+      fetchUserData();
+    }
+  }, [fetchUserData, user]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {

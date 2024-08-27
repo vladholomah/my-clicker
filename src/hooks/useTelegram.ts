@@ -25,11 +25,7 @@ export const useTelegram = () => {
     };
 
     initTelegram();
-
-    // Додаємо додаткове логування
     console.log('useTelegram hook initialized');
-    console.log('window.Telegram:', window.Telegram);
-    console.log('window.Telegram.WebApp:', window.Telegram?.WebApp);
   }, []);
 
   return { user, tg };

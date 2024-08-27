@@ -57,30 +57,11 @@ async function connectToDatabase() {
   return client.db('holmah_coin_db');
 }
 
-function generateReferralCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-async function getUserProfilePhoto(userId) {
-  try {
-    const bot = new TelegramBot(process.env.BOT_TOKEN);
-    const userProfilePhotos = await bot.getUserProfilePhotos(userId, { limit: 1 });
-    if (userProfilePhotos.photos && userProfilePhotos.photos.length > 0) {
-      const fileId = userProfilePhotos.photos[0][0].file_id;
-      const file = await bot.getFile(fileId);
-      return `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
-    }
-  } catch (error) {
-    console.error('Error fetching user profile photo:', error);
-  }
-  return null;
-}
-
 async function getOrCreateUser(users, userId, firstName, lastName, username) {
   let user = await users.findOne({ telegramId: userId });
   if (!user) {
     console.log('User not found, creating a new one');
-    const referralCode = generateReferralCode();
+    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     user = {
       telegramId: userId,
       firstName: firstName || 'Unknown',
