@@ -35,8 +35,8 @@ module.exports = async (req, res) => {
 
     console.log('User found:', user);
 
-    // Змінено: пошук друзів за полем referredBy
-    const friends = await users.find({ referredBy: userId }).toArray();
+    // Змінено: пошук друзів за полем referrals користувача
+    const friends = await users.find({ telegramId: { $in: user.referrals || [] } }).toArray();
     console.log('Friends found:', friends.length);
 
     const friendsData = friends.map(friend => ({
@@ -53,12 +53,19 @@ module.exports = async (req, res) => {
     const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
     console.log('Referral link generated:', referralLink);
     const response = {
+      user: {
+        telegramId: user.telegramId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        coins: user.coins || 0,
+        totalCoins: user.totalCoins || user.coins || 0,
+        level: user.level || 'Beginner',
+        avatar: user.avatar || null
+      },
       friends: friendsData,
       referralCode: user.referralCode,
       referralLink,
-      userCoins: user.coins || 0,
-      userTotalCoins: user.totalCoins || user.coins || 0,
-      userLevel: user.level || 'Beginner'
     };
     console.log('Sending response:', response);
     res.status(200).json(response);
