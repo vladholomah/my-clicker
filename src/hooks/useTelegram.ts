@@ -28,5 +28,6 @@ export const useTelegram = () => {
     console.log('useTelegram hook initialized');
   }, []);
 
+  і
   return { user, tg };
 };
