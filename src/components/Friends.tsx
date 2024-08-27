@@ -81,7 +81,7 @@ const Friends: React.FC = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [fetchUserData]);
+  }, [fetchUserData, user, tg]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
