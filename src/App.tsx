@@ -42,6 +42,14 @@ function AppContent() {
     console.log('AppContent mounted');
     console.log('User:', user);
     console.log('Telegram WebApp:', tg);
+
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      console.log('Telegram WebApp initialized');
+      console.log('User data:', window.Telegram.WebApp.initDataUnsafe.user);
+    } else {
+      console.error('Telegram WebApp is not available');
+    }
   }, [user, tg]);
 
   const handleMenuItemClick = (item: string) => {

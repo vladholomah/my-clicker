@@ -29,6 +29,10 @@ const TelegramWebAppWrapper: React.FC = () => {
       document.documentElement.style.setProperty('--tg-theme-button-color', '#3390ec');
       document.documentElement.style.setProperty('--tg-theme-button-text-color', '#ffffff');
     }
+
+    // Додаткова перевірка глобального об'єкта Telegram
+    console.log('window.Telegram:', window.Telegram);
+    console.log('window.Telegram?.WebApp:', window.Telegram?.WebApp);
   }, []);
 
   return <App />;

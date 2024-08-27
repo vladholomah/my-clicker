@@ -75,6 +75,9 @@ const Friends: React.FC = () => {
     console.log('Friends component mounted, user:', user);
     if (user) {
       fetchUserData();
+    } else {
+      setLoading(false);
+      setDebugMessage('User is not available');
     }
   }, [fetchUserData, user]);
 
