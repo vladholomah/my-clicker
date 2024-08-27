@@ -38,7 +38,7 @@ function AppContent() {
   });
   const { user, tg } = useTelegram();
 
-  useEffect(() => {
+   useEffect(() => {
     console.log('AppContent mounted');
     console.log('User:', user);
     console.log('Telegram WebApp:', tg);
