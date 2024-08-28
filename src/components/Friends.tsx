@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
 import './Friends.css';
@@ -37,48 +37,47 @@ const Friends: React.FC = () => {
   const [debugMessage, setDebugMessage] = useState<string>('');
   const { user, tg } = useTelegram();
 
-  const fetchUserData = useCallback(async () => {
-    console.log('fetchUserData called, user:', user);
-    let userId;
-    if (user && user.id) {
-      userId = user.id.toString();
-    } else {
-      // Якщо user.id недоступний, спробуємо отримати userId з URL
-      const urlParams = new URLSearchParams(window.location.search);
-      userId = urlParams.get('userId');
-    }
-
-    if (!userId) {
-      setDebugMessage('User ID is not available');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const API_URL = process.env.REACT_APP_API_URL;
-      setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
-      const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
-      console.log('User data received:', response.data);
-      setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
-      setUserData(response.data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setError('Error loading user data');
-      if (axios.isAxiosError(error)) {
-        setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
-      } else {
-        setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    const fetchUserData = async () => {
+      console.log('fetchUserData called, user:', user);
+      let userId;
+      if (user && user.id) {
+        userId = user.id.toString();
+      } else {
+        // Якщо user.id недоступний, спробуємо отримати userId з URL
+        const urlParams = new URLSearchParams(window.location.search);
+        userId = urlParams.get('userId');
+      }
+
+      if (!userId) {
+        setDebugMessage('User ID is not available');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const API_URL = process.env.REACT_APP_API_URL;
+        setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+        const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
+        console.log('User data received:', response.data);
+        setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError('Error loading user data');
+        if (axios.isAxiosError(error)) {
+          setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
+        } else {
+          setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
     console.log('Friends component mounted, user:', user);
     fetchUserData();
-  }, [fetchUserData]);
+  }, [user]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
