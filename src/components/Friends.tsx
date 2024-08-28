@@ -40,35 +40,40 @@ const Friends: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       console.log('fetchUserData called, user:', user);
+      setDebugMessage(prev => prev + '\nFetchUserData called');
+
       let userId;
       if (user && user.id) {
         userId = user.id.toString();
+        setDebugMessage(prev => prev + `\nUserId from user: ${userId}`);
       } else {
-        // Якщо user.id недоступний, спробуємо отримати userId з URL
         const urlParams = new URLSearchParams(window.location.search);
         userId = urlParams.get('userId');
+        setDebugMessage(prev => prev + `\nUserId from URL: ${userId}`);
       }
 
       if (!userId) {
-        setDebugMessage('User ID is not available');
+        setDebugMessage(prev => prev + '\nUser ID is not available');
         setLoading(false);
         return;
       }
 
       try {
         const API_URL = process.env.REACT_APP_API_URL;
-        setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+        setDebugMessage(prev => prev + `\nAPI URL: ${API_URL}`);
+        setDebugMessage(prev => prev + `\nTrying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+
         const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
         console.log('User data received:', response.data);
-        setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
+        setDebugMessage(prev => prev + `\nAPI Response: ${JSON.stringify(response.data)}`);
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
         if (axios.isAxiosError(error)) {
-          setDebugMessage(`Axios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
+          setDebugMessage(prev => prev + `\nAxios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
         } else {
-          setDebugMessage(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          setDebugMessage(prev => prev + `\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
       } finally {
         setLoading(false);
@@ -76,12 +81,13 @@ const Friends: React.FC = () => {
     };
 
     console.log('Friends component mounted, user:', user);
+    setDebugMessage('Friends component mounted');
     fetchUserData();
   }, [user]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
-      setDebugMessage('Referral link is not available');
+      setDebugMessage(prev => prev + '\nReferral link is not available');
       return;
     }
     const shareText = `Join me in Holmah Coin and get a bonus! Use my referral link: ${userData.referralLink}`;
@@ -131,7 +137,10 @@ const Friends: React.FC = () => {
         <strong>Debug Info:</strong><br/>
         User: {user ? JSON.stringify(user) : 'No user data'}<br/>
         API URL: {process.env.REACT_APP_API_URL}<br/>
-        Debug Message: {debugMessage}
+        Loading: {loading ? 'True' : 'False'}<br/>
+        Error: {error || 'None'}<br/>
+        UserData: {userData ? 'Available' : 'Not Available'}<br/>
+        Debug Message: <pre>{debugMessage}</pre>
       </div>
     </div>
   );
