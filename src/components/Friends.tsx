@@ -74,6 +74,7 @@ const Friends: React.FC = () => {
     }
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     console.log('Friends component mounted, user:', user);
     fetchUserData();
