@@ -38,18 +38,47 @@ function AppContent() {
   });
   const { user, tg } = useTelegram();
 
-   useEffect(() => {
+  useEffect(() => {
     console.log('AppContent mounted');
     console.log('User:', user);
     console.log('Telegram WebApp:', tg);
 
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-      console.log('Telegram WebApp initialized');
-      console.log('User data:', window.Telegram.WebApp.initDataUnsafe.user);
-    } else {
-      console.error('Telegram WebApp is not available');
-    }
+    const getUserId = async () => {
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        console.log('Telegram WebApp initialized');
+        const webAppUser = window.Telegram.WebApp.initDataUnsafe.user;
+        console.log('User data:', webAppUser);
+
+        if (webAppUser && webAppUser.id) {
+          return webAppUser.id.toString();
+        }
+      }
+
+      // Якщо не вдалося отримати userId з WebApp, спробуємо інші методи
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlUserId = urlParams.get('userId');
+      if (urlUserId) return urlUserId;
+
+      const localStorageUserId = localStorage.getItem('userId');
+      if (localStorageUserId) return localStorageUserId;
+
+      console.error('Unable to get userId');
+      return '';
+    };
+
+    getUserId().then(userId => {
+      if (userId) {
+        console.log('UserId obtained:', userId);
+        localStorage.setItem('userId', userId);
+        // Якщо userId немає в URL, додаємо його
+        if (!window.location.search.includes('userId')) {
+          window.history.pushState({}, '', `${window.location.pathname}?userId=${userId}`);
+        }
+      } else {
+        console.error('No userId available');
+      }
+    });
   }, [user, tg]);
 
   const handleMenuItemClick = (item: string) => {

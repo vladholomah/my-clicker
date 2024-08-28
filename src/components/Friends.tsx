@@ -39,20 +39,22 @@ const Friends: React.FC = () => {
 
   const fetchUserData = useCallback(async () => {
     console.log('fetchUserData called, user:', user);
-    if (!user) {
-      setDebugMessage('User object is undefined');
-      setLoading(false);
-      return;
+    let userId;
+    if (user && user.id) {
+      userId = user.id.toString();
+    } else {
+      // Якщо user.id недоступний, спробуємо отримати userId з URL
+      const urlParams = new URLSearchParams(window.location.search);
+      userId = urlParams.get('userId');
     }
-    if (!user.id) {
-      setDebugMessage('User ID is undefined');
+
+    if (!userId) {
+      setDebugMessage('User ID is not available');
       setLoading(false);
       return;
     }
 
     try {
-      setDebugMessage(`Initial user state: ${JSON.stringify(user)}`);
-      const userId = user.id.toString();
       const API_URL = process.env.REACT_APP_API_URL;
       setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
       const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
