@@ -58,6 +58,7 @@ const Friends: React.FC = () => {
       const API_URL = process.env.REACT_APP_API_URL;
       setDebugMessage(`Trying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
       const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
+      console.log('User data received:', response.data);
       setDebugMessage(`API Response: ${JSON.stringify(response.data)}`);
       setUserData(response.data);
     } catch (error) {
@@ -75,13 +76,8 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     console.log('Friends component mounted, user:', user);
-    if (user) {
-      fetchUserData();
-    } else {
-      setLoading(false);
-      setDebugMessage('User is not available');
-    }
-  }, [fetchUserData, user]);
+    fetchUserData();
+  }, [fetchUserData]);
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
