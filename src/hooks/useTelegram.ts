@@ -33,8 +33,7 @@ export const useTelegram = () => {
         console.error('Telegram WebApp is not available');
       }
     };
-zxc
-    zcx
+
     initTelegram();
   }, []);
 

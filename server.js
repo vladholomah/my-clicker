@@ -155,9 +155,7 @@ const server = app.listen(port, () => {
     .then(() => console.log('Webhook set successfully'))
     .catch((error) => console.error('Error setting webhook:', error));
 });
-dsc
-dcs
-sd
+
 process.on('SIGINT', async () => {
   if (client) {
     await client.close();
