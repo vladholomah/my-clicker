@@ -37,49 +37,49 @@ const Friends: React.FC = () => {
   const [debugMessage, setDebugMessage] = useState<string>('');
   const { user, tg } = useTelegram();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      console.log('fetchUserData called, user:', user);
-      setDebugMessage(prev => prev + '\nFetchUserData called');
+useEffect(() => {
+  const fetchUserData = async () => {
+    console.log('fetchUserData called, user:', user);
+    setDebugMessage(prev => prev + '\nFetchUserData called');
 
-      let userId: string | null = null;
-      if (user && user.id) {
-        userId = user.id.toString();
-        setDebugMessage(prev => prev + `\nUserId from user: ${userId}`);
-      } else {
-        const urlParams = new URLSearchParams(window.location.search);
-        userId = urlParams.get('userId');
-        setDebugMessage(prev => prev + `\nUserId from URL: ${userId}`);
-      }
+    let userId: string | null = null;
+    if (user && user.id) {
+      userId = user.id.toString();
+      setDebugMessage(prev => prev + `\nUserId from user: ${userId}`);
+    } else {
+      const urlParams = new URLSearchParams(window.location.search);
+      userId = urlParams.get('userId');
+      setDebugMessage(prev => prev + `\nUserId from URL: ${userId}`);
+    }
 
-      if (!userId) {
-        setDebugMessage(prev => prev + '\nUser ID is not available');
-        setLoading(false);
-        return;
-      }
+    if (!userId) {
+      setDebugMessage(prev => prev + '\nUser ID is not available');
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const API_URL = process.env.REACT_APP_API_URL;
-        setDebugMessage(prev => prev + `\nAPI URL: ${API_URL}`);
-        setDebugMessage(prev => prev + `\nTrying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
+    try {
+      const API_URL = process.env.REACT_APP_API_URL;
+      setDebugMessage(prev => prev + `\nAPI URL: ${API_URL}`);
+      setDebugMessage(prev => prev + `\nTrying to fetch data from: ${API_URL}/api/getUserData?userId=${userId}`);
 
-        const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
-        console.log('User data received:', response.data);
-        setDebugMessage(prev => prev + `\nAPI Response: ${JSON.stringify(response.data)}`);
-        setUserData(response.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Error loading user data');
-        handleError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const response = await axios.get<UserData>(`${API_URL}/api/getUserData?userId=${userId}`);
+      console.log('User data received:', response.data);
+      setDebugMessage(prev => prev + `\nAPI Response: ${JSON.stringify(response.data)}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setError('Error loading user data');
+      handleError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    console.log('Friends component mounted, user:', user);
-    setDebugMessage('Friends component mounted');
-    fetchUserData();
-  }, [user]);
+  console.log('Friends component mounted, user:', user);
+  setDebugMessage('Friends component mounted');
+  fetchUserData();
+}, [user]);
 
   const handleError = (error: unknown) => {
     if (axios.isAxiosError(error)) {
@@ -110,7 +110,6 @@ const Friends: React.FC = () => {
       });
     }
   };
-
 
   if (loading) return <div className="friends-container">Loading...</div>;
 
