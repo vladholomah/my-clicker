@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useTelegram } from '../hooks/useTelegram';
 import './Friends.css';
 
@@ -42,7 +42,7 @@ const Friends: React.FC = () => {
       console.log('fetchUserData called, user:', user);
       setDebugMessage(prev => prev + '\nFetchUserData called');
 
-      let userId;
+      let userId: string | null = null;
       if (user && user.id) {
         userId = user.id.toString();
         setDebugMessage(prev => prev + `\nUserId from user: ${userId}`);
@@ -71,9 +71,12 @@ const Friends: React.FC = () => {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
         if (axios.isAxiosError(error)) {
-          setDebugMessage(prev => prev + `\nAxios Error: ${error.message}. Status: ${error.response?.status}. Data: ${JSON.stringify(error.response?.data)}`);
+          const axiosError = error as AxiosError;
+          setDebugMessage(prev => prev + `\nAxios Error: ${axiosError.message}. Status: ${axiosError.response?.status}. Data: ${JSON.stringify(axiosError.response?.data)}`);
+        } else if (error instanceof Error) {
+          setDebugMessage(prev => prev + `\nError: ${error.message}`);
         } else {
-          setDebugMessage(prev => prev + `\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          setDebugMessage(prev => prev + `\nUnknown error: ${String(error)}`);
         }
       } finally {
         setLoading(false);
@@ -96,9 +99,9 @@ const Friends: React.FC = () => {
     } else {
       navigator.clipboard.writeText(shareText).then(() => {
         alert('Referral link copied to clipboard! Share it with your friends.');
-      }).catch(err => {
+      }).catch((err: unknown) => {
         console.error('Failed to copy text: ', err);
-        alert('Failed to copy referral link. Please copy it manually: ' + userData.referralLink);
+        alert(`Failed to copy referral link. Please copy it manually: ${userData.referralLink}`);
       });
     }
   };
