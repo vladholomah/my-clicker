@@ -70,14 +70,7 @@ const Friends: React.FC = () => {
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError('Error loading user data');
-        if (axios.isAxiosError(error)) {
-          const axiosError = error as AxiosError;
-          setDebugMessage(prev => prev + `\nAxios Error: ${axiosError.message}. Status: ${axiosError.response?.status}. Data: ${JSON.stringify(axiosError.response?.data)}`);
-        } else if (error instanceof Error) {
-          setDebugMessage(prev => prev + `\nError: ${error.message}`);
-        } else {
-          setDebugMessage(prev => prev + `\nUnknown error: ${String(error)}`);
-        }
+        handleError(error);
       } finally {
         setLoading(false);
       }
@@ -87,6 +80,17 @@ const Friends: React.FC = () => {
     setDebugMessage('Friends component mounted');
     fetchUserData();
   }, [user]);
+
+  const handleError = (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError;
+      setDebugMessage(prev => prev + `\nAxios Error: ${axiosError.message}. Status: ${axiosError.response?.status}. Data: ${JSON.stringify(axiosError.response?.data)}`);
+    } else if (error instanceof Error) {
+      setDebugMessage(prev => prev + `\nError: ${error.message}`);
+    } else {
+      setDebugMessage(prev => prev + `\nUnknown error: ${String(error)}`);
+    }
+  };
 
   const handleInviteFriend = () => {
     if (!userData?.referralLink) {
@@ -101,10 +105,12 @@ const Friends: React.FC = () => {
         alert('Referral link copied to clipboard! Share it with your friends.');
       }).catch((err: unknown) => {
         console.error('Failed to copy text: ', err);
+        handleError(err);
         alert(`Failed to copy referral link. Please copy it manually: ${userData.referralLink}`);
       });
     }
   };
+
 
   if (loading) return <div className="friends-container">Loading...</div>;
 
