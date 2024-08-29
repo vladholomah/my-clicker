@@ -92,7 +92,7 @@ async function getFriends(users, userId) {
 
 app.get('/api/getUserData', async (req, res) => {
   const { userId } = req.query;
-  console.log('Received getUserData request for userId:', userId);
+  console.log('Received request for user data. User ID:', userId);
 
   if (!userId) {
     console.error('getUserData: userId is undefined');
