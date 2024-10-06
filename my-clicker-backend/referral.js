@@ -1,6 +1,10 @@
-const { MongoClient } = require('mongodb');
+import { Pool } from 'pg';
 
-module.exports = async (req, res) => {
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+});
+
+export default async (req, res) => {
   console.log('Received referral request:', req.method, req.url);
   console.log('Request body:', JSON.stringify(req.body));
 
@@ -11,18 +15,11 @@ module.exports = async (req, res) => {
     return res.status(400).json({ success: false, error: 'Missing required parameters' });
   }
 
-  const client = new MongoClient(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
+  const client = await pool.connect();
   try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-    const db = client.db('holmah_coin_db');
-    const users = db.collection('users');
+    console.log('Connected to PostgreSQL');
 
-    let referrer = await users.findOne({ telegramId: referrerId });
+    const { rows: [referrer] } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [referrerId]);
     console.log('Referrer before update:', referrer);
     console.log('New user:', newUserId);
 
@@ -33,35 +30,28 @@ module.exports = async (req, res) => {
 
     const bonusAmount = 5000;
 
-    const updateResult = await users.updateOne(
-      { telegramId: referrerId },
-      {
-        $addToSet: { referrals: newUserId },
-        $inc: { coins: bonusAmount, totalCoins: bonusAmount }
-      }
-    );
-    console.log('Update result for referrer:', updateResult);
+    await client.query(`
+      UPDATE users 
+      SET referrals = array_append(referrals, $1),
+          coins = coins + $2,
+          total_coins = total_coins + $2
+      WHERE telegram_id = $3
+    `, [newUserId, bonusAmount, referrerId]);
 
-    let newUser = await users.findOne({ telegramId: newUserId });
+    const { rows: [newUser] } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [newUserId]);
     if (!newUser) {
-      const insertResult = await users.insertOne({
-        telegramId: newUserId,
-        referrals: [],
-        coins: bonusAmount,
-        totalCoins: bonusAmount,
-        level: 'Beginner',
-        referredBy: referrerId
-      });
-      console.log('Insert result for new user:', insertResult);
+      await client.query(`
+        INSERT INTO users (telegram_id, referrals, coins, total_coins, level, referred_by)
+        VALUES ($1, ARRAY[]::text[], $2, $2, 'Beginner', $3)
+      `, [newUserId, bonusAmount, referrerId]);
     } else {
-      const updateNewUserResult = await users.updateOne(
-        { telegramId: newUserId },
-        {
-          $inc: { coins: bonusAmount, totalCoins: bonusAmount },
-          $set: { referredBy: referrerId }
-        }
-      );
-      console.log('Update result for existing new user:', updateNewUserResult);
+      await client.query(`
+        UPDATE users
+        SET coins = coins + $1,
+            total_coins = total_coins + $1,
+            referred_by = $2
+        WHERE telegram_id = $3
+      `, [bonusAmount, referrerId, newUserId]);
     }
 
     console.log('Referral processed successfully');
@@ -74,6 +64,6 @@ module.exports = async (req, res) => {
     console.error('Error processing referral:', error);
     res.status(500).json({ success: false, error: error.message });
   } finally {
-    await client.close();
+    client.release();
   }
 };

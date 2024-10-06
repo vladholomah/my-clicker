@@ -1,168 +1,69 @@
-import express from 'express';
-import { MongoClient } from 'mongodb';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import TelegramBot from 'node-telegram-bot-api';
-import dotenv from 'dotenv';
-import botHandler from './bot.js';
+import { Pool } from 'pg';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-const logEnvVar = (name) => console.log(`${name}:`, process.env[name] ? (name === 'BOT_TOKEN' ? 'Set' : process.env[name]) : 'Not set');
-
-['MONGODB_URI', 'BOT_TOKEN', 'FRONTEND_URL', 'BOT_USERNAME', 'REACT_APP_API_URL'].forEach(logEnvVar);
-
-const app = express();
-const port = process.env.PORT || 5000;
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(express.json());
-
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  next();
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
 });
 
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  console.error('MONGODB_URI is not defined');
-  process.exit(1);
-}
+export default async (req, res) => {
+  console.log('Received referral request:', req.method, req.url);
+  console.log('Request body:', JSON.stringify(req.body));
 
-let client;
+  const { referrerId, newUserId } = req.body;
 
-async function connectToDatabase() {
-  if (!client) {
-    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-    try {
-      await client.connect();
-      console.log('Connected to MongoDB');
-      const db = client.db('holmah_coin_db');
-      const collections = await db.listCollections().toArray();
-      console.log('Available collections:', collections.map(c => c.name));
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error);
-      process.exit(1);
-    }
-  }
-  return client.db('holmah_coin_db');
-}
-
-function generateReferralCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-async function getOrCreateUser(users, userId, firstName, lastName, username) {
-  let user = await users.findOne({ telegramId: userId });
-  if (!user) {
-    console.log('User not found, creating a new one');
-    const referralCode = generateReferralCode();
-    user = {
-      telegramId: userId,
-      firstName: firstName || 'Unknown',
-      lastName: lastName || 'User',
-      username: username || 'unknown',
-      coins: 0,
-      totalCoins: 0,
-      referralCode: referralCode,
-      referrals: [],
-      referredBy: null,
-      avatar: null,
-      level: 'Beginner'
-    };
-    await users.insertOne(user);
-  }
-  return user;
-}
-
-async function getFriends(users, userId) {
-  const user = await users.findOne({ telegramId: userId });
-  if (!user || !user.referrals) return [];
-  return await users.find({ telegramId: { $in: user.referrals } }).toArray();
-}
-
-app.get('/api/getUserData', async (req, res) => {
-  const { userId } = req.query;
-  console.log('Received request for user data. User ID:', userId);
-
-  if (!userId) {
-    console.error('getUserData: userId is undefined');
-    return res.status(400).json({ error: 'userId is required' });
+  if (!referrerId || !newUserId) {
+    console.error('Missing referrerId or newUserId');
+    return res.status(400).json({ success: false, error: 'Missing required parameters' });
   }
 
+  const client = await pool.connect();
   try {
-    const db = await connectToDatabase();
-    const users = db.collection('users');
+    console.log('Connected to PostgreSQL');
 
-    const user = await getOrCreateUser(users, userId);
-    console.log('User found:', user);
+    const { rows: [referrer] } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [referrerId]);
+    console.log('Referrer before update:', referrer);
+    console.log('New user:', newUserId);
 
-    const friends = await getFriends(users, userId);
-    console.log('Friends found:', friends);
+    if (!referrer) {
+      console.error('Referrer not found');
+      return res.status(404).json({ success: false, error: 'Referrer not found' });
+    }
 
-    const response = {
-      user: {
-        telegramId: user.telegramId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        coins: parseInt(user.coins) || 0,
-        totalCoins: parseInt(user.totalCoins) || 0,
-        level: user.level || 'Beginner',
-        avatar: user.avatar
-      },
-      friends: friends.map(friend => ({
-        telegramId: friend.telegramId,
-        firstName: friend.firstName,
-        lastName: friend.lastName,
-        username: friend.username,
-        coins: parseInt(friend.coins) || 0,
-        totalCoins: parseInt(friend.totalCoins) || 0,
-        level: friend.level || 'Beginner',
-        avatar: friend.avatar
-      })),
-      referralCode: user.referralCode,
-      referralLink: `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`
-    };
+    const bonusAmount = 5000;
 
-    console.log('Sending response:', JSON.stringify(response, null, 2));
-    res.json(response);
+    await client.query(`
+      UPDATE users 
+      SET referrals = array_append(referrals, $1),
+          coins = coins + $2,
+          total_coins = total_coins + $2
+      WHERE telegram_id = $3
+    `, [newUserId, bonusAmount, referrerId]);
+
+    const { rows: [newUser] } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [newUserId]);
+    if (!newUser) {
+      await client.query(`
+        INSERT INTO users (telegram_id, referrals, coins, total_coins, level, referred_by)
+        VALUES ($1, ARRAY[]::text[], $2, $2, 'Beginner', $3)
+      `, [newUserId, bonusAmount, referrerId]);
+    } else {
+      await client.query(`
+        UPDATE users
+        SET coins = coins + $1,
+            total_coins = total_coins + $1,
+            referred_by = $2
+        WHERE telegram_id = $3
+      `, [bonusAmount, referrerId, newUserId]);
+    }
+
+    console.log('Referral processed successfully');
+    res.status(200).json({
+      success: true,
+      referrerBonus: bonusAmount,
+      newUserBonus: bonusAmount
+    });
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error processing referral:', error);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    client.release();
   }
-});
-
-app.post(`/bot${process.env.BOT_TOKEN}`, express.json(), botHandler);
-
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log(`CORS origin set to: ${process.env.FRONTEND_URL || '*'}`);
-  console.log(`Webhook URL: ${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`);
-
-  const bot = new TelegramBot(process.env.BOT_TOKEN);
-  const webhookURL = `${process.env.REACT_APP_API_URL}/bot${process.env.BOT_TOKEN}`;
-  bot.setWebHook(webhookURL)
-    .then(() => console.log('Webhook set successfully'))
-    .catch((error) => console.error('Error setting webhook:', error));
-});
-
-process.on('SIGINT', async () => {
-  if (client) {
-    await client.close();
-    console.log('MongoDB connection closed');
-  }
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
+};

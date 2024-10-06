@@ -1,95 +1,57 @@
-import { MongoClient } from 'mongodb';
+import { Pool } from 'pg';
 import TelegramBot from 'node-telegram-bot-api';
 
-let db;
-let bot;
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+});
 
-const connectToDatabase = async () => {
-  if (!db) {
-    try {
-      const client = new MongoClient(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-      await client.connect();
-      db = client.db('holmah_coin_db');
-      console.log('Connected to MongoDB');
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error);
-      throw error;
-    }
-  }
-  return db;
-};
-
-const initBot = () => {
-  if (!bot) {
-    bot = new TelegramBot(process.env.BOT_TOKEN);
-  }
-  return bot;
-};
+const bot = new TelegramBot(process.env.BOT_TOKEN);
 
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-const addReferralBonus = async (users, referrerId, newUserId, bonusAmount) => {
+const addReferralBonus = async (client, referrerId, newUserId, bonusAmount) => {
   console.log(`Adding referral bonus: referrerId=${referrerId}, newUserId=${newUserId}, bonusAmount=${bonusAmount}`);
 
-  const referrerUpdate = await users.updateOne(
-    { telegramId: referrerId },
-    {
-      $addToSet: { referrals: newUserId },
-      $inc: { coins: bonusAmount, totalCoins: bonusAmount }
-    }
-  );
-  console.log('Referrer update result:', referrerUpdate);
+  await client.query(`
+    UPDATE users 
+    SET referrals = array_append(referrals, $1),
+        coins = coins + $2,
+        total_coins = total_coins + $2
+    WHERE telegram_id = $3
+  `, [newUserId, bonusAmount, referrerId]);
 
-  const newUserUpdate = await users.updateOne(
-    { telegramId: newUserId },
-    {
-      $inc: { coins: bonusAmount, totalCoins: bonusAmount },
-      $set: { referredBy: referrerId }
-    }
-  );
-  console.log('New user update result:', newUserUpdate);
-
-  return { referrerUpdate, newUserUpdate };
+  await client.query(`
+    UPDATE users
+    SET coins = coins + $1,
+        total_coins = total_coins + $1,
+        referred_by = $2
+    WHERE telegram_id = $3
+  `, [bonusAmount, referrerId, newUserId]);
 };
 
-const getOrCreateUser = async (users, userId, firstName, lastName, username) => {
-  let user = await users.findOne({ telegramId: userId });
-  if (!user) {
+const getOrCreateUser = async (client, userId, firstName, lastName, username) => {
+  const { rows } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [userId]);
+  if (rows.length === 0) {
     console.log('User not found, creating a new one');
     const referralCode = generateReferralCode();
-    user = {
-      telegramId: userId,
-      firstName: firstName || 'Unknown',
-      lastName: lastName || 'User',
-      username: username || 'unknown',
-      coins: 0,
-      totalCoins: 0,
-      referralCode: referralCode,
-      referrals: [],
-      referredBy: null,
-      avatar: null,
-      level: 'Beginner'
-    };
-    await users.insertOne(user);
-    console.log('New user created:', user);
-  } else {
-    console.log('Existing user found:', user);
+    const newUser = await client.query(`
+      INSERT INTO users (telegram_id, first_name, last_name, username, coins, total_coins, referral_code, referrals, referred_by, avatar, level)
+      VALUES ($1, $2, $3, $4, 0, 0, $5, ARRAY[]::text[], NULL, NULL, 'Beginner')
+      RETURNING *
+    `, [userId, firstName || 'Unknown', lastName || 'User', username || 'unknown', referralCode]);
+    return newUser.rows[0];
   }
-  return user;
+  return rows[0];
 };
 
 const botHandler = async (req, res) => {
   console.log('Bot handler called');
   console.log('Webhook received:', JSON.stringify(req.body, null, 2));
 
+  const client = await pool.connect();
   try {
-    const db = await connectToDatabase();
-    console.log('Database connected');
-    const users = db.collection('users');
-    const bot = initBot();
-
     if (req.body && req.body.message) {
       const { chat: { id: chatId }, text, from: { id: userId, first_name, last_name, username } } = req.body.message;
       console.log(`Received message: ${text} from user ${userId}`);
@@ -101,20 +63,20 @@ const botHandler = async (req, res) => {
           const referrerCode = args.length > 1 ? args[1] : null;
           console.log(`Referrer code: ${referrerCode}`);
 
-          let user = await getOrCreateUser(users, userId.toString(), first_name, last_name, username);
+          let user = await getOrCreateUser(client, userId.toString(), first_name, last_name, username);
           console.log('User:', user);
 
-          if (referrerCode && !user.referredBy) {
+          if (referrerCode && !user.referred_by) {
             console.log(`Processing referral for code: ${referrerCode}`);
-            const referrer = await users.findOne({ referralCode: referrerCode });
+            const { rows: [referrer] } = await client.query('SELECT * FROM users WHERE referral_code = $1', [referrerCode]);
             console.log('Referrer found:', referrer);
-            if (referrer && referrer.telegramId !== userId.toString()) {
+            if (referrer && referrer.telegram_id !== userId.toString()) {
               const bonusAmount = 5000;
-              await addReferralBonus(users, referrer.telegramId, userId.toString(), bonusAmount);
-              console.log(`User ${userId} added to referrals of ${referrer.telegramId}`);
+              await addReferralBonus(client, referrer.telegram_id, userId.toString(), bonusAmount);
+              console.log(`User ${userId} added to referrals of ${referrer.telegram_id}`);
 
               await bot.sendMessage(chatId, `Вітаємо! Ви отримали ${bonusAmount} монет як бонус за реферальне посилання!`);
-              await bot.sendMessage(referrer.telegramId, `Ваш друг приєднався за вашим реферальним посиланням. Ви отримали ${bonusAmount} монет як бонус!`);
+              await bot.sendMessage(referrer.telegram_id, `Ваш друг приєднався за вашим реферальним посиланням. Ви отримали ${bonusAmount} монет як бонус!`);
             } else {
               console.log('Invalid referrer or user trying to refer themselves');
               await bot.sendMessage(chatId, 'Ласкаво просимо до бота Holmah Coin!');
@@ -124,7 +86,7 @@ const botHandler = async (req, res) => {
             await bot.sendMessage(chatId, 'Ласкаво просимо до бота Holmah Coin!');
           }
 
-          const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referralCode}`;
+          const referralLink = `https://t.me/${process.env.BOT_USERNAME}?start=${user.referral_code}`;
           const keyboard = {
             keyboard: [
               [{ text: 'Грати зараз', web_app: { url: process.env.FRONTEND_URL } }],
@@ -152,6 +114,8 @@ const botHandler = async (req, res) => {
     console.error('General error:', error);
     console.error('Error stack:', error.stack);
     res.status(200).json({ ok: true }); // Always respond with 200 OK for Telegram
+  } finally {
+    client.release();
   }
 };
 
