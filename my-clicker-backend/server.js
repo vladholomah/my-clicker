@@ -1,11 +1,23 @@
-import { Pool } from 'pg';
+import pg from 'pg';
+const { Pool } = pg;
 
+// Створюємо пул з'єднань один раз
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-export default async (req, res) => {
-  console.log('Received referral request:', req.method, req.url);
+// Експортуємо функцію-обробник для Vercel
+export default async function handler(req, res) {
+  console.log('Received request:', req.method, req.url);
+
+  // Перевіряємо метод запиту
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method Not Allowed' });
+  }
+
   console.log('Request body:', JSON.stringify(req.body));
 
   const { referrerId, newUserId } = req.body;
@@ -15,9 +27,13 @@ export default async (req, res) => {
     return res.status(400).json({ success: false, error: 'Missing required parameters' });
   }
 
-  const client = await pool.connect();
+  let client;
   try {
+    client = await pool.connect();
     console.log('Connected to PostgreSQL');
+
+    // Початок транзакції
+    await client.query('BEGIN');
 
     const { rows: [referrer] } = await client.query('SELECT * FROM users WHERE telegram_id = $1', [referrerId]);
     console.log('Referrer before update:', referrer);
@@ -54,6 +70,9 @@ export default async (req, res) => {
       `, [bonusAmount, referrerId, newUserId]);
     }
 
+    // Завершення транзакції
+    await client.query('COMMIT');
+
     console.log('Referral processed successfully');
     res.status(200).json({
       success: true,
@@ -61,9 +80,10 @@ export default async (req, res) => {
       newUserBonus: bonusAmount
     });
   } catch (error) {
+    if (client) await client.query('ROLLBACK');
     console.error('Error processing referral:', error);
     res.status(500).json({ success: false, error: error.message });
   } finally {
-    client.release();
+    if (client) client.release();
   }
-};
+}
