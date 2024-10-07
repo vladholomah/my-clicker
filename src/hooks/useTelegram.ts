@@ -19,14 +19,14 @@ export const useTelegram = () => {
           setUser(telegram.initDataUnsafe.user);
         } else {
           console.warn('User data not available in Telegram WebApp');
-          // Якщо дані користувача недоступні через Telegram WebApp, спробуємо отримати їх з URL
+          // Спробуємо отримати userId з URL або localStorage
           const urlParams = new URLSearchParams(window.location.search);
-          const userId = urlParams.get('userId');
+          const userId = urlParams.get('userId') || localStorage.getItem('userId');
           if (userId) {
-            console.log('userId found in URL:', userId);
+            console.log('userId found:', userId);
             setUser({ id: parseInt(userId) } as TelegramUser);
           } else {
-            console.error('No userId found in URL');
+            console.error('No userId found');
           }
         }
       } else {

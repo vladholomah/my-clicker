@@ -1,13 +1,12 @@
-import { ReportHandler } from 'web-vitals';
+import { type Metric, onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
 
-const reportWebVitals = async (onPerfEntry?: ReportHandler) => {
+const reportWebVitals = (onPerfEntry?: (metric: Metric) => void) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
-    getCLS(onPerfEntry);
-    getFID(onPerfEntry);
-    getFCP(onPerfEntry);
-    getLCP(onPerfEntry);
-    getTTFB(onPerfEntry);
+    onCLS(onPerfEntry);
+    onFID(onPerfEntry);
+    onFCP(onPerfEntry);
+    onLCP(onPerfEntry);
+    onTTFB(onPerfEntry);
   }
 };
 
