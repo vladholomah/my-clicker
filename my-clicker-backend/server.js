@@ -1,5 +1,17 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 import pg from 'pg';
+
+dotenv.config();
+
 const { Pool } = pg;
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
 
 // Створюємо пул з'єднань один раз
 const pool = new Pool({
@@ -9,15 +21,19 @@ const pool = new Pool({
   }
 });
 
-// Експортуємо функцію-обробник для Vercel
-export default async function handler(req, res) {
-  console.log('Received request:', req.method, req.url);
-
-  // Перевіряємо метод запиту
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, error: 'Method Not Allowed' });
+// Перевірка з'єднання з базою даних
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+  } else {
+    console.log('Successfully connected to the database');
+    release();
   }
+});
 
+// Ендпоінт для обробки рефералів
+app.post('/api/referral', async (req, res) => {
+  console.log('Received referral request:', req.method, req.url);
   console.log('Request body:', JSON.stringify(req.body));
 
   const { referrerId, newUserId } = req.body;
@@ -86,4 +102,20 @@ export default async function handler(req, res) {
   } finally {
     if (client) client.release();
   }
+});
+
+// Тестовий ендпоінт
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Backend is working!' });
+});
+
+// Для локального запуску
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 }
+
+// Експорт для Vercel
+export default app;
